@@ -517,7 +517,6 @@
 
         .plan-card-image {
             width: 100%;
-            aspect-ratio: 16 / 9;
             background: var(--bg-secondary);
             display: flex;
             align-items: center;
@@ -525,6 +524,17 @@
             color: var(--text-secondary);
             font-size: 48px;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Manual upload: keep 16:9 */
+        .plan-card-image.has-manual-img {
+            aspect-ratio: 16 / 9;
+        }
+
+        /* No image: fixed placeholder height */
+        .plan-card-image.no-img {
+            min-height: 80px;
         }
 
         .plan-card-image img {
@@ -532,12 +542,14 @@
             height: 100%;
             object-fit: cover;
             object-position: top;
+            display: block;
         }
 
-        /* og:image from URL — show completely at natural ratio */
+        /* og:image — natural aspect ratio */
         .plan-og-img {
             width: 100%;
-            height: 100%;
+            height: auto;
+            display: block;
             object-fit: contain;
             background: var(--bg-secondary);
         }
@@ -3279,16 +3291,22 @@
             card.draggable = true;
             card.dataset.id = plan.id;
 
+            const hasManualImg = !!plan.image;
+            const hasUrl = !!plan.url;
+            const imageDivClass = hasManualImg ? 'plan-card-image has-manual-img'
+                                : hasUrl       ? 'plan-card-image no-img'
+                                               : 'plan-card-image no-img';
+
             const imageHTML = plan.image ? 
                 `<img src="${plan.image}" alt="${plan.name}">` : 
-                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">⛓️💥</span>`;
+                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">⛓️</span>`;
 
             card.innerHTML = `
                 <div class="plan-card-actions">
                     <button class="icon-btn" onclick="editResource('${plan.id}'); event.stopPropagation();">✏️</button>
                     <button class="icon-btn" onclick="deleteResource('${plan.id}'); event.stopPropagation();">🗑️</button>
                 </div>
-                <div class="plan-card-image">${imageHTML}</div>
+                <div class="${imageDivClass}">${imageHTML}</div>
                 <div class="plan-card-content">
                     <div class="plan-card-header">
                         <div class="plan-card-title">${plan.name}</div>
@@ -3304,14 +3322,25 @@
                 </div>
             `;
 
+            const imageDiv = card.querySelector('.plan-card-image');
+
             // 沒有手動圖片但有 URL → 抓 og:image
             if (!plan.image && plan.url) {
                 const img = card.querySelector('.plan-og-img');
                 const placeholder = card.querySelector('.plan-img-placeholder');
+
+                const showOgImg = (url) => {
+                    img.onload = () => {
+                        img.style.display = 'block';
+                        if (placeholder) placeholder.style.display = 'none';
+                        imageDiv.classList.remove('no-img');
+                    };
+                    img.onerror = () => { /* 保留 placeholder */ };
+                    img.src = url;
+                };
+
                 if (ogImageCache[plan.url]) {
-                    img.src = ogImageCache[plan.url];
-                    img.style.display = 'block';
-                    if (placeholder) placeholder.style.display = 'none';
+                    showOgImg(ogImageCache[plan.url]);
                 } else {
                     fetch(`https://api.microlink.io/?url=${encodeURIComponent(plan.url)}`)
                         .then(r => r.json())
@@ -3319,9 +3348,7 @@
                             const imgUrl = data?.data?.image?.url;
                             if (imgUrl && img) {
                                 ogImageCache[plan.url] = imgUrl;
-                                img.src = imgUrl;
-                                img.style.display = 'block';
-                                if (placeholder) placeholder.style.display = 'none';
+                                showOgImg(imgUrl);
                             }
                         })
                         .catch(() => {});
