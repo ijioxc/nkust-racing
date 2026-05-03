@@ -614,14 +614,16 @@
             background: var(--bg);
             border-radius: 12px;
             padding: 0;
-            max-width: 900px;
+            max-width: 960px;
         }
 
         .plan-detail-image {
             width: 100%;
-            max-height: 500px;
+            height: auto;
+            display: block;
             object-fit: contain;
             background: var(--bg-secondary);
+            border-radius: 12px 12px 0 0;
         }
 
         .plan-detail-content {
@@ -1140,7 +1142,7 @@
             background: var(--bg);
             border-radius: 12px;
             padding: 30px;
-            max-width: 700px;
+            max-width: 960px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -2726,7 +2728,11 @@
             // Click to view detail
             card.onclick = (e) => {
                 if (!e.target.closest('.plan-card-actions')) {
-                    showPlanDetail(plan.id);
+                    if (plan.isPlan) {
+                        showPlanDetail(plan.id);
+                    } else {
+                        showResourceDetail(plan.id);
+                    }
                 }
             };
 
@@ -2757,7 +2763,7 @@
 
             document.getElementById('worklogDetailContent').innerHTML = `
                 <div class="plan-detail-modal">
-                    ${imageHTML}
+                    <div id="planDetailImgWrap">${imageHTML}</div>
                     <div class="plan-detail-content">
                         <div class="plan-detail-header">
                             <div class="plan-detail-title">${plan.name}</div>
@@ -2782,6 +2788,29 @@
                     </div>
                 </div>
             `;
+
+            // 若無圖片但有 URL，抓 og:image
+            if (!plan.image && plan.url) {
+                const wrap = document.getElementById('planDetailImgWrap');
+                const fetchImg = (url) => {
+                    const img = document.createElement('img');
+                    img.className = 'plan-detail-image';
+                    img.alt = plan.name;
+                    img.src = url;
+                    wrap.appendChild(img);
+                };
+                if (ogImageCache[plan.url]) {
+                    fetchImg(ogImageCache[plan.url]);
+                } else {
+                    fetch(`https://api.microlink.io/?url=${encodeURIComponent(plan.url)}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const imgUrl = data?.data?.image?.url;
+                            if (imgUrl) { ogImageCache[plan.url] = imgUrl; fetchImg(imgUrl); }
+                        })
+                        .catch(() => {});
+                }
+            }
 
             document.getElementById('worklogDetailModal').classList.add('show');
         }
