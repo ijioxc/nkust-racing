@@ -7,6 +7,33 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Firebase Realtime Database -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaLAdn2l-VZJJGk_uVst03MaNEtCJLn0Q",
+            authDomain: "nkust-racing.firebaseapp.com",
+            databaseURL: "https://nkust-racing-default-rtdb.firebaseio.com/",
+            projectId: "nkust-racing",
+            storageBucket: "nkust-racing.firebasestorage.app",
+            messagingSenderId: "438278825258",
+            appId: "1:438278825258:web:b90e07234f150a3c39aa53"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window._fbDb = db;
+        window._fbRef = ref;
+        window._fbSet = set;
+        window._fbOnValue = onValue;
+
+        // 通知主 script Firebase 已就緒
+        window.dispatchEvent(new Event('firebase-ready'));
+    </script>
     <style>
         :root {
             --primary-orange: #ED6C00;
@@ -204,13 +231,18 @@
 
         .filter-buttons {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 6px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
             margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
         }
+        .filter-buttons::-webkit-scrollbar { display: none; }
 
         .filter-btn {
-            padding: 6px 14px;
+            padding: 6px 12px;
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 20px;
@@ -219,6 +251,8 @@
             color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .filter-btn:hover {
@@ -230,6 +264,30 @@
             background: var(--primary-orange);
             border-color: var(--primary-orange);
             color: white;
+        }
+
+        /* Show-more button in category sections */
+        .show-more-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background: var(--bg-secondary);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .show-more-btn:hover {
+            background: var(--orange-light);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
         }
 
         .category-section {
@@ -276,42 +334,41 @@
             font-weight: 600;
         }
 
-        .show-more-btn {
-            display: inline-block;
-            margin-top: 16px;
-            padding: 8px 20px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .show-more-btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
-        }
-
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
-        @media (max-width: 1400px) {
+        @media (max-width: 1200px) {
             .resources-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 768px) {
             .resources-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
+            }
+            header {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .header-right {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .header-stat {
+                font-size: 12px;
+            }
+            .header-left h1 {
+                font-size: 20px;
+            }
+            .container {
+                padding: 12px;
+            }
+            .category-title {
+                font-size: 16px;
             }
         }
 
@@ -319,38 +376,11 @@
             .resources-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .container {
-                padding: 12px;
-            }
-            
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            
-            .header-left h1 {
-                font-size: 22px;
-            }
-            
             .header-right {
-                width: 100%;
-                justify-content: space-between;
+                gap: 6px;
             }
-            
-            .filter-btn {
-                font-size: 12px;
-                padding: 5px 12px;
-            }
-            
-            .category-title {
-                font-size: 18px;
-            }
-            
-            .show-more-btn {
-                width: 100%;
-                text-align: center;
+            .search-input-header.active {
+                width: 140px;
             }
         }
 
@@ -363,10 +393,7 @@
             transition: all 0.3s ease;
             position: relative;
             cursor: pointer;
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            min-height: 140px;
+            text-align: center;
         }
 
         .person-card:hover {
@@ -375,40 +402,29 @@
             border-color: var(--primary-orange);
         }
 
-        .person-card-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            position: relative;
-            min-width: 90px;
-        }
-
         .person-card-content {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            flex: 1;
+            align-items: center;
+            gap: 10px;
         }
 
         .person-avatar-large {
-            width: 90px;
-            height: 90px;
-            background: var(--bg-secondary);
-            border: 3px solid var(--border);
+            width: 60px;
+            height: 60px;
+            background: #2a2a2a;
             border-radius: 50%;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
+            font-size: 32px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
         }
 
         .person-card:hover .person-avatar-large {
-            transform: scale(1.05);
-            border-color: var(--primary-orange);
+            transform: scale(1.1);
         }
 
         .person-avatar-large img {
@@ -417,116 +433,70 @@
             object-fit: cover;
         }
 
-        .person-dept-grade {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
         .person-info {
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
 
         .person-name {
-            font-size: 22px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--text-primary);
-            letter-spacing: 3px;
+            margin-bottom: 8px;
             line-height: 1.2;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .person-card:hover .person-name {
+            font-size: 17px;
             color: var(--primary-orange);
-        }
-
-        .person-contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .person-contact-item {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
         }
 
         .person-work-types {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 2px;
+            gap: 4px;
+            justify-content: center;
+            margin-bottom: 6px;
         }
 
         .work-type-tag {
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: white;
             transition: all 0.3s ease;
         }
 
         .person-card:hover .work-type-tag {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 11px;
+            padding: 5px 12px;
         }
 
         .person-card-hint {
-            display: none;
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .person-card:hover .person-card-hint {
+            font-size: 11px;
+            color: var(--primary-orange);
         }
 
         .person-card-actions {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 8px;
+            right: 8px;
             display: flex;
-            gap: 6px;
+            gap: 4px;
             opacity: 0;
             transition: opacity 0.2s;
-            z-index: 10;
         }
 
         .person-card:hover .person-card-actions {
             opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            .person-card {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding: 14px;
-                min-height: auto;
-            }
-
-            .person-card-left {
-                min-width: auto;
-            }
-
-            .person-avatar-large {
-                width: 80px;
-                height: 80px;
-                font-size: 32px;
-            }
-
-            .person-name {
-                font-size: 18px;
-                letter-spacing: 2px;
-            }
-
-            .person-contact-info {
-                align-items: center;
-            }
-
-            .person-work-types {
-                justify-content: center;
-            }
         }
 
         /* Plan Card - Wide Rectangle with Image */
@@ -1803,11 +1773,11 @@
         const categoryConfig = {
             '人員管理': { order: 1 },
             '工作日誌': { order: 2 },
-            '賽事資訊': { order: 3 },
-            '工程工具': { order: 4 },
-            '零件供應商': { order: 5 },
-            '學習資源': { order: 6 },
-            '計畫': { order: 7 }
+            '計畫': { order: 3 },
+            '賽事資訊': { order: 4 },
+            '工程工具': { order: 5 },
+            '零件供應商': { order: 6 },
+            '學習資源': { order: 7 }
         };
 
         const categories = Object.keys(categoryConfig).sort((a, b) => 
@@ -1827,16 +1797,40 @@
         const emojis = ['👤', '😀', '😎', '🤓', '🧑‍🔧', '🏎️', '⚙️', '🔧', '🏁', '🎯', '💪', '🚀', '⭐', '🔥', '💡', '🎨'];
 
         function init() {
-            loadData();
-            
-            if (resources.length === 0) {
-                loadSampleData();
-            }
-            
-            renderResources();
             setupSearch();
-            updateHeaderStats();
             setupEmojiPicker();
+
+            function startFirebase() {
+                // 即時監聽 Firebase 資料變更
+                window._fbOnValue(window._fbRef(window._fbDb, 'resources'), (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        resources = data;
+                    } else if (data && typeof data === 'object' && !Array.isArray(data)) {
+                        resources = Object.values(data).filter(Boolean);
+                    } else {
+                        // Firebase 無資料，載入預設並推上去
+                        loadData();
+                        if (resources.length === 0) loadSampleData();
+                        window._fbSet(window._fbRef(window._fbDb, 'resources'), resources);
+                    }
+                    renderResources();
+                    updateHeaderStats();
+                });
+                showNotification('🔥 即時同步已連線');
+            }
+
+            if (window._fbDb) {
+                startFirebase();
+            } else {
+                // Firebase module 還沒載完，等 ready 事件
+                window.addEventListener('firebase-ready', startFirebase, { once: true });
+                // 先用 localStorage 顯示，之後 Firebase 來了再蓋掉
+                loadData();
+                if (resources.length === 0) loadSampleData();
+                renderResources();
+                updateHeaderStats();
+            }
         }
 
         function setupEmojiPicker() {
@@ -2258,6 +2252,11 @@
 
         function saveData() {
             localStorage.setItem('fsaeResources', JSON.stringify(resources));
+            // 寫到 Firebase（即時同步給所有人）
+            if (window._fbDb) {
+                window._fbSet(window._fbRef(window._fbDb, 'resources'), resources)
+                    .catch(err => console.error('Firebase 寫入失敗:', err));
+            }
             updateHeaderStats();
         }
 
@@ -2323,12 +2322,14 @@
                     const sortedResources = category === '計畫' 
                         ? [...categoryResources].sort((a, b) => (a.order || 0) - (b.order || 0))
                         : categoryResources;
-                    
-                    // In overview mode, limit to 4 items per category
+
+                    // In overview mode, limit to 6 per category
                     const isOverview = currentFilter === 'all';
-                    const displayLimit = isOverview ? 4 : sortedResources.length;
-                    const displayResources = sortedResources.slice(0, displayLimit);
-                    const hasMore = sortedResources.length > displayLimit;
+                    const OVERVIEW_LIMIT = 6;
+                    const displayResources = (isOverview && sortedResources.length > OVERVIEW_LIMIT)
+                        ? sortedResources.slice(0, OVERVIEW_LIMIT)
+                        : sortedResources;
+                    const hiddenCount = sortedResources.length - displayResources.length;
                     
                     displayResources.forEach(resource => {
                         if (resource.isPerson) {
@@ -2337,23 +2338,22 @@
                             grid.appendChild(createWorklogCard(resource));
                         } else if (resource.isPlan) {
                             grid.appendChild(createPlanCard(resource));
+                        } else if (resource.category === '學習資源' || resource.category === '零件供應商' || resource.category === '賽事資訊') {
+                            grid.appendChild(createPlanCard(resource));
                         } else {
                             grid.appendChild(createResourceCard(resource));
                         }
                     });
                     
                     contentArea.appendChild(grid);
-                    
-                    // Add "Show More" button if needed
-                    if (hasMore) {
-                        const showMoreBtn = document.createElement('button');
-                        showMoreBtn.className = 'show-more-btn';
-                        showMoreBtn.textContent = `查看全部 ${sortedResources.length} 項`;
-                        showMoreBtn.onclick = () => {
-                            const targetBtn = document.querySelector(`.filter-btn[onclick*="${category}"]`);
-                            if (targetBtn) filterByCategory(category, targetBtn);
-                        };
-                        contentArea.appendChild(showMoreBtn);
+
+                    // Show-more button
+                    if (isOverview && hiddenCount > 0) {
+                        const moreBtn = document.createElement('button');
+                        moreBtn.className = 'show-more-btn';
+                        moreBtn.innerHTML = `展開查看全部 ${sortedResources.length} 筆 ▾`;
+                        moreBtn.onclick = () => filterByCategory(category, null);
+                        contentArea.appendChild(moreBtn);
                     }
                 }
             });
@@ -2754,26 +2754,17 @@
                 return `<span class="work-type-tag" style="background: ${color};">${type}</span>`;
             }).join('');
 
-            // 組合科系和年級
-            const deptGrade = [person.department, person.grade].filter(Boolean).join(' ');
-
             card.innerHTML = `
                 <div class="person-card-actions">
                     <button class="icon-btn" onclick="editResource('${person.id}'); event.stopPropagation();">✏️</button>
                     <button class="icon-btn" onclick="deleteResource('${person.id}'); event.stopPropagation();">🗑️</button>
                 </div>
-                <div class="person-card-left">
-                    <div class="person-avatar-large">${avatarHTML}</div>
-                    ${deptGrade ? `<div class="person-dept-grade">${deptGrade}</div>` : ''}
-                </div>
                 <div class="person-card-content">
+                    <div class="person-avatar-large">${avatarHTML}</div>
                     <div class="person-info">
                         <div class="person-name">${person.name}</div>
-                        <div class="person-contact-info">
-                            ${person.email ? `<div class="person-contact-item">GMAIL：${person.email}</div>` : ''}
-                            ${person.phone ? `<div class="person-contact-item">Phone：${person.phone}</div>` : ''}
-                        </div>
                         ${workTypes.length > 0 ? `<div class="person-work-types">${workTypeTags}</div>` : ''}
+                        <div class="person-card-hint">點擊查看詳情</div>
                     </div>
                 </div>
             `;
@@ -2863,7 +2854,9 @@
             card.className = 'resource-card' + (resource.pinned ? ' pinned' : '');
             card.style.cursor = 'pointer';
 
-            const priorityText = {high: '重要', medium: '中等', low: '參考'}[resource.priority];
+            const priorityMap = {high: '重要', medium: '中等', low: '參考', '高': '重要', '中': '中等', '低': '參考'};
+            const priorityText = priorityMap[resource.priority] || resource.priority || '';
+            const priorityCls = ({high: 'high', medium: 'medium', low: 'low', '高': 'high', '中': 'medium', '低': 'low'}[resource.priority]) || 'medium';
 
             card.innerHTML = `
                 <div class="card-header">
@@ -2874,8 +2867,8 @@
                         <button class="icon-btn" onclick="deleteResource('${resource.id}'); event.stopPropagation();">🗑️</button>
                     </div>
                 </div>
-                <span class="priority-badge priority-${resource.priority}">${priorityText}</span>
-                <p class="resource-description">${resource.description}</p>
+                ${priorityText ? `<span class="priority-badge priority-${priorityCls}">${priorityText}</span>` : ''}
+                <p class="resource-description">${resource.description || ''}</p>
                 ${resource.url ? `<a href="${resource.url}" class="resource-url" target="_blank" onclick="event.stopPropagation()">${resource.url.replace(/^https?:\/\//, '')}</a>` : ''}
             `;
 
@@ -2887,7 +2880,9 @@
             const resource = resources.find(r => r.id === id);
             if (!resource) return;
 
-            const priorityText = {high: '重要', medium: '中等', low: '參考'}[resource.priority];
+            const priorityMap2 = {high: '重要', medium: '中等', low: '參考', '高': '重要', '中': '中等', '低': '參考'};
+            const priorityText = priorityMap2[resource.priority] || resource.priority || '';
+            const priorityCls = ({high: 'high', medium: 'medium', low: 'low', '高': 'high', '中': 'medium', '低': 'low'}[resource.priority]) || 'medium';
 
             document.getElementById('worklogDetailContent').innerHTML = `
                 <div class="plan-detail-modal">
@@ -2895,7 +2890,7 @@
                         <div class="plan-detail-header">
                             <div class="plan-detail-title">${resource.name}</div>
                             <div class="plan-detail-meta">
-                                <span class="priority-badge priority-${resource.priority}">${priorityText}</span>
+                                ${priorityText ? `<span class="priority-badge priority-${priorityCls}">${priorityText}</span>` : ''}
                                 <span>${resource.category}</span>
                             </div>
                         </div>
@@ -2934,7 +2929,14 @@
         function filterByCategory(category, btn) {
             currentFilter = category;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            } else {
+                // Called programmatically (e.g. from show-more): find matching tab
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    if (b.getAttribute('onclick')?.includes(`'${category}'`)) b.classList.add('active');
+                });
+            }
             renderResources();
         }
 
