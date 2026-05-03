@@ -517,19 +517,20 @@
         .plan-card-image {
             width: 100%;
             aspect-ratio: 16 / 9;
-            object-fit: cover;
             background: var(--bg-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-secondary);
             font-size: 48px;
+            overflow: hidden;
         }
 
         .plan-card-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: var(--bg-secondary);
         }
 
         .plan-card-content {
@@ -848,7 +849,6 @@
         .resource-preview-wrap {
             width: calc(100% + 32px);
             margin: -16px -16px 12px -16px;
-            aspect-ratio: 16 / 9;
             overflow: hidden;
             border-radius: 8px 8px 0 0;
             background: var(--bg-secondary);
@@ -856,14 +856,47 @@
 
         .resource-preview-img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 200px;
+            object-fit: contain;
             display: block;
             transition: transform 0.3s ease;
         }
 
         .resource-card:hover .resource-preview-img {
             transform: scale(1.03);
+        }
+
+        /* Work Type Pills */
+        .work-type-pills {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .work-type-pill {
+            padding: 8px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .work-type-pill:hover {
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .work-type-pill.active {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
         }
 
         /* Timeline */
@@ -1520,30 +1553,28 @@
 
                     <div class="form-group">
                         <label>工作類別（可多選）</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="車體"> 車體
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="引擎"> 引擎
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="懸吊"> 懸吊
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="煞車"> 煞車
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="電裝"> 電裝
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="空力"> 空力
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="work-type-checkbox" value="其他"> 其他
-                            </label>
+                        <div class="work-type-pills" id="workTypePills">
+                            <div class="work-type-pill" data-value="車體" onclick="toggleWorkTypePill(this)">車體</div>
+                            <div class="work-type-pill" data-value="引擎" onclick="toggleWorkTypePill(this)">引擎</div>
+                            <div class="work-type-pill" data-value="懸吊" onclick="toggleWorkTypePill(this)">懸吊</div>
+                            <div class="work-type-pill" data-value="煞車" onclick="toggleWorkTypePill(this)">煞車</div>
+                            <div class="work-type-pill" data-value="電裝" onclick="toggleWorkTypePill(this)">電裝</div>
+                            <div class="work-type-pill" data-value="空力" onclick="toggleWorkTypePill(this)">空力</div>
+                            <div class="work-type-pill" data-value="教授" onclick="toggleWorkTypePill(this)">教授</div>
+                            <div class="work-type-pill" data-value="其他" onclick="toggleWorkTypePill(this)">其他</div>
+                        </div>
+                        <div style="display:none">
+                            <input type="checkbox" class="work-type-checkbox" value="車體">
+                            <input type="checkbox" class="work-type-checkbox" value="引擎">
+                            <input type="checkbox" class="work-type-checkbox" value="懸吊">
+                            <input type="checkbox" class="work-type-checkbox" value="煞車">
+                            <input type="checkbox" class="work-type-checkbox" value="電裝">
+                            <input type="checkbox" class="work-type-checkbox" value="空力">
+                            <input type="checkbox" class="work-type-checkbox" value="教授">
+                            <input type="checkbox" class="work-type-checkbox" value="其他">
                         </div>
                     </div>
+
 
                     <div class="form-group">
                         <label>科系</label>
@@ -1854,6 +1885,18 @@
         function toggleEmojiPicker() {
             const picker = document.getElementById('emojiPicker');
             picker.style.display = picker.style.display === 'none' ? 'grid' : 'none';
+        }
+
+        function toggleWorkTypePill(el) {
+            el.classList.toggle('active');
+            const val = el.dataset.value;
+            const cb = document.querySelector(`.work-type-checkbox[value="${val}"]`);
+            if (cb) cb.checked = el.classList.contains('active');
+        }
+
+        function resetWorkTypePills() {
+            document.querySelectorAll('.work-type-pill').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.work-type-checkbox').forEach(cb => cb.checked = false);
         }
 
         function selectEmoji(emoji) {
@@ -2645,7 +2688,7 @@
 
             const imageHTML = plan.image ? 
                 `<img src="${plan.image}" alt="${plan.name}">` : 
-                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">🖼️</span>`;
+                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">⛓️💥</span>`;
 
             card.innerHTML = `
                 <div class="plan-card-actions">
@@ -3048,14 +3091,19 @@
             document.getElementById('modalTitle').textContent = `新增${category}`;
             document.getElementById('resourceForm').reset();
             document.getElementById('formCategory').value = category;
-            
-            // Set default year to 2026
+            resetWorkTypePills();
+
+            // 所有日期欄位預設 2026-今天
             const today = new Date();
             const defaultDate = `2026-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            if (category === '工作日誌') {
-                document.getElementById('formStartDate').value = defaultDate;
-            }
-            
+            ['formJoinDate', 'formStartDate', 'formEndDate'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = defaultDate;
+            });
+            updateWeekday('formJoinDate', 'joinWeekday');
+            updateWeekday('formStartDate', 'startWeekday');
+            updateWeekday('formEndDate', 'endWeekday');
+
             toggleFormFields();
             document.getElementById('editModal').classList.add('show');
         }
@@ -3112,12 +3160,14 @@
                 document.getElementById('formSkills').value = resource.skills || '';
                 document.getElementById('formOtherInfo').value = resource.otherInfo || '';
                 
-                // Set checkboxes
+                // Set checkboxes + sync pills
                 const types = resource.workTypes ? resource.workTypes.split(',').map(t => t.trim()) : [];
-                document.querySelectorAll('.work-type-checkbox').forEach(cb => {
-                    cb.checked = types.includes(cb.value);
+                resetWorkTypePills();
+                document.querySelectorAll('.work-type-checkbox').forEach(cb => { cb.checked = types.includes(cb.value); });
+                document.querySelectorAll('.work-type-pill').forEach(pill => {
+                    if (types.includes(pill.dataset.value)) pill.classList.add('active');
                 });
-                
+
                 // Update weekday
                 updateWeekday('formJoinDate', 'joinWeekday');
                 
