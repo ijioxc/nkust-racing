@@ -932,6 +932,9 @@
             border-radius: 8px;
             padding: 16px;
             transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .resource-card:hover {
@@ -1016,12 +1019,15 @@
             font-size: 13px;
             line-height: 1.5;
             margin-bottom: 8px;
+            flex: 1;
         }
 
         .resource-url {
             color: var(--accent-blue);
             font-size: 12px;
             text-decoration: none;
+            word-break: break-all;
+            margin-top: auto;
         }
 
         .resource-url:hover {
@@ -1034,11 +1040,12 @@
             overflow: hidden;
             border-radius: 6px;
             background: var(--bg-secondary);
+            flex-shrink: 0;
         }
 
         .resource-preview-img {
             width: 100%;
-            height: 160px;
+            height: 150px;
             object-fit: cover;
             display: block;
             transition: transform 0.3s ease;
