@@ -2652,7 +2652,7 @@
 
             const imageHTML = plan.image ? 
                 `<img src="${plan.image}" alt="${plan.name}">` : 
-                '🖼️';
+                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">🖼️</span>`;
 
             card.innerHTML = `
                 <div class="plan-card-actions">
@@ -2671,8 +2671,33 @@
                         </div>
                     ` : ''}
                     ${plan.content ? `<div class="plan-card-desc">${plan.content.substring(0, 80)}${plan.content.length > 80 ? '...' : ''}</div>` : ''}
+                    ${plan.description ? `<div class="plan-card-desc">${plan.description.substring(0, 80)}${plan.description.length > 80 ? '...' : ''}</div>` : ''}
                 </div>
             `;
+
+            // 沒有手動圖片但有 URL → 抓 og:image
+            if (!plan.image && plan.url) {
+                const img = card.querySelector('.plan-og-img');
+                const placeholder = card.querySelector('.plan-img-placeholder');
+                if (ogImageCache[plan.url]) {
+                    img.src = ogImageCache[plan.url];
+                    img.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                } else {
+                    fetch(`https://api.microlink.io/?url=${encodeURIComponent(plan.url)}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const imgUrl = data?.data?.image?.url;
+                            if (imgUrl && img) {
+                                ogImageCache[plan.url] = imgUrl;
+                                img.src = imgUrl;
+                                img.style.display = 'block';
+                                if (placeholder) placeholder.style.display = 'none';
+                            }
+                        })
+                        .catch(() => {});
+                }
+            }
 
             // Drag events
             card.addEventListener('dragstart', (e) => {
