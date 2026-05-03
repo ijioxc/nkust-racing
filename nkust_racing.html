@@ -107,70 +107,63 @@
 
         .header-right {
             display: flex;
-            gap: 20px;
+            gap: 8px;
             align-items: center;
         }
 
-        .header-stat {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .header-stat-value {
-            font-weight: 700;
-            color: var(--primary-orange);
-            margin-left: 4px;
-        }
-
-        .icon-btn-header {
-            width: 32px;
-            height: 32px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 16px;
-            color: var(--text-primary);
-        }
-
-        .icon-btn-header:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-        }
-
-        /* Search Container with Expandable Input */
-        .search-container-header {
-            position: relative;
+        .header-pill {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
         }
 
-        .search-input-header {
+        .header-pill:hover {
+            background: var(--orange-light);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .header-pill-value {
+            color: var(--primary-orange);
+            font-weight: 700;
+        }
+
+        .header-pill.search-active {
+            border-color: var(--primary-orange);
+            background: var(--orange-light);
+        }
+
+        .search-input-pill {
             width: 0;
+            max-width: 0;
             opacity: 0;
-            padding: 6px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--bg);
+            padding: 0;
+            border: none;
+            background: transparent;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
             transition: all 0.3s ease;
+            outline: none;
             pointer-events: none;
         }
 
-        .search-input-header.active {
-            width: 200px;
+        .search-active .search-input-pill {
+            width: 140px;
+            max-width: 140px;
             opacity: 1;
             pointer-events: auto;
-        }
-
-        .search-input-header:focus {
-            outline: none;
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 0 3px rgba(237, 108, 0, 0.1);
         }
 
         .top-controls {
@@ -1444,22 +1437,22 @@
                 <h1>NKUST Racing</h1>
             </div>
             <div class="header-right">
-                <div class="header-stat">
-                    人員<span class="header-stat-value" id="peopleCount">0</span>
+                <!-- 人數 -->
+                <div class="header-pill">
+                    👥 人員 <span class="header-pill-value" id="peopleCount">0</span>
                 </div>
-                <div class="header-stat">
-                    日誌<span class="header-stat-value" id="lastLogDate">-</span>
+                <!-- 最近更新 -->
+                <div class="header-pill">
+                    🗓️ 更新 <span class="header-pill-value" id="lastLogDate">-</span>
                 </div>
-                
-                <!-- Search Icon with expandable input -->
-                <div class="search-container-header">
-                    <button class="icon-btn-header" id="searchToggle" onclick="toggleSearch()">🔍</button>
-                    <input type="text" id="searchInput" class="search-input-header" placeholder="搜尋..." onkeyup="handleSearch(event)">
-                </div>
-                
-                <button class="icon-btn-header" onclick="toggleTheme()">◐</button>
-                <button class="icon-btn-header" onclick="showImportDialog()" title="匯入">📥</button>
-                <button class="icon-btn-header" onclick="showExportDialog()" title="匯出">📤</button>
+                <!-- 搜尋 -->
+                <button class="header-pill" id="searchToggle" onclick="toggleSearch()">
+                    🔍 <input type="text" id="searchInput" class="search-input-pill" placeholder="搜尋..." oninput="handleSearch(event)">
+                </button>
+                <!-- 夜間模式 -->
+                <button class="header-pill" onclick="toggleTheme()" id="themeBtn">
+                    🌙 夜間
+                </button>
             </div>
         </header>
 
@@ -1769,18 +1762,7 @@
         </div>
     </div>
 
-    <div class="modal" id="confirmModal">
-        <div class="modal-content" style="max-width: 450px; text-align: center;">
-            <h3 id="confirmTitle" style="margin-bottom: 12px;"></h3>
-            <p id="confirmMessage" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn" style="flex: 1;" onclick="closeConfirmModal()">取消</button>
-                <button class="btn" style="flex: 1; background: var(--primary-orange); color: white;" id="confirmButton">確定</button>
-            </div>
-        </div>
-    </div>
 
-    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
 
     <script>
         let resources = [];
@@ -1821,11 +1803,15 @@
         const emojis = ['👤', '😀', '😎', '🤓', '🧑‍🔧', '🏎️', '⚙️', '🔧', '🏁', '🎯', '💪', '🚀', '⭐', '🔥', '💡', '🎨'];
 
         function init() {
+            // 預設夜間模式
+            const savedTheme = localStorage.getItem('theme');
+            document.body.setAttribute('data-theme', savedTheme !== null ? savedTheme : 'dark');
+            updateThemeBtn();
+
             setupSearch();
             setupEmojiPicker();
 
             function startFirebase() {
-                // 即時監聽 Firebase 資料變更
                 window._fbOnValue(window._fbRef(window._fbDb, 'resources'), (snapshot) => {
                     const data = snapshot.val();
                     if (data && Array.isArray(data) && data.length > 0) {
@@ -1833,7 +1819,6 @@
                     } else if (data && typeof data === 'object' && !Array.isArray(data)) {
                         resources = Object.values(data).filter(Boolean);
                     } else {
-                        // Firebase 無資料，載入預設並推上去
                         loadData();
                         if (resources.length === 0) loadSampleData();
                         window._fbSet(window._fbRef(window._fbDb, 'resources'), resources);
@@ -1847,9 +1832,7 @@
             if (window._fbDb) {
                 startFirebase();
             } else {
-                // Firebase module 還沒載完，等 ready 事件
                 window.addEventListener('firebase-ready', startFirebase, { once: true });
-                // 先用 localStorage 顯示，之後 Firebase 來了再蓋掉
                 loadData();
                 if (resources.length === 0) loadSampleData();
                 renderResources();
@@ -2022,18 +2005,26 @@
             const newTheme = currentTheme === 'dark' ? '' : 'dark';
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
+            updateThemeBtn();
+        }
+
+        function updateThemeBtn() {
+            const btn = document.getElementById('themeBtn');
+            if (!btn) return;
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            btn.innerHTML = isDark ? '☀️ 日間' : '🌙 夜間';
         }
 
         function toggleSearch() {
+            const btn = document.getElementById('searchToggle');
             const input = document.getElementById('searchInput');
-            const isActive = input.classList.contains('active');
-            
+            const isActive = btn.classList.contains('search-active');
             if (isActive) {
-                input.classList.remove('active');
+                btn.classList.remove('search-active');
                 input.value = '';
-                filterByCategory(currentFilter, document.querySelector('.filter-btn.active'));
+                handleSearch({ target: input });
             } else {
-                input.classList.add('active');
+                btn.classList.add('search-active');
                 input.focus();
             }
         }
@@ -3308,60 +3299,6 @@
 
         function closeCalendar() {
             document.getElementById('calendarModal').classList.remove('show');
-        }
-
-        function showExportDialog() {
-            document.getElementById('confirmTitle').textContent = '匯出資料';
-            document.getElementById('confirmMessage').textContent = '將匯出所有資源到 JSON 檔案。';
-            document.getElementById('confirmButton').onclick = () => {
-                closeConfirmModal();
-                exportData();
-            };
-            document.getElementById('confirmModal').classList.add('show');
-        }
-
-        function showImportDialog() {
-            document.getElementById('confirmTitle').textContent = '匯入資料';
-            document.getElementById('confirmMessage').textContent = '匯入將覆蓋目前所有資料。';
-            document.getElementById('confirmButton').onclick = () => {
-                closeConfirmModal();
-                document.getElementById('importFile').click();
-            };
-            document.getElementById('confirmModal').classList.add('show');
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.remove('show');
-        }
-
-        function exportData() {
-            const data = { resources };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `nkust-racing-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            showNotification('已匯出');
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    resources = data.resources || [];
-                    saveData();
-                    renderResources();
-                    showNotification('已匯入');
-                } catch (error) {
-                    alert('匯入失敗');
-                }
-            };
-            reader.readAsText(file);
         }
 
         function showNotification(message) {
