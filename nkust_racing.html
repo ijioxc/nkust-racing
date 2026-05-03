@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NKUST Racing</title>
+    <title>NKUST Racing 知識庫</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
             --primary-orange: #ED6C00;
             --secondary-yellow: #F6AB00;
             --accent-blue: #006DAD;
-        
+            
             --color-chassis: #FF6B6B;
             --color-engine: #4ECDC4;
             --color-suspension: #45B7D1;
@@ -276,27 +276,81 @@
             font-weight: 600;
         }
 
+        .show-more-btn {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 20px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .show-more-btn:hover {
+            background: var(--orange-light);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 16px;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .resources-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
 
         @media (max-width: 768px) {
             .resources-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
         }
 
         @media (max-width: 480px) {
             .resources-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 12px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .header-left h1 {
+                font-size: 22px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .filter-btn {
+                font-size: 12px;
+                padding: 5px 12px;
+            }
+            
+            .category-title {
+                font-size: 18px;
+            }
+            
+            .show-more-btn {
+                width: 100%;
+                text-align: center;
             }
         }
 
@@ -309,7 +363,10 @@
             transition: all 0.3s ease;
             position: relative;
             cursor: pointer;
-            text-align: left;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            min-height: 140px;
         }
 
         .person-card:hover {
@@ -318,29 +375,40 @@
             border-color: var(--primary-orange);
         }
 
+        .person-card-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            min-width: 90px;
+        }
+
         .person-card-content {
             display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 16px;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
         }
 
         .person-avatar-large {
-            width: 60px;
-            height: 60px;
-            background: #2a2a2a;
+            width: 90px;
+            height: 90px;
+            background: var(--bg-secondary);
+            border: 3px solid var(--border);
             border-radius: 50%;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 36px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .person-card:hover .person-avatar-large {
-            transform: scale(1.1);
+            transform: scale(1.05);
+            border-color: var(--primary-orange);
         }
 
         .person-avatar-large img {
@@ -349,70 +417,116 @@
             object-fit: cover;
         }
 
+        .person-dept-grade {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
         .person-info {
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .person-name {
-            font-size: 15px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            letter-spacing: 3px;
             line-height: 1.2;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
         }
 
         .person-card:hover .person-name {
-            font-size: 17px;
             color: var(--primary-orange);
+        }
+
+        .person-contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .person-contact-item {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .person-work-types {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            justify-content: center;
-            margin-bottom: 6px;
+            gap: 6px;
+            margin-top: 2px;
         }
 
         .work-type-tag {
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 6px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             color: white;
             transition: all 0.3s ease;
         }
 
         .person-card:hover .work-type-tag {
-            font-size: 11px;
-            padding: 5px 12px;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .person-card-hint {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .person-card:hover .person-card-hint {
-            font-size: 11px;
-            color: var(--primary-orange);
+            display: none;
         }
 
         .person-card-actions {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 12px;
+            right: 12px;
             display: flex;
-            gap: 4px;
+            gap: 6px;
             opacity: 0;
             transition: opacity 0.2s;
+            z-index: 10;
         }
 
         .person-card:hover .person-card-actions {
             opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .person-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 14px;
+                min-height: auto;
+            }
+
+            .person-card-left {
+                min-width: auto;
+            }
+
+            .person-avatar-large {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .person-name {
+                font-size: 18px;
+                letter-spacing: 2px;
+            }
+
+            .person-contact-info {
+                align-items: center;
+            }
+
+            .person-work-types {
+                justify-content: center;
+            }
         }
 
         /* Plan Card - Wide Rectangle with Image */
@@ -1358,13 +1472,13 @@
 
         <div class="filter-buttons">
             <button class="filter-btn active" onclick="filterByCategory('all', this)">總覽</button>
-            <button class="filter-btn" onclick="filterByCategory('人員管理', this)">人員管理</button>
-            <button class="filter-btn" onclick="filterByCategory('工作日誌', this)">工作日誌</button>
-            <button class="filter-btn" onclick="filterByCategory('賽事資訊', this)">賽事資訊</button>
-            <button class="filter-btn" onclick="filterByCategory('工程工具', this)">工程工具</button>
-            <button class="filter-btn" onclick="filterByCategory('零件供應商', this)">零件供應商</button>
-            <button class="filter-btn" onclick="filterByCategory('學習資源', this)">學習資源</button>
+            <button class="filter-btn" onclick="filterByCategory('人員管理', this)">人員</button>
+            <button class="filter-btn" onclick="filterByCategory('工作日誌', this)">日誌</button>
             <button class="filter-btn" onclick="filterByCategory('計畫', this)">計畫</button>
+            <button class="filter-btn" onclick="filterByCategory('賽事資訊', this)">賽事</button>
+            <button class="filter-btn" onclick="filterByCategory('工程工具', this)">工具</button>
+            <button class="filter-btn" onclick="filterByCategory('零件供應商', this)">零件商</button>
+            <button class="filter-btn" onclick="filterByCategory('學習資源', this)">資源</button>
         </div>
 
         <div id="resourcesContainer"></div>
@@ -2210,7 +2324,13 @@
                         ? [...categoryResources].sort((a, b) => (a.order || 0) - (b.order || 0))
                         : categoryResources;
                     
-                    sortedResources.forEach(resource => {
+                    // In overview mode, limit to 4 items per category
+                    const isOverview = currentFilter === 'all';
+                    const displayLimit = isOverview ? 4 : sortedResources.length;
+                    const displayResources = sortedResources.slice(0, displayLimit);
+                    const hasMore = sortedResources.length > displayLimit;
+                    
+                    displayResources.forEach(resource => {
                         if (resource.isPerson) {
                             grid.appendChild(createPersonCard(resource));
                         } else if (resource.isWorklog) {
@@ -2223,6 +2343,18 @@
                     });
                     
                     contentArea.appendChild(grid);
+                    
+                    // Add "Show More" button if needed
+                    if (hasMore) {
+                        const showMoreBtn = document.createElement('button');
+                        showMoreBtn.className = 'show-more-btn';
+                        showMoreBtn.textContent = `查看全部 ${sortedResources.length} 項`;
+                        showMoreBtn.onclick = () => {
+                            const targetBtn = document.querySelector(`.filter-btn[onclick*="${category}"]`);
+                            if (targetBtn) filterByCategory(category, targetBtn);
+                        };
+                        contentArea.appendChild(showMoreBtn);
+                    }
                 }
             });
         }
@@ -2622,17 +2754,26 @@
                 return `<span class="work-type-tag" style="background: ${color};">${type}</span>`;
             }).join('');
 
+            // 組合科系和年級
+            const deptGrade = [person.department, person.grade].filter(Boolean).join(' ');
+
             card.innerHTML = `
                 <div class="person-card-actions">
                     <button class="icon-btn" onclick="editResource('${person.id}'); event.stopPropagation();">✏️</button>
                     <button class="icon-btn" onclick="deleteResource('${person.id}'); event.stopPropagation();">🗑️</button>
                 </div>
-                <div class="person-card-content">
+                <div class="person-card-left">
                     <div class="person-avatar-large">${avatarHTML}</div>
+                    ${deptGrade ? `<div class="person-dept-grade">${deptGrade}</div>` : ''}
+                </div>
+                <div class="person-card-content">
                     <div class="person-info">
                         <div class="person-name">${person.name}</div>
+                        <div class="person-contact-info">
+                            ${person.email ? `<div class="person-contact-item">GMAIL：${person.email}</div>` : ''}
+                            ${person.phone ? `<div class="person-contact-item">Phone：${person.phone}</div>` : ''}
+                        </div>
                         ${workTypes.length > 0 ? `<div class="person-work-types">${workTypeTags}</div>` : ''}
-                        <div class="person-card-hint">點擊查看詳情</div>
                     </div>
                 </div>
             `;
