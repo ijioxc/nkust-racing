@@ -377,47 +377,48 @@
             }
         }
 
-        /* Person Card - Vertical Layout for Grid */
+        /* Person Card - Horizontal compact layout */
         .person-card {
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            padding: 11px 13px;
+            transition: all 0.22s ease;
             position: relative;
             cursor: pointer;
-            text-align: center;
         }
 
         .person-card:hover {
-            box-shadow: 0 6px 20px var(--shadow);
-            transform: translateY(-4px);
+            box-shadow: 0 4px 14px var(--shadow);
             border-color: var(--primary-orange);
+            transform: translateY(-2px);
         }
 
         .person-card-content {
             display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 11px;
+        }
+
+        .person-avatar-col {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 4px;
+            flex-shrink: 0;
         }
 
         .person-avatar-large {
-            width: 60px;
-            height: 60px;
-            background: #2a2a2a;
+            width: 46px;
+            height: 46px;
+            background: var(--orange-light);
             border-radius: 50%;
-            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 22px;
             overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        .person-card:hover .person-avatar-large {
-            transform: scale(1.1);
         }
 
         .person-avatar-large img {
@@ -426,62 +427,61 @@
             object-fit: cover;
         }
 
+        .person-position-badge {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: center;
+            max-width: 48px;
+            line-height: 1.2;
+        }
+
         .person-info {
-            width: 100%;
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-top: 2px;
         }
 
         .person-name {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 8px;
-            line-height: 1.2;
-            transition: all 0.3s ease;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .person-card:hover .person-name {
-            font-size: 17px;
             color: var(--primary-orange);
         }
 
         .person-work-types {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            justify-content: center;
-            margin-bottom: 6px;
+            gap: 3px;
         }
 
         .work-type-tag {
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 2px 7px;
+            border-radius: 4px;
             font-size: 10px;
             font-weight: 600;
             color: white;
-            transition: all 0.3s ease;
-        }
-
-        .person-card:hover .work-type-tag {
-            font-size: 11px;
-            padding: 5px 12px;
         }
 
         .person-card-hint {
             font-size: 10px;
             color: var(--text-secondary);
-            margin-top: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .person-card:hover .person-card-hint {
-            font-size: 11px;
-            color: var(--primary-orange);
         }
 
         .person-card-actions {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 7px;
+            right: 7px;
             display: flex;
             gap: 4px;
             opacity: 0;
@@ -527,6 +527,14 @@
         }
 
         .plan-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        /* og:image from URL — show completely at natural ratio */
+        .plan-og-img {
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -655,6 +663,7 @@
             gap: 12px;
             padding-top: 20px;
             border-top: 1px solid var(--border);
+            justify-content: flex-end;
         }
 
         /* Person Detail Modal - Horizontal Layout */
@@ -668,6 +677,153 @@
             display: flex;
             gap: 30px;
             align-items: flex-start;
+        }
+
+        .person-detail-avatar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .person-detail-position {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-orange);
+            background: rgba(255,107,0,0.12);
+            padding: 3px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        /* 工作日誌 7欄卡片 */
+        .worklog-columns {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        .worklog-col { min-width: 0; }
+        .worklog-col-header {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .worklog-col-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary-orange);
+            border-radius: 8px;
+            padding: 8px 7px;
+            margin-bottom: 7px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .worklog-col-card:hover { border-color: var(--primary-orange); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .wc-pct {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary-orange);
+            min-width: 34px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .wc-mid {
+            flex: 1;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+            word-break: break-all;
+            min-width: 0;
+        }
+        .wc-dates {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: right;
+            line-height: 1.9;
+            flex-shrink: 0;
+        }
+        .worklog-col-empty {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        /* 人員分頁展開式圖卡 */
+        .person-full-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 12px;
+        }
+        .person-full-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            position: relative;
+        }
+        .person-full-card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .person-full-card:hover .person-full-card-actions { opacity: 1; }
+        .person-full-card-content {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .person-full-avatar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .person-full-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            overflow: hidden;
+        }
+        .person-full-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .person-full-info { flex: 1; min-width: 0; }
+        .person-full-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .person-full-contact {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+        }
+        .person-full-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
         }
 
         .person-detail-avatar {
@@ -749,6 +905,13 @@
             display: flex;
             gap: 8px;
             margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .person-modal-top-actions {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
         }
 
         .resource-card {
@@ -772,7 +935,9 @@
         .card-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 10px;
+            gap: 8px;
         }
 
         .resource-name {
@@ -786,7 +951,12 @@
         .card-actions {
             display: flex;
             gap: 4px;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: opacity 0.18s;
         }
+
+        .resource-card:hover .card-actions { opacity: 1; }
 
         .icon-btn {
             width: 24px;
@@ -856,9 +1026,8 @@
 
         .resource-preview-img {
             width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: contain;
+            height: 160px;
+            object-fit: cover;
             display: block;
             transition: transform 0.3s ease;
         }
@@ -867,36 +1036,102 @@
             transform: scale(1.03);
         }
 
-        /* Work Type Pills */
+        /* Work Type Pills - multi-select, responsive */
         .work-type-pills {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+            gap: 6px;
         }
 
         .work-type-pill {
-            padding: 8px 12px;
+            padding: 7px 8px;
             border: 1.5px solid var(--border);
-            border-radius: 20px;
-            font-size: 13px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
             background: var(--bg);
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
             user-select: none;
         }
 
         .work-type-pill:hover {
             border-color: var(--primary-orange);
             color: var(--primary-orange);
+            background: var(--orange-light);
         }
 
         .work-type-pill.active {
             background: var(--primary-orange);
             border-color: var(--primary-orange);
             color: white;
+        }
+
+        /* Pill Selector - single select */
+        .pill-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+            gap: 6px;
+        }
+
+        .pill-option {
+            padding: 7px 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+
+        .pill-option:hover {
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+            background: var(--orange-light);
+        }
+
+        .pill-option.active {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
+        }
+
+        /* Overview split layout */
+        .overview-split-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+            gap: 24px;
+            margin-bottom: 32px;
+            align-items: start;
+        }
+
+        .overview-split-row .category-section {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 1000px) {
+            .overview-split-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form two-column grid */
+        .form-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-two-col {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Timeline */
@@ -910,31 +1145,36 @@
 
         .timeline-controls {
             display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 0;
+            margin-bottom: 12px;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
         .timeline-range-btn {
-            padding: 6px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
+            padding: 4px 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color 0.15s, border-color 0.15s;
         }
 
         .timeline-range-btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
+            color: var(--text-primary);
+            background: transparent;
+            border-color: transparent;
         }
 
         .timeline-range-btn.active {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            color: white;
+            color: var(--primary-orange);
+            border-bottom-color: var(--primary-orange);
+            font-weight: 600;
+            background: transparent;
         }
 
         .timeline-scale {
@@ -1174,6 +1414,11 @@
             overflow-y: auto;
         }
 
+        #worklogDetailModal.person-modal .modal-content {
+            max-width: 460px;
+            padding: 20px;
+        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -1227,6 +1472,8 @@
         .worklog-detail-actions {
             display: flex;
             gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
         }
 
         .worklog-detail-meta {
@@ -1504,10 +1751,9 @@
     </div>
 
     <!-- Worklog Detail Modal -->
-    <div class="modal" id="worklogDetailModal">
+    <div class="modal" id="worklogDetailModal" onclick="if(event.target===this)closeWorklogDetail()">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">工作日誌詳情</h2>
+            <div class="modal-header" style="justify-content:flex-end">
                 <button class="close-btn" onclick="closeWorklogDetail()">×</button>
             </div>
             <div id="worklogDetailContent"></div>
@@ -1515,7 +1761,7 @@
     </div>
 
     <!-- Edit Modal -->
-    <div class="modal" id="editModal">
+    <div class="modal" id="editModal" onclick="if(event.target===this)closeModal()">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">新增資源</h2>
@@ -1532,23 +1778,32 @@
                         <button type="button" class="upload-btn" onclick="document.getElementById('avatarInput').click()" style="margin-left: 8px;">上傳照片</button>
                     </div>
                     
-                    <div class="form-group">
-                        <label>姓名 *</label>
-                        <input type="text" id="formPersonName">
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>姓名 *</label>
+                            <input type="text" id="formPersonName">
+                        </div>
+                        <div class="form-group">
+                            <label>入隊日期</label>
+                            <div class="date-input-wrapper">
+                                <input type="date" id="formJoinDate" onclick="this.showPicker&&this.showPicker()" onchange="updateWeekday('formJoinDate','joinWeekday')">
+                                <span class="date-weekday" id="joinWeekday"></span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label>職位</label>
-                        <select id="formPosition">
-                            <option value="">選擇職位</option>
-                            <option value="隊長">隊長</option>
-                            <option value="副隊長">副隊長</option>
-                            <option value="組長">組長</option>
-                            <option value="成員">成員</option>
-                            <option value="教授">教授</option>
-                            <option value="助教">助教</option>
-                            <option value="顧問">顧問</option>
-                        </select>
+                        <div class="pill-selector" id="formPosition-pills">
+                            <div class="pill-option" data-value="隊長" onclick="togglePillOption(this,'formPosition-pills','formPosition')">隊長</div>
+                            <div class="pill-option" data-value="副隊長" onclick="togglePillOption(this,'formPosition-pills','formPosition')">副隊長</div>
+                            <div class="pill-option" data-value="組長" onclick="togglePillOption(this,'formPosition-pills','formPosition')">組長</div>
+                            <div class="pill-option" data-value="成員" onclick="togglePillOption(this,'formPosition-pills','formPosition')">成員</div>
+                            <div class="pill-option" data-value="教授" onclick="togglePillOption(this,'formPosition-pills','formPosition')">教授</div>
+                            <div class="pill-option" data-value="助教" onclick="togglePillOption(this,'formPosition-pills','formPosition')">助教</div>
+                            <div class="pill-option" data-value="顧問" onclick="togglePillOption(this,'formPosition-pills','formPosition')">顧問</div>
+                        </div>
+                        <input type="hidden" id="formPosition" value="">
                     </div>
 
                     <div class="form-group">
@@ -1561,7 +1816,6 @@
                             <div class="work-type-pill" data-value="電裝" onclick="toggleWorkTypePill(this)">電裝</div>
                             <div class="work-type-pill" data-value="空力" onclick="toggleWorkTypePill(this)">空力</div>
                             <div class="work-type-pill" data-value="教授" onclick="toggleWorkTypePill(this)">教授</div>
-                            <div class="work-type-pill" data-value="其他" onclick="toggleWorkTypePill(this)">其他</div>
                         </div>
                         <div style="display:none">
                             <input type="checkbox" class="work-type-checkbox" value="車體">
@@ -1571,58 +1825,46 @@
                             <input type="checkbox" class="work-type-checkbox" value="電裝">
                             <input type="checkbox" class="work-type-checkbox" value="空力">
                             <input type="checkbox" class="work-type-checkbox" value="教授">
-                            <input type="checkbox" class="work-type-checkbox" value="其他">
                         </div>
                     </div>
 
 
                     <div class="form-group">
                         <label>科系</label>
-                        <select id="formDepartment" onchange="toggleDepartmentInput()">
-                            <option value="">選擇科系</option>
-                            <option value="機械工程系">機械工程系</option>
-                            <option value="車輛工程系">車輛工程系</option>
-                            <option value="模具工程系">模具工程系</option>
-                            <option value="電機工程系">電機工程系</option>
-                            <option value="電子工程系">電子工程系</option>
-                            <option value="環境安全系">環境安全系</option>
-                            <option value="造船系">造船系</option>
-                            <option value="其他">其他（請輸入）</option>
-                        </select>
-                        <input type="text" id="formDepartmentOther" placeholder="請輸入科系名稱" style="display: none; margin-top: 8px;">
+                        <div class="pill-selector" id="formDepartment-pills">
+                            <div class="pill-option" data-value="機械工程系" onclick="selectDepartment(this)">機械</div>
+                            <div class="pill-option" data-value="車輛工程系" onclick="selectDepartment(this)">車輛</div>
+                            <div class="pill-option" data-value="模具工程系" onclick="selectDepartment(this)">模具</div>
+                            <div class="pill-option" data-value="電機工程系" onclick="selectDepartment(this)">電機</div>
+                            <div class="pill-option" data-value="環境安全系" onclick="selectDepartment(this)">環安</div>
+                            <div class="pill-option" data-value="造船系" onclick="selectDepartment(this)">造船</div>
+                            <div class="pill-option" data-value="其他" onclick="selectDepartment(this)">其他</div>
+                        </div>
+                        <input type="hidden" id="formDepartment" value="">
+                        <input type="text" id="formDepartmentOther" placeholder="請輸入科系名稱" style="display:none;margin-top:8px;">
                     </div>
 
                     <div class="form-group">
                         <label>年級</label>
-                        <select id="formGrade">
-                            <option value="">選擇年級</option>
-                            <option value="大一">大一</option>
-                            <option value="大二">大二</option>
-                            <option value="大三">大三</option>
-                            <option value="大四">大四</option>
-                            <option value="研一">研一</option>
-                            <option value="研二">研二</option>
-                            <option value="博士班">博士班</option>
-                            <option value="教職">教職</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>入隊日期</label>
-                        <div class="date-input-wrapper">
-                            <input type="date" id="formJoinDate" onchange="updateWeekday('formJoinDate', 'joinWeekday')">
-                            <span class="date-weekday" id="joinWeekday"></span>
+                        <div class="pill-selector" id="formGrade-pills">
+                            <div class="pill-option" data-value="大一" onclick="togglePillOption(this,'formGrade-pills','formGrade')">大一</div>
+                            <div class="pill-option" data-value="大二" onclick="togglePillOption(this,'formGrade-pills','formGrade')">大二</div>
+                            <div class="pill-option" data-value="大三" onclick="togglePillOption(this,'formGrade-pills','formGrade')">大三</div>
+                            <div class="pill-option" data-value="大四" onclick="togglePillOption(this,'formGrade-pills','formGrade')">大四</div>
+                            <div class="pill-option" data-value="教職" onclick="togglePillOption(this,'formGrade-pills','formGrade')">教職</div>
                         </div>
+                        <input type="hidden" id="formGrade" value="">
                     </div>
 
-                    <div class="form-group">
-                        <label>Gmail</label>
-                        <input type="email" id="formEmail" placeholder="example@gmail.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Phone</label>
-                        <input type="tel" id="formPhone" placeholder="0912345678">
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>Gmail</label>
+                            <input type="email" id="formEmail" placeholder="example@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="formPhone" placeholder="0912345678">
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -1640,47 +1882,49 @@
                 <div id="worklogFormFields" class="hidden">
                     <div class="form-group">
                         <label>工作類別 *</label>
-                        <select id="formWorkType">
-                            <option value="">選擇類別</option>
-                            <option value="車體">車體</option>
-                            <option value="引擎">引擎</option>
-                            <option value="懸吊">懸吊</option>
-                            <option value="煞車">煞車</option>
-                            <option value="電裝">電裝</option>
-                            <option value="空力">空力</option>
-                            <option value="其他">其他</option>
-                        </select>
+                        <div class="pill-selector" id="formWorkType-pills">
+                            <div class="pill-option" data-value="車體" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">車體</div>
+                            <div class="pill-option" data-value="引擎" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">引擎</div>
+                            <div class="pill-option" data-value="懸吊" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">懸吊</div>
+                            <div class="pill-option" data-value="煞車" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">煞車</div>
+                            <div class="pill-option" data-value="電裝" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">電裝</div>
+                            <div class="pill-option" data-value="空力" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">空力</div>
+                            <div class="pill-option" data-value="其他" onclick="togglePillOption(this,'formWorkType-pills','formWorkType')">其他</div>
+                        </div>
+                        <input type="hidden" id="formWorkType" value="">
                     </div>
 
-                    <div class="form-group">
-                        <label>標題 *</label>
-                        <input type="text" id="formWorklogTitle" placeholder="例如：引擎採購">
-                    </div>
-
-                    <div class="form-group">
-                        <label>完成度 (%)</label>
-                        <input type="number" id="formProgress" min="0" max="100" value="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label>開始日期 *</label>
-                        <div class="date-input-wrapper">
-                            <input type="date" id="formStartDate" onchange="updateWeekday('formStartDate', 'startWeekday')">
-                            <span class="date-weekday" id="startWeekday"></span>
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>標題 *</label>
+                            <input type="text" id="formWorklogTitle" placeholder="例如：引擎採購">
+                        </div>
+                        <div class="form-group">
+                            <label>完成度 (%)</label>
+                            <input type="number" id="formProgress" min="0" max="100" value="0">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>預計完成日期</label>
-                        <div class="date-input-wrapper">
-                            <input type="date" id="formEndDate" onchange="updateWeekday('formEndDate', 'endWeekday')">
-                            <span class="date-weekday" id="endWeekday"></span>
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>開始日期 *</label>
+                            <div class="date-input-wrapper">
+                                <input type="date" id="formStartDate" onclick="this.showPicker&&this.showPicker()" onchange="updateWeekday('formStartDate','startWeekday')">
+                                <span class="date-weekday" id="startWeekday"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>預計完成日期</label>
+                            <div class="date-input-wrapper">
+                                <input type="date" id="formEndDate" onclick="this.showPicker&&this.showPicker()" onchange="updateWeekday('formEndDate','endWeekday')">
+                                <span class="date-weekday" id="endWeekday"></span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>備註/想法/規劃</label>
-                        <textarea id="formWorklogNotes" rows="6" placeholder="記錄工作內容、時間規劃想法、完成度高低的原因、給未來自己的指引..."></textarea>
+                        <textarea id="formWorklogNotes" rows="5" placeholder="記錄工作內容、時間規劃想法、完成度高低的原因、給未來自己的指引..."></textarea>
                     </div>
                 </div>
 
@@ -1721,57 +1965,224 @@
 
                     <div class="form-group">
                         <label>標籤</label>
-                        <select id="formPlanTag">
-                            <option value="討論中">📝 討論中</option>
-                            <option value="進行中">🚀 進行中</option>
-                            <option value="已完成">✅ 已完成</option>
-                            <option value="擱置">⏸️ 擱置</option>
-                        </select>
+                        <div class="pill-selector" id="formPlanTag-pills">
+                            <div class="pill-option active" data-value="討論中" onclick="togglePillOption(this,'formPlanTag-pills','formPlanTag')">📝 討論中</div>
+                            <div class="pill-option" data-value="進行中" onclick="togglePillOption(this,'formPlanTag-pills','formPlanTag')">🚀 進行中</div>
+                            <div class="pill-option" data-value="已完成" onclick="togglePillOption(this,'formPlanTag-pills','formPlanTag')">✅ 已完成</div>
+                            <div class="pill-option" data-value="擱置" onclick="togglePillOption(this,'formPlanTag-pills','formPlanTag')">⏸️ 擱置</div>
+                        </div>
+                        <input type="hidden" id="formPlanTag" value="討論中">
                     </div>
                 </div>
 
-                <!-- Regular Resource Form -->
-                <div id="resourceFormFields">
+                <!-- Event Form (賽事資訊) -->
+                <div id="eventFormFields" class="hidden">
                     <div class="form-group">
-                        <label>標題 *</label>
-                        <input type="text" id="formName">
+                        <label>賽事名稱 *</label>
+                        <input type="text" id="formEventTitle" placeholder="例如：2026 FSAE 靜態審查">
                     </div>
 
+                    <div class="form-group">
+                        <label>圖片 / 連結</label>
+                        <div class="upload-buttons">
+                            <button type="button" class="upload-option-btn" onclick="document.getElementById('formEventImage').click()">📷 圖片上傳</button>
+                            <button type="button" class="upload-option-btn" onclick="toggleEventUrlInput()">🔗 網頁連結</button>
+                        </div>
+                        <input type="file" id="formEventImage" accept="image/*" style="display:none;" onchange="previewEventImage(event)">
+                        <div id="eventUrlInput" style="display:none;margin-top:10px;">
+                            <input type="url" id="formEventUrl" placeholder="https://example.com" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text-primary);">
+                        </div>
+                        <div id="eventImagePreview" style="margin-top:10px;display:none;">
+                            <img id="eventImagePreviewImg" style="width:100%;max-height:240px;object-fit:cover;border-radius:8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>賽事日期</label>
+                            <div class="date-input-wrapper">
+                                <input type="date" id="formEventDate" onclick="this.showPicker&&this.showPicker()" onchange="updateWeekday('formEventDate','eventWeekday')">
+                                <span class="date-weekday" id="eventWeekday"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>地點</label>
+                            <input type="text" id="formEventLocation" placeholder="例如：台南、屏東">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="formEventDesc" rows="4" placeholder="賽事說明、注意事項..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>重要程度</label>
+                        <div class="pill-selector" id="formEventPriority-pills">
+                            <div class="pill-option" data-value="high" onclick="togglePillOption(this,'formEventPriority-pills','formEventPriority')">🔴 重要</div>
+                            <div class="pill-option active" data-value="medium" onclick="togglePillOption(this,'formEventPriority-pills','formEventPriority')">🟡 中等</div>
+                            <div class="pill-option" data-value="low" onclick="togglePillOption(this,'formEventPriority-pills','formEventPriority')">🟢 參考</div>
+                        </div>
+                        <input type="hidden" id="formEventPriority" value="medium">
+                    </div>
+
+                    <div class="form-group">
+                        <label>狀態</label>
+                        <div class="pill-selector" id="formEventTag-pills">
+                            <div class="pill-option active" data-value="即將到來" onclick="togglePillOption(this,'formEventTag-pills','formEventTag')">📅 即將到來</div>
+                            <div class="pill-option" data-value="進行中" onclick="togglePillOption(this,'formEventTag-pills','formEventTag')">🚀 進行中</div>
+                            <div class="pill-option" data-value="已結束" onclick="togglePillOption(this,'formEventTag-pills','formEventTag')">✅ 已結束</div>
+                        </div>
+                        <input type="hidden" id="formEventTag" value="即將到來">
+                    </div>
+                </div>
+
+                <!-- category tracker (hidden) -->
+                <div id="resourceFormFields" style="display:none;">
+                    <select id="formCategory" onchange="toggleFormFields()">
+                        <option value="人員管理">人員管理</option>
+                        <option value="工作日誌">工作日誌</option>
+                        <option value="計畫">計畫</option>
+                        <option value="賽事資訊">賽事資訊</option>
+                        <option value="工程工具">工程工具</option>
+                        <option value="零件供應商">零件供應商</option>
+                        <option value="學習資源">學習資源</option>
+                    </select>
+                    <input type="hidden" id="formName">
+                    <input type="hidden" id="formUrl">
+                    <input type="hidden" id="formPriority" value="medium">
+                    <input type="hidden" id="formDescription">
+                    <input type="hidden" id="formDetailedContent">
+                </div>
+
+                <!-- 工程工具 Form -->
+                <div id="toolFormFields" class="hidden">
+                    <div class="form-group">
+                        <label>工具名稱 *</label>
+                        <input type="text" id="formToolName" placeholder="例如：SolidWorks、MATLAB">
+                    </div>
                     <div class="form-group">
                         <label>網址</label>
-                        <input type="url" id="formUrl">
+                        <input type="url" id="formToolUrl" placeholder="https://...">
                     </div>
-
                     <div class="form-group">
-                        <label>分類 *</label>
-                        <select id="formCategory" onchange="toggleFormFields()">
-                            <option value="人員管理">人員管理</option>
-                            <option value="工作日誌">工作日誌</option>
-                            <option value="計畫">計畫</option>
-                            <option value="賽事資訊">賽事資訊</option>
-                            <option value="工程工具">工程工具</option>
-                            <option value="零件供應商">零件供應商</option>
-                            <option value="學習資源">學習資源</option>
-                        </select>
+                        <label>工具類型</label>
+                        <div class="pill-selector" id="formToolType-pills">
+                            <div class="pill-option" data-value="CAD設計" onclick="togglePillOption(this,'formToolType-pills','formToolType')">CAD設計</div>
+                            <div class="pill-option" data-value="模擬分析" onclick="togglePillOption(this,'formToolType-pills','formToolType')">模擬分析</div>
+                            <div class="pill-option" data-value="製造加工" onclick="togglePillOption(this,'formToolType-pills','formToolType')">製造加工</div>
+                            <div class="pill-option" data-value="文件協作" onclick="togglePillOption(this,'formToolType-pills','formToolType')">文件協作</div>
+                            <div class="pill-option" data-value="量測檢測" onclick="togglePillOption(this,'formToolType-pills','formToolType')">量測檢測</div>
+                            <div class="pill-option" data-value="其他" onclick="togglePillOption(this,'formToolType-pills','formToolType')">其他</div>
+                        </div>
+                        <input type="hidden" id="formToolType" value="">
                     </div>
-
                     <div class="form-group">
-                        <label>重要程度 *</label>
-                        <select id="formPriority">
-                            <option value="high">重要</option>
-                            <option value="medium">中等</option>
-                            <option value="low">參考</option>
-                        </select>
+                        <label>重要程度</label>
+                        <div class="pill-selector" id="formToolPriority-pills">
+                            <div class="pill-option" data-value="high" onclick="togglePillOption(this,'formToolPriority-pills','formToolPriority')">🔴 重要</div>
+                            <div class="pill-option active" data-value="medium" onclick="togglePillOption(this,'formToolPriority-pills','formToolPriority')">🟡 中等</div>
+                            <div class="pill-option" data-value="low" onclick="togglePillOption(this,'formToolPriority-pills','formToolPriority')">🟢 參考</div>
+                        </div>
+                        <input type="hidden" id="formToolPriority" value="medium">
                     </div>
-
                     <div class="form-group">
-                        <label>描述 *</label>
-                        <textarea id="formDescription" rows="3"></textarea>
+                        <label>描述</label>
+                        <textarea id="formToolDesc" rows="3" placeholder="功能說明、使用情境..."></textarea>
                     </div>
+                </div>
 
+                <!-- 零件供應商 Form -->
+                <div id="partFormFields" class="hidden">
                     <div class="form-group">
-                        <label>詳細內容</label>
-                        <textarea id="formDetailedContent" rows="5"></textarea>
+                        <label>廠商名稱 *</label>
+                        <input type="text" id="formPartName" placeholder="例如：建佑精機、東新五金">
+                    </div>
+                    <div class="form-group">
+                        <label>零件分類（可多選）</label>
+                        <div class="work-type-pills" id="partCategory-pills">
+                            <div class="work-type-pill" data-value="車體" onclick="this.classList.toggle('active')">車體</div>
+                            <div class="work-type-pill" data-value="引擎" onclick="this.classList.toggle('active')">引擎</div>
+                            <div class="work-type-pill" data-value="懸吊" onclick="this.classList.toggle('active')">懸吊</div>
+                            <div class="work-type-pill" data-value="煞車" onclick="this.classList.toggle('active')">煞車</div>
+                            <div class="work-type-pill" data-value="電裝" onclick="this.classList.toggle('active')">電裝</div>
+                            <div class="work-type-pill" data-value="空力" onclick="this.classList.toggle('active')">空力</div>
+                            <div class="work-type-pill" data-value="其他" onclick="this.classList.toggle('active')">其他</div>
+                        </div>
+                    </div>
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>網址 / 聯絡</label>
+                            <input type="text" id="formPartUrl" placeholder="網址或電話">
+                        </div>
+                        <div class="form-group">
+                            <label>價格參考</label>
+                            <input type="text" id="formPartPrice" placeholder="例如：NT$500/件">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>重要程度</label>
+                        <div class="pill-selector" id="formPartPriority-pills">
+                            <div class="pill-option" data-value="high" onclick="togglePillOption(this,'formPartPriority-pills','formPartPriority')">🔴 重要</div>
+                            <div class="pill-option active" data-value="medium" onclick="togglePillOption(this,'formPartPriority-pills','formPartPriority')">🟡 中等</div>
+                            <div class="pill-option" data-value="low" onclick="togglePillOption(this,'formPartPriority-pills','formPartPriority')">🟢 參考</div>
+                        </div>
+                        <input type="hidden" id="formPartPriority" value="medium">
+                    </div>
+                    <div class="form-group">
+                        <label>採購備註</label>
+                        <textarea id="formPartDesc" rows="3" placeholder="規格、交期、聯絡人..."></textarea>
+                    </div>
+                </div>
+
+                <!-- 學習資源 Form -->
+                <div id="learningFormFields" class="hidden">
+                    <div class="form-group">
+                        <label>標題 *</label>
+                        <input type="text" id="formLearnName" placeholder="例如：車輛動力學教材">
+                    </div>
+                    <div class="form-group">
+                        <label>網址</label>
+                        <input type="url" id="formLearnUrl" placeholder="https://...">
+                    </div>
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>資源類型</label>
+                            <div class="pill-selector" id="formLearnType-pills">
+                                <div class="pill-option" data-value="書籍" onclick="togglePillOption(this,'formLearnType-pills','formLearnType')">書籍</div>
+                                <div class="pill-option" data-value="論文" onclick="togglePillOption(this,'formLearnType-pills','formLearnType')">論文</div>
+                                <div class="pill-option" data-value="影片" onclick="togglePillOption(this,'formLearnType-pills','formLearnType')">影片</div>
+                                <div class="pill-option" data-value="課程" onclick="togglePillOption(this,'formLearnType-pills','formLearnType')">課程</div>
+                                <div class="pill-option" data-value="手冊" onclick="togglePillOption(this,'formLearnType-pills','formLearnType')">手冊</div>
+                                <div class="pill-option" data-value="其他" onclick="togglePillOption(this,'formLearnType-pills','formLearnType')">其他</div>
+                            </div>
+                            <input type="hidden" id="formLearnType" value="">
+                        </div>
+                        <div class="form-group">
+                            <label>相關領域（可多選）</label>
+                            <div class="work-type-pills" id="learnField-pills">
+                                <div class="work-type-pill" data-value="車體" onclick="this.classList.toggle('active')">車體</div>
+                                <div class="work-type-pill" data-value="引擎" onclick="this.classList.toggle('active')">引擎</div>
+                                <div class="work-type-pill" data-value="懸吊" onclick="this.classList.toggle('active')">懸吊</div>
+                                <div class="work-type-pill" data-value="煞車" onclick="this.classList.toggle('active')">煞車</div>
+                                <div class="work-type-pill" data-value="電裝" onclick="this.classList.toggle('active')">電裝</div>
+                                <div class="work-type-pill" data-value="空力" onclick="this.classList.toggle('active')">空力</div>
+                                <div class="work-type-pill" data-value="通用" onclick="this.classList.toggle('active')">通用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>重要程度</label>
+                        <div class="pill-selector" id="formLearnPriority-pills">
+                            <div class="pill-option" data-value="high" onclick="togglePillOption(this,'formLearnPriority-pills','formLearnPriority')">🔴 重要</div>
+                            <div class="pill-option active" data-value="medium" onclick="togglePillOption(this,'formLearnPriority-pills','formLearnPriority')">🟡 中等</div>
+                            <div class="pill-option" data-value="low" onclick="togglePillOption(this,'formLearnPriority-pills','formLearnPriority')">🟢 參考</div>
+                        </div>
+                        <input type="hidden" id="formLearnPriority" value="medium">
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="formLearnDesc" rows="3" placeholder="內容摘要、適合程度..."></textarea>
                     </div>
                 </div>
 
@@ -1783,7 +2194,7 @@
         </div>
     </div>
 
-    <div class="modal" id="calendarModal">
+    <div class="modal" id="calendarModal" onclick="if(event.target===this)closeCalendar()">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">行事曆</h2>
@@ -1803,6 +2214,7 @@
         let currentFilter = 'all';
         let currentAvatarData = null;
         let currentPlanImageData = null;
+        let currentEventImageData = null;
         let worklogViewMode = 'timeline';
         let timelineRange = 'auto';
         let draggedPlanId = null;
@@ -1905,19 +2317,58 @@
             toggleEmojiPicker();
         }
 
-        function toggleDepartmentInput() {
-            const select = document.getElementById('formDepartment');
-            const otherInput = document.getElementById('formDepartmentOther');
-            
-            if (select.value === '其他') {
-                otherInput.style.display = 'block';
-                otherInput.required = true;
+        function getActivePills(groupId) {
+            return Array.from(document.querySelectorAll(`#${groupId} .pill-option.active, #${groupId} .work-type-pill.active`))
+                .map(p => p.dataset.value).join(',');
+        }
+
+        function setActivePills(groupId, csv) {
+            const vals = (csv || '').split(',').map(v => v.trim()).filter(Boolean);
+            document.querySelectorAll(`#${groupId} .pill-option, #${groupId} .work-type-pill`).forEach(p => {
+                p.classList.toggle('active', vals.includes(p.dataset.value));
+            });
+        }
+
+        function resetMultiPills(groupId) {
+            document.querySelectorAll(`#${groupId} .pill-option, #${groupId} .work-type-pill`).forEach(p => p.classList.remove('active'));
+        }
+
+        function togglePillOption(el, groupId, hiddenId) {
+            document.getElementById(groupId).querySelectorAll('.pill-option').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            if (hiddenId) document.getElementById(hiddenId).value = el.dataset.value;
+        }
+
+        function setPillOption(groupId, hiddenId, value) {
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            group.querySelectorAll('.pill-option').forEach(p => p.classList.toggle('active', p.dataset.value === value));
+            if (hiddenId) document.getElementById(hiddenId).value = value || '';
+        }
+
+        function resetPillSelector(groupId, hiddenId) {
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            group.querySelectorAll('.pill-option').forEach(p => p.classList.remove('active'));
+            if (hiddenId) document.getElementById(hiddenId).value = '';
+        }
+
+        function selectDepartment(el) {
+            document.getElementById('formDepartment-pills').querySelectorAll('.pill-option').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            const val = el.dataset.value;
+            document.getElementById('formDepartment').value = val;
+            const other = document.getElementById('formDepartmentOther');
+            if (val === '其他') {
+                other.style.display = 'block';
+                other.focus();
             } else {
-                otherInput.style.display = 'none';
-                otherInput.required = false;
-                otherInput.value = '';
+                other.style.display = 'none';
+                other.value = '';
             }
         }
+
+        function toggleDepartmentInput() { /* replaced by selectDepartment */ }
 
         function togglePlanUrlInput() {
             const urlInput = document.getElementById('planUrlInput');
@@ -2333,88 +2784,211 @@
             }
         }
 
+        function createWorklogColumns(worklogs) {
+            const categories = ['車體','引擎','懸吊','煞車','電裝','空力','其他'];
+            const wrap = document.createElement('div');
+            wrap.className = 'worklog-columns';
+
+            categories.forEach(cat => {
+                const col = document.createElement('div');
+                col.className = 'worklog-col';
+                const color = workTypeColors[cat] || '#999';
+
+                const header = document.createElement('div');
+                header.className = 'worklog-col-header';
+                header.style.borderBottomColor = color;
+                header.style.color = color;
+                header.textContent = cat;
+                col.appendChild(header);
+
+                const items = worklogs
+                    .filter(w => (w.workType || '').split(',').map(s=>s.trim()).includes(cat))
+                    .sort((a, b) => {
+                        if (!a.endDate && !b.endDate) return 0;
+                        if (!a.endDate) return 1;
+                        if (!b.endDate) return -1;
+                        return new Date(a.endDate) - new Date(b.endDate);
+                    });
+
+                if (items.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'worklog-col-empty';
+                    empty.textContent = '—';
+                    col.appendChild(empty);
+                } else {
+                    items.forEach(w => {
+                        const card = document.createElement('div');
+                        card.className = 'worklog-col-card';
+                        card.style.borderLeftColor = color;
+
+                        const pct = w.progress != null ? w.progress : 0;
+                        const startFmt = w.startDate ? w.startDate.slice(5) : '—';
+                        const endFmt = w.endDate ? w.endDate.slice(5) : '—';
+
+                        card.innerHTML = `
+                            <div class="wc-pct">${pct}%</div>
+                            <div class="wc-mid">${w.name || ''}</div>
+                            <div class="wc-dates"><div>${startFmt}</div><div>${endFmt}</div></div>
+                        `;
+                        card.onclick = () => editResource(w.id);
+                        col.appendChild(card);
+                    });
+                }
+                wrap.appendChild(col);
+            });
+            return wrap;
+        }
+
+        function createPartColumns(parts) {
+            const categories = ['車體','引擎','懸吊','煞車','電裝','空力','其他'];
+            const priorityOrder = {high:0, medium:1, low:2, '高':0, '中':1, '低':2};
+            const wrap = document.createElement('div');
+            wrap.className = 'worklog-columns';
+
+            categories.forEach(cat => {
+                const col = document.createElement('div');
+                col.className = 'worklog-col';
+                const color = workTypeColors[cat] || '#999';
+
+                const header = document.createElement('div');
+                header.className = 'worklog-col-header';
+                header.style.borderBottomColor = color;
+                header.style.color = color;
+                header.textContent = cat;
+                col.appendChild(header);
+
+                const items = parts
+                    .filter(p => (p.partCategories || p.tag || '').split(',').map(s=>s.trim()).includes(cat))
+                    .sort((a, b) => (priorityOrder[a.priority]??1) - (priorityOrder[b.priority]??1));
+
+                if (items.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'worklog-col-empty';
+                    empty.textContent = '—';
+                    col.appendChild(empty);
+                } else {
+                    items.forEach(p => {
+                        const card = document.createElement('div');
+                        card.className = 'worklog-col-card';
+                        card.style.borderLeftColor = color;
+                        const priceText = p.price ? `$${p.price}` : '';
+                        card.innerHTML = `
+                            <div class="wc-mid">${p.name || ''}</div>
+                            ${priceText ? `<div class="wc-dates"><div>${priceText}</div></div>` : ''}
+                        `;
+                        card.onclick = () => editResource(p.id);
+                        col.appendChild(card);
+                    });
+                }
+                wrap.appendChild(col);
+            });
+            return wrap;
+        }
+
+        function buildCategorySection(category, forceAll) {
+            const isOverview = currentFilter === 'all' && !forceAll;
+            const categoryResources = resources
+                .filter(r => r.category === category)
+                .sort((a, b) => {
+                    if (a.pinned && !b.pinned) return -1;
+                    if (!a.pinned && b.pinned) return 1;
+                    return 0;
+                });
+
+            const section = document.createElement('div');
+            section.className = 'category-section';
+            section.innerHTML = `
+                <div class="category-header">
+                    <h2 class="category-title">${category}</h2>
+                    <button class="add-category-btn" onclick="openAddModalForCategory('${category}')">+</button>
+                    <span class="category-count">${categoryResources.length}</span>
+                </div>
+                <div class="content-area"></div>
+            `;
+
+            const contentArea = section.querySelector('.content-area');
+
+            if (category === '工作日誌') {
+                contentArea.appendChild(createWorklogTimeline(categoryResources));
+                if (!isOverview) {
+                    contentArea.appendChild(createWorklogColumns(categoryResources));
+                }
+                return section;
+            }
+
+            if (category === '零件供應商' && !isOverview) {
+                contentArea.appendChild(createPartColumns(categoryResources));
+                return section;
+            }
+
+            {
+                const grid = document.createElement('div');
+                grid.className = (category === '人員管理' && !isOverview) ? 'person-full-grid' : 'resources-grid';
+
+                const sortedResources = category === '計畫'
+                    ? [...categoryResources].sort((a, b) => (a.order || 0) - (b.order || 0))
+                    : categoryResources;
+
+                const OVERVIEW_LIMIT = 6;
+                const displayResources = (isOverview && sortedResources.length > OVERVIEW_LIMIT)
+                    ? sortedResources.slice(0, OVERVIEW_LIMIT)
+                    : sortedResources;
+                const hiddenCount = sortedResources.length - displayResources.length;
+
+                displayResources.forEach(resource => {
+                    if (resource.isPerson) {
+                        grid.appendChild(isOverview ? createPersonCard(resource) : createPersonFullCard(resource));
+                    } else if (resource.isWorklog) {
+                        grid.appendChild(createWorklogCard(resource));
+                    } else if (resource.isPlan) {
+                        grid.appendChild(createPlanCard(resource));
+                    } else if (['學習資源','零件供應商','賽事資訊'].includes(resource.category)) {
+                        grid.appendChild(createResourceCard(resource));
+                    } else {
+                        grid.appendChild(createResourceCard(resource));
+                    }
+                });
+
+                contentArea.appendChild(grid);
+
+                if (isOverview && hiddenCount > 0) {
+                    const moreBtn = document.createElement('button');
+                    moreBtn.className = 'show-more-btn';
+                    moreBtn.innerHTML = `展開查看全部 ${sortedResources.length} 筆 ▾`;
+                    moreBtn.onclick = () => filterByCategory(category, null);
+                    contentArea.appendChild(moreBtn);
+                }
+            }
+            return section;
+        }
+
         function renderResources() {
             const container = document.getElementById('resourcesContainer');
             container.innerHTML = '';
+            const isOverview = currentFilter === 'all';
 
-            categories.forEach(category => {
-                const categoryResources = resources
-                    .filter(r => r.category === category && (currentFilter === 'all' || currentFilter === category))
-                    .sort((a, b) => {
-                        if (a.pinned && !b.pinned) return -1;
-                        if (!a.pinned && b.pinned) return 1;
-                        return 0;
+            if (isOverview) {
+                // Top: 人員管理 + 工作日誌 side by side
+                const splitRow = document.createElement('div');
+                splitRow.className = 'overview-split-row';
+                splitRow.appendChild(buildCategorySection('人員管理'));
+                splitRow.appendChild(buildCategorySection('工作日誌'));
+                container.appendChild(splitRow);
+
+                // Remaining categories below
+                categories
+                    .filter(c => c !== '人員管理' && c !== '工作日誌')
+                    .forEach(category => {
+                        const count = resources.filter(r => r.category === category).length;
+                        if (count === 0) return;
+                        container.appendChild(buildCategorySection(category));
                     });
-
-                if (categoryResources.length === 0 && currentFilter !== 'all') return;
-
-                const section = document.createElement('div');
-                section.className = 'category-section';
-
-                section.innerHTML = `
-                    <div class="category-header">
-                        <h2 class="category-title">${category}</h2>
-                        <button class="add-category-btn" onclick="openAddModalForCategory('${category}')">+</button>
-                        <span class="category-count">${categoryResources.length}</span>
-                    </div>
-                    ${category === '工作日誌' ? `
-                        <div class="view-toggle">
-                            <button class="view-toggle-btn ${worklogViewMode === 'timeline' ? 'active' : ''}" onclick="switchWorklogView('timeline')">時間軸</button>
-                            <button class="view-toggle-btn ${worklogViewMode === 'cards' ? 'active' : ''}" onclick="switchWorklogView('cards')">卡片</button>
-                        </div>
-                    ` : ''}
-                    <div class="content-area"></div>
-                `;
-
-                container.appendChild(section);
-
-                const contentArea = section.querySelector('.content-area');
-
-                if (category === '工作日誌' && worklogViewMode === 'timeline') {
-                    contentArea.appendChild(createWorklogTimeline(categoryResources));
-                } else {
-                    const grid = document.createElement('div');
-                    grid.className = 'resources-grid';
-                    
-                    // Sort plans by order
-                    const sortedResources = category === '計畫' 
-                        ? [...categoryResources].sort((a, b) => (a.order || 0) - (b.order || 0))
-                        : categoryResources;
-
-                    // In overview mode, limit to 6 per category
-                    const isOverview = currentFilter === 'all';
-                    const OVERVIEW_LIMIT = 6;
-                    const displayResources = (isOverview && sortedResources.length > OVERVIEW_LIMIT)
-                        ? sortedResources.slice(0, OVERVIEW_LIMIT)
-                        : sortedResources;
-                    const hiddenCount = sortedResources.length - displayResources.length;
-                    
-                    displayResources.forEach(resource => {
-                        if (resource.isPerson) {
-                            grid.appendChild(createPersonCard(resource));
-                        } else if (resource.isWorklog) {
-                            grid.appendChild(createWorklogCard(resource));
-                        } else if (resource.isPlan) {
-                            grid.appendChild(createPlanCard(resource));
-                        } else if (resource.category === '學習資源' || resource.category === '零件供應商' || resource.category === '賽事資訊') {
-                            grid.appendChild(createPlanCard(resource));
-                        } else {
-                            grid.appendChild(createResourceCard(resource));
-                        }
-                    });
-                    
-                    contentArea.appendChild(grid);
-
-                    // Show-more button
-                    if (isOverview && hiddenCount > 0) {
-                        const moreBtn = document.createElement('button');
-                        moreBtn.className = 'show-more-btn';
-                        moreBtn.innerHTML = `展開查看全部 ${sortedResources.length} 筆 ▾`;
-                        moreBtn.onclick = () => filterByCategory(category, null);
-                        contentArea.appendChild(moreBtn);
-                    }
+            } else {
+                const categoryResources = resources.filter(r => r.category === currentFilter);
+                if (categoryResources.length >= 0) {
+                    container.appendChild(buildCategorySection(currentFilter, true));
                 }
-            });
+            }
         }
 
         function switchWorklogView(mode) {
@@ -2577,7 +3151,7 @@
                         <div class="timeline-item-progress">${item.log.progress}%</div>
                     `;
                     
-                    div.onclick = () => showWorklogDetail(item.log.id);
+                    div.onclick = () => editResource(item.log.id);
                     trackTimeline.appendChild(div);
                 });
 
@@ -2646,7 +3220,7 @@
         }
 
         function closeWorklogDetail() {
-            document.getElementById('worklogDetailModal').classList.remove('show');
+            document.getElementById('worklogDetailModal').classList.remove('show', 'person-modal');
         }
 
         function deleteResourceFromDetail(id) {
@@ -2816,8 +3390,8 @@
                             <div class="plan-detail-body">${plan.content}</div>
                         ` : ''}
                         <div class="plan-detail-actions">
-                            <button class="btn" onclick="editResource('${plan.id}'); closeWorklogDetail();" style="background: var(--primary-orange); color: white; border-color: var(--primary-orange);">編輯</button>
-                            <button class="btn" onclick="deleteResourceFromDetail('${plan.id}')">刪除</button>
+                            <button class="icon-btn" onclick="editResource('${plan.id}'); closeWorklogDetail();" title="編輯">✏️</button>
+                            <button class="icon-btn" onclick="deleteResourceFromDetail('${plan.id}')" title="刪除">🗑️</button>
                         </div>
                     </div>
                 </div>
@@ -2865,16 +3439,14 @@
             }).join('');
 
             card.innerHTML = `
-                <div class="person-card-actions">
-                    <button class="icon-btn" onclick="editResource('${person.id}'); event.stopPropagation();">✏️</button>
-                    <button class="icon-btn" onclick="deleteResource('${person.id}'); event.stopPropagation();">🗑️</button>
-                </div>
                 <div class="person-card-content">
-                    <div class="person-avatar-large">${avatarHTML}</div>
+                    <div class="person-avatar-col">
+                        <div class="person-avatar-large">${avatarHTML}</div>
+                        ${person.position ? `<div class="person-position-badge">${person.position}</div>` : ''}
+                    </div>
                     <div class="person-info">
                         <div class="person-name">${person.name}</div>
                         ${workTypes.length > 0 ? `<div class="person-work-types">${workTypeTags}</div>` : ''}
-                        <div class="person-card-hint">點擊查看詳情</div>
                     </div>
                 </div>
             `;
@@ -2885,6 +3457,35 @@
                 }
             };
 
+            return card;
+        }
+
+        function createPersonFullCard(person) {
+            const card = document.createElement('div');
+            card.className = 'person-full-card';
+            const workTypes = person.workTypes ? person.workTypes.split(',').map(t => t.trim()) : [];
+            const avatarHTML = person.avatar && person.avatar.startsWith('data:') ?
+                `<img src="${person.avatar}">` : person.avatar || '👤';
+            const workTypeTags = workTypes.map(type => {
+                const color = workTypeColors[type] || '#999999';
+                return `<span class="work-type-tag" style="background:${color};">${type}</span>`;
+            }).join('');
+            card.onclick = () => showPersonDetail(person.id);
+            card.innerHTML = `
+                <div class="person-full-card-content">
+                    <div class="person-full-avatar-col">
+                        <div class="person-full-avatar">${avatarHTML}</div>
+                        ${person.position ? `<div class="person-detail-position">${person.position}</div>` : ''}
+                    </div>
+                    <div class="person-full-info">
+                        <div class="person-full-name">${person.name}</div>
+                        ${person.email ? `<div class="person-full-contact">GMAIL: ${person.email}</div>` : ''}
+                        ${person.phone ? `<div class="person-full-contact">Phone: ${person.phone}</div>` : ''}
+                        ${workTypes.length > 0 ? `<div class="person-work-types" style="margin-top:8px;">${workTypeTags}</div>` : ''}
+                        ${person.department || person.grade ? `<div class="person-full-meta">${[person.department, person.grade].filter(Boolean).join(' · ')}</div>` : ''}
+                    </div>
+                </div>
+            `;
             return card;
         }
 
@@ -2904,59 +3505,36 @@
 
             document.getElementById('worklogDetailContent').innerHTML = `
                 <div class="person-detail-modal">
+                    <div class="person-modal-top-actions">
+                        <button class="icon-btn" onclick="editResource('${person.id}'); closeWorklogDetail();" title="編輯">✏️</button>
+                        <button class="icon-btn" onclick="deleteResourceFromDetail('${person.id}')" title="刪除">🗑️</button>
+                    </div>
                     <div class="person-detail-content">
-                        <div class="person-detail-avatar">${avatarHTML}</div>
+                        <div class="person-detail-avatar-col">
+                            <div class="person-detail-avatar">${avatarHTML}</div>
+                            ${person.position ? `<div class="person-detail-position">${person.position}</div>` : ''}
+                        </div>
                         <div class="person-detail-info">
-                            <div class="person-detail-name">${person.name}${person.position ? ` · ${person.position}` : ''}</div>
+                            <div class="person-detail-name">${person.name}</div>
                             ${person.email ? `<div class="person-detail-contact">GMAIL: ${person.email}</div>` : ''}
                             ${person.phone ? `<div class="person-detail-contact">Phone: ${person.phone}</div>` : ''}
                             ${workTypes.length > 0 ? `<div class="person-detail-tags">${workTypeTags}</div>` : ''}
-                            
                             ${person.department || person.grade || person.joinDate || person.skills || person.otherInfo ? `
                                 <div class="person-detail-extra">
-                                    ${person.department ? `
-                                        <div class="person-detail-field">
-                                            <div class="person-detail-label">科系</div>
-                                            <div class="person-detail-value">${person.department}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${person.grade ? `
-                                        <div class="person-detail-field">
-                                            <div class="person-detail-label">年級</div>
-                                            <div class="person-detail-value">${person.grade}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${person.joinDate ? `
-                                        <div class="person-detail-field">
-                                            <div class="person-detail-label">入隊日期</div>
-                                            <div class="person-detail-value">${person.joinDate}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${person.skills ? `
-                                        <div class="person-detail-field">
-                                            <div class="person-detail-label">興趣技能</div>
-                                            <div class="person-detail-value">${person.skills}</div>
-                                        </div>
-                                    ` : ''}
-                                    ${person.otherInfo ? `
-                                        <div class="person-detail-field">
-                                            <div class="person-detail-label">其他資訊</div>
-                                            <div class="person-detail-value">${person.otherInfo}</div>
-                                        </div>
-                                    ` : ''}
+                                    ${person.department ? `<div class="person-detail-field"><div class="person-detail-label">科系</div><div class="person-detail-value">${person.department}</div></div>` : ''}
+                                    ${person.grade ? `<div class="person-detail-field"><div class="person-detail-label">年級</div><div class="person-detail-value">${person.grade}</div></div>` : ''}
+                                    ${person.joinDate ? `<div class="person-detail-field"><div class="person-detail-label">入隊日期</div><div class="person-detail-value">${person.joinDate}</div></div>` : ''}
+                                    ${person.skills ? `<div class="person-detail-field"><div class="person-detail-label">興趣技能</div><div class="person-detail-value">${person.skills}</div></div>` : ''}
+                                    ${person.otherInfo ? `<div class="person-detail-field"><div class="person-detail-label">其他資訊</div><div class="person-detail-value">${person.otherInfo}</div></div>` : ''}
                                 </div>
                             ` : ''}
-
-                            <div class="person-detail-actions">
-                                <button class="btn" onclick="editResource('${person.id}'); closeWorklogDetail();" style="background: var(--primary-orange); color: white; border-color: var(--primary-orange);">編輯</button>
-                                <button class="btn" onclick="deleteResourceFromDetail('${person.id}')">刪除</button>
-                            </div>
                         </div>
                     </div>
                 </div>
             `;
 
-            document.getElementById('worklogDetailModal').classList.add('show');
+            const m = document.getElementById('worklogDetailModal');
+            m.classList.add('show', 'person-modal');
         }
 
         function createResourceCard(resource) {
@@ -3044,8 +3622,8 @@
                             <div class="plan-detail-body">${resource.detailedContent}</div>
                         ` : ''}
                         <div class="plan-detail-actions">
-                            <button class="btn" onclick="editResource('${resource.id}'); closeWorklogDetail();" style="background: var(--primary-orange); color: white; border-color: var(--primary-orange);">編輯</button>
-                            <button class="btn" onclick="deleteResourceFromDetail('${resource.id}')">刪除</button>
+                            <button class="icon-btn" onclick="editResource('${resource.id}'); closeWorklogDetail();" title="編輯">✏️</button>
+                            <button class="icon-btn" onclick="deleteResourceFromDetail('${resource.id}')" title="刪除">🗑️</button>
                         </div>
                     </div>
                 </div>
@@ -3092,41 +3670,96 @@
             document.getElementById('resourceForm').reset();
             document.getElementById('formCategory').value = category;
             resetWorkTypePills();
+            resetPillSelector('formPosition-pills', 'formPosition');
+            resetPillSelector('formGrade-pills', 'formGrade');
+            resetPillSelector('formDepartment-pills', 'formDepartment');
+            resetPillSelector('formWorkType-pills', 'formWorkType');
+            document.getElementById('formDepartmentOther').style.display = 'none';
+            document.getElementById('formDepartmentOther').value = '';
+
+            // planTag 預設「討論中」
+            setPillOption('formPlanTag-pills', 'formPlanTag', '討論中');
+            // event pills 預設
+            setPillOption('formEventPriority-pills', 'formEventPriority', 'medium');
+            setPillOption('formEventTag-pills', 'formEventTag', '即將到來');
+            // resource priority 預設
+            setPillOption('formPriority-pills', 'formPriority', 'medium');
+            // tool / part / learning 預設
+            resetPillSelector('formToolType-pills', 'formToolType');
+            setPillOption('formToolPriority-pills', 'formToolPriority', 'medium');
+            resetMultiPills('partCategory-pills');
+            setPillOption('formPartPriority-pills', 'formPartPriority', 'medium');
+            resetPillSelector('formLearnType-pills', 'formLearnType');
+            resetMultiPills('learnField-pills');
+            setPillOption('formLearnPriority-pills', 'formLearnPriority', 'medium');
+            // 清除 event 圖片
+            currentEventImageData = null;
+            document.getElementById('eventImagePreview').style.display = 'none';
+            document.getElementById('eventImagePreviewImg').src = '';
+            document.getElementById('eventUrlInput').style.display = 'none';
+            document.getElementById('formEventUrl').value = '';
 
             // 所有日期欄位預設 2026-今天
             const today = new Date();
             const defaultDate = `2026-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            ['formJoinDate', 'formStartDate', 'formEndDate'].forEach(id => {
+            ['formJoinDate', 'formStartDate', 'formEndDate', 'formEventDate'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = defaultDate;
             });
             updateWeekday('formJoinDate', 'joinWeekday');
             updateWeekday('formStartDate', 'startWeekday');
             updateWeekday('formEndDate', 'endWeekday');
+            updateWeekday('formEventDate', 'eventWeekday');
 
             toggleFormFields();
             document.getElementById('editModal').classList.add('show');
         }
 
         function toggleFormFields() {
-            const category = document.getElementById('formCategory').value;
-            const isPerson = category === '人員管理';
-            const isWorklog = category === '工作日誌';
-            const isPlan = category === '計畫';
-            
+            const category  = document.getElementById('formCategory').value;
+            const isPerson   = category === '人員管理';
+            const isWorklog  = category === '工作日誌';
+            const isPlan     = category === '計畫';
+            const isEvent    = category === '賽事資訊';
+            const isTool     = category === '工程工具';
+            const isPart     = category === '零件供應商';
+            const isLearning = category === '學習資源';
+
             document.getElementById('personFormFields').classList.toggle('hidden', !isPerson);
             document.getElementById('worklogFormFields').classList.toggle('hidden', !isWorklog);
             document.getElementById('planFormFields').classList.toggle('hidden', !isPlan);
-            document.getElementById('resourceFormFields').classList.toggle('hidden', isPerson || isWorklog || isPlan);
-            
-            document.getElementById('formPersonName').required = isPerson;
-            document.getElementById('formWorklogTitle').required = isWorklog;
-            document.getElementById('formWorkType').required = isWorklog;
-            document.getElementById('formStartDate').required = isWorklog;
-            document.getElementById('formPlanTitle').required = isPlan;
-            document.getElementById('formName').required = !isPerson && !isWorklog && !isPlan;
-            document.getElementById('formPriority').required = !isPerson && !isWorklog && !isPlan;
-            document.getElementById('formDescription').required = !isPerson && !isWorklog && !isPlan;
+            document.getElementById('eventFormFields').classList.toggle('hidden', !isEvent);
+            document.getElementById('toolFormFields').classList.toggle('hidden', !isTool);
+            document.getElementById('partFormFields').classList.toggle('hidden', !isPart);
+            document.getElementById('learningFormFields').classList.toggle('hidden', !isLearning);
+
+            document.getElementById('formPersonName').required   = isPerson;
+            document.getElementById('formWorklogTitle').required  = isWorklog;
+            document.getElementById('formStartDate').required    = isWorklog;
+            document.getElementById('formPlanTitle').required    = isPlan;
+            document.getElementById('formEventTitle').required   = isEvent;
+            document.getElementById('formToolName').required     = isTool;
+            document.getElementById('formPartName').required     = isPart;
+            document.getElementById('formLearnName').required    = isLearning;
+        }
+
+        function toggleEventUrlInput() {
+            const el = document.getElementById('eventUrlInput');
+            const show = el.style.display === 'none';
+            el.style.display = show ? 'block' : 'none';
+            if (!show) document.getElementById('formEventUrl').value = '';
+        }
+
+        function previewEventImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                currentEventImageData = e.target.result;
+                document.getElementById('eventImagePreview').style.display = 'block';
+                document.getElementById('eventImagePreviewImg').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function editResource(id) {
@@ -3139,21 +3772,6 @@
 
             if (resource.isPerson) {
                 document.getElementById('formPersonName').value = resource.name || '';
-                document.getElementById('formPosition').value = resource.position || '';
-                
-                // Handle department with "其他" option
-                const dept = resource.department || '';
-                const deptOptions = ['機械工程系', '車輛工程系', '模具工程系', '電機工程系', '電子工程系', '環境安全系', '造船系'];
-                if (dept && !deptOptions.includes(dept) && dept !== '') {
-                    document.getElementById('formDepartment').value = '其他';
-                    document.getElementById('formDepartmentOther').value = dept;
-                    document.getElementById('formDepartmentOther').style.display = 'block';
-                } else {
-                    document.getElementById('formDepartment').value = dept;
-                    document.getElementById('formDepartmentOther').style.display = 'none';
-                }
-                
-                document.getElementById('formGrade').value = resource.grade || '';
                 document.getElementById('formJoinDate').value = resource.joinDate || '';
                 document.getElementById('formEmail').value = resource.email || '';
                 document.getElementById('formPhone').value = resource.phone || '';
@@ -3168,9 +3786,23 @@
                     if (types.includes(pill.dataset.value)) pill.classList.add('active');
                 });
 
+                setPillOption('formPosition-pills', 'formPosition', resource.position || '');
+                setPillOption('formGrade-pills', 'formGrade', resource.grade || '');
+                resetPillSelector('formDepartment-pills', 'formDepartment');
+                const dept = resource.department || '';
+                const stdDepts = ['機械工程系','車輛工程系','模具工程系','電機工程系','環境安全系','造船系'];
+                if (dept && !stdDepts.includes(dept)) {
+                    setPillOption('formDepartment-pills', 'formDepartment', '其他');
+                    document.getElementById('formDepartmentOther').value = dept;
+                    document.getElementById('formDepartmentOther').style.display = 'block';
+                } else {
+                    setPillOption('formDepartment-pills', 'formDepartment', dept);
+                    document.getElementById('formDepartmentOther').style.display = 'none';
+                }
+
                 // Update weekday
                 updateWeekday('formJoinDate', 'joinWeekday');
-                
+
                 if (resource.avatar) {
                     const preview = document.getElementById('avatarPreview');
                     if (resource.avatar.startsWith('data:')) {
@@ -3182,6 +3814,7 @@
                 }
             } else if (resource.isWorklog) {
                 document.getElementById('formWorkType').value = resource.workType || '';
+                setPillOption('formWorkType-pills', 'formWorkType', resource.workType || '');
                 document.getElementById('formWorklogTitle').value = resource.name || '';
                 document.getElementById('formProgress').value = resource.progress || 0;
                 document.getElementById('formStartDate').value = resource.startDate || '';
@@ -3205,6 +3838,26 @@
                 if (resource.url) {
                     document.getElementById('planUrlInput').style.display = 'block';
                 }
+            } else if (resource.category === '工程工具') {
+                document.getElementById('formToolName').value = resource.name || '';
+                document.getElementById('formToolUrl').value = resource.url || '';
+                setPillOption('formToolType-pills', 'formToolType', resource.tag || '');
+                setPillOption('formToolPriority-pills', 'formToolPriority', resource.priority || 'medium');
+                document.getElementById('formToolDesc').value = resource.description || '';
+            } else if (resource.category === '零件供應商') {
+                document.getElementById('formPartName').value = resource.name || '';
+                document.getElementById('formPartUrl').value = resource.url || '';
+                setActivePills('partCategory-pills', resource.partCategories || resource.tag || '');
+                document.getElementById('formPartPrice').value = resource.price || '';
+                setPillOption('formPartPriority-pills', 'formPartPriority', resource.priority || 'medium');
+                document.getElementById('formPartDesc').value = resource.description || '';
+            } else if (resource.category === '學習資源') {
+                document.getElementById('formLearnName').value = resource.name || '';
+                document.getElementById('formLearnUrl').value = resource.url || '';
+                setPillOption('formLearnType-pills', 'formLearnType', resource.tag || '');
+                setActivePills('learnField-pills', resource.learnFields || '');
+                setPillOption('formLearnPriority-pills', 'formLearnPriority', resource.priority || 'medium');
+                document.getElementById('formLearnDesc').value = resource.description || '';
             } else {
                 document.getElementById('formName').value = resource.name;
                 document.getElementById('formUrl').value = resource.url || '';
@@ -3212,7 +3865,7 @@
                 document.getElementById('formDescription').value = resource.description;
                 document.getElementById('formDetailedContent').value = resource.detailedContent || '';
             }
-            
+
             document.getElementById('editModal').classList.add('show');
         }
 
@@ -3221,10 +3874,14 @@
             currentEditId = null;
             currentAvatarData = null;
             currentPlanImageData = null;
+            currentEventImageData = null;
             document.getElementById('avatarPreview').textContent = '👤';
             document.getElementById('emojiPicker').style.display = 'none';
             document.getElementById('planImagePreview').style.display = 'none';
             document.getElementById('planImagePreviewImg').src = '';
+            document.getElementById('eventImagePreview').style.display = 'none';
+            document.getElementById('eventImagePreviewImg').src = '';
+            document.getElementById('eventUrlInput').style.display = 'none';
         }
 
         function previewAvatar(event) {
@@ -3295,8 +3952,10 @@
                 resource.avatar = currentAvatarData || '👤';
                 resource.priority = 'medium';
             } else if (isWorklog) {
+                const workTypeVal = document.getElementById('formWorkType').value;
+                if (!workTypeVal) { alert('請選擇工作類別'); return; }
                 resource.isWorklog = true;
-                resource.workType = document.getElementById('formWorkType').value;
+                resource.workType = workTypeVal;
                 resource.name = document.getElementById('formWorklogTitle').value;
                 resource.progress = parseInt(document.getElementById('formProgress').value) || 0;
                 resource.startDate = document.getElementById('formStartDate').value;
@@ -3312,14 +3971,45 @@
                 resource.tag = document.getElementById('formPlanTag').value;
                 resource.order = currentEditId ? resources.find(r => r.id === currentEditId)?.order || Date.now() : Date.now();
                 resource.priority = 'medium';
+            } else if (category === '賽事資訊') {
+                resource.isPlan = true;
+                resource.name = document.getElementById('formEventTitle').value;
+                resource.image = currentEventImageData;
+                resource.url = document.getElementById('formEventUrl').value;
+                resource.content = document.getElementById('formEventDesc').value;
+                resource.location = document.getElementById('formEventLocation').value;
+                resource.eventDate = document.getElementById('formEventDate').value;
+                resource.tag = document.getElementById('formEventTag').value;
+                resource.priority = document.getElementById('formEventPriority').value;
+            } else if (category === '工程工具') {
+                resource.name = document.getElementById('formToolName').value;
+                resource.url = document.getElementById('formToolUrl').value;
+                resource.tag = document.getElementById('formToolType').value;
+                resource.priority = document.getElementById('formToolPriority').value;
+                resource.description = document.getElementById('formToolDesc').value;
+            } else if (category === '零件供應商') {
+                resource.name = document.getElementById('formPartName').value;
+                resource.url = document.getElementById('formPartUrl').value;
+                resource.partCategories = getActivePills('partCategory-pills');
+                resource.tag = resource.partCategories;
+                resource.price = document.getElementById('formPartPrice').value;
+                resource.priority = document.getElementById('formPartPriority').value;
+                resource.description = document.getElementById('formPartDesc').value;
+            } else if (category === '學習資源') {
+                resource.name = document.getElementById('formLearnName').value;
+                resource.url = document.getElementById('formLearnUrl').value;
+                resource.tag = document.getElementById('formLearnType').value;
+                resource.learnFields = getActivePills('learnField-pills');
+                resource.priority = document.getElementById('formLearnPriority').value;
+                resource.description = document.getElementById('formLearnDesc').value;
             } else {
                 resource.name = document.getElementById('formName').value;
                 resource.url = document.getElementById('formUrl').value;
-                resource.priority = document.getElementById('formPriority').value;
-                resource.description = document.getElementById('formDescription').value;
-                resource.detailedContent = document.getElementById('formDetailedContent').value;
+                resource.priority = 'medium';
+                resource.description = '';
             }
 
+            const wasEditing = !!currentEditId;
             if (currentEditId) {
                 const index = resources.findIndex(r => r.id === currentEditId);
                 resources[index] = resource;
@@ -3328,9 +4018,9 @@
             }
 
             saveData();
-            renderResources();
+            try { renderResources(); } catch(e) { console.error('renderResources:', e); }
             closeModal();
-            showNotification(currentEditId ? '已更新' : '已新增');
+            showNotification(wasEditing ? '已更新' : '已新增');
         }
 
         function deleteResource(id) {
