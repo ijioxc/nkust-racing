@@ -677,6 +677,34 @@
             padding-top: 20px;
             border-top: 1px solid var(--border);
             justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .plan-detail-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            min-width: 60px;
+            font-size: 13px;
+        }
+
+        .part-detail-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+
+        .part-detail-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
         }
 
         /* Person Detail Modal - Horizontal Layout */
@@ -2151,6 +2179,20 @@
                             <input type="text" id="formPartPrice" placeholder="例如：NT$500/件">
                         </div>
                     </div>
+                    <div class="form-two-col">
+                        <div class="form-group">
+                            <label>電話</label>
+                            <input type="text" id="formPartPhone" placeholder="02-1234-5678 / 0912-345-678">
+                        </div>
+                        <div class="form-group">
+                            <label>職稱 / 聯絡人</label>
+                            <input type="text" id="formPartContact" placeholder="例如：張先生">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>地址（支援 Google Maps）</label>
+                        <input type="text" id="formPartAddress" placeholder="例如：台灣市中山區...">
+                    </div>
                     <div class="form-group">
                         <label>重要程度</label>
                         <div class="pill-selector" id="formPartPriority-pills">
@@ -2162,7 +2204,7 @@
                     </div>
                     <div class="form-group">
                         <label>採購備註</label>
-                        <textarea id="formPartDesc" rows="3" placeholder="規格、交期、聯絡人..."></textarea>
+                        <textarea id="formPartDesc" rows="3" placeholder="規格、交期、注意事項..."></textarea>
                     </div>
                 </div>
 
@@ -2621,174 +2663,34 @@
         }
 
         function initializeLearningResources() {
+            const t = Date.now();
             const learningResources = [
-                // 官方文件與規則
-                {
-                    id: 'res_' + Date.now() + '_1',
-                    category: '學習資源',
-                    name: '台灣 FS 官網 - SES 文件審查',
-                    url: 'https://www.fstaiwan.net/3-ses-document-review',
-                    priority: '高',
-                    description: 'Formula Student Taiwan 官方文件審查說明',
-                    detailedContent: '台灣賽事官方網站，包含 SES（結構等效性檢查）文件審查相關資訊與規範。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_2',
-                    category: '學習資源',
-                    name: 'FSAEOnline 官方文件資源',
-                    url: 'https://www.fsaeonline.com/cdsweb/gen/documentresources.aspx',
-                    priority: '高',
-                    description: 'FSAE 官方線上文件資源中心',
-                    detailedContent: 'Formula SAE 官方網站的文件資源頁面，包含規則、技術文件、表格等。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_3',
-                    category: '賽事資訊',
-                    name: 'JSAE 官方公告 - 第23屆 ICV',
-                    url: 'https://www.jsae.or.jp/formula/past-result/23rd_official_announce_icvclass/',
-                    priority: '高',
-                    description: '日本第23屆全日本學生賽車大賽 ICV 組公告',
-                    detailedContent: '日本自動車技術會（JSAE）主辦的 Formula Student Japan 第23屆賽事 ICV 組官方公告。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_4',
-                    category: '學習資源',
-                    name: 'JSAE Formula 2025 數位手冊',
-                    url: 'https://digitalbook.jsae.or.jp/library/books/fsaej2025/book/?_gl=1*47e67o*_ga*ODI0MDY0MTY3LjE2ODUzNjc0MjA.*_ga_TPEZ3HK0HG*czE3NzUyMjI3NDMkbzg4JGcxJHQxNzc1MjIyNzU5JGo0NCRsMCRoMA..#target/page_no=1',
-                    priority: '高',
-                    description: '2025 年日本賽事官方數位手冊',
-                    detailedContent: 'JSAE Formula 2025 完整賽事規則與技術規範數位版。'
-                },
-                
-                // 贊助商申請
-                {
-                    id: 'res_' + Date.now() + '_5',
-                    category: '學習資源',
-                    name: 'Realis Simulation 學術贊助申請',
-                    url: 'https://www.realis-simulation.com/zh/support/academia/formula-sae-grant-request/',
-                    priority: '中',
-                    description: 'Realis 模擬軟體學術贊助計畫',
-                    detailedContent: 'Realis Simulation 提供給 Formula SAE 車隊的軟體贊助申請頁面，支援中文介面。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_6',
-                    category: '學習資源',
-                    name: 'Altair 技術贊助申請',
-                    url: 'https://altair.com/technology-sponsorship-request',
-                    priority: '中',
-                    description: 'Altair CAE 軟體技術贊助計畫',
-                    detailedContent: 'Altair 提供的技術贊助申請，包含 HyperWorks、SimSolid 等工程模擬軟體。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_7',
-                    category: '學習資源',
-                    name: 'ANSYS 學生車隊計畫',
-                    url: 'https://www.ansys.com/academic/students/student-teams',
-                    priority: '中',
-                    description: 'ANSYS 學生車隊支持計畫',
-                    detailedContent: 'ANSYS 針對學生競賽團隊提供的軟體授權與技術支援計畫。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_8',
-                    category: '學習資源',
-                    name: 'MATLAB 學術競賽支持',
-                    url: 'https://jp.mathworks.com/academia/student-competitions/formula-student-michigan.html',
-                    priority: '中',
-                    description: 'MathWorks Formula Student 支持計畫',
-                    detailedContent: 'MATLAB 和 Simulink 針對 Formula Student 車隊的學術支援資源。'
-                },
-                
-                // 零件供應商 - 輪圈
-                {
-                    id: 'res_' + Date.now() + '_9',
-                    category: '零件供應商',
-                    name: 'OZ Racing - Formula Student 輪圈',
-                    url: 'https://www.ozracing.com/motorsport/formula-student/wheels',
-                    priority: '高',
-                    description: 'OZ Racing Formula Student 專用輪圈',
-                    detailedContent: '義大利 OZ Racing 提供的 Formula Student 競賽輪圈產品線。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_10',
-                    category: '零件供應商',
-                    name: 'Keizer Wheels - FSAE',
-                    url: 'https://keizerwheels.com/product-category/fsae/',
-                    priority: '高',
-                    description: 'Keizer 鋁合金賽車輪圈 FSAE 系列',
-                    detailedContent: 'Keizer Wheels 專為 FSAE 設計的輕量化鋁合金輪圈。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_11',
-                    category: '零件供應商',
-                    name: 'Enkei SF-01 規格書',
-                    url: 'https://www.enkei.co.jp/upload/product/wheels/_2512_SF-01_web_02.pdf',
-                    priority: '中',
-                    description: 'Enkei SF-01 輪圈技術規格 PDF',
-                    detailedContent: 'Enkei 日本原廠 SF-01 輪圈詳細技術規格文件。'
-                },
-                
-                // 零件供應商 - 輪胎
-                {
-                    id: 'res_' + Date.now() + '_12',
-                    category: '零件供應商',
-                    name: 'Hoosier Tire - Formula Student/FSAE',
-                    url: 'https://www.hoosiertirewest.com/categories/circuit-racing-road-course-rally/formula-student-fsae.html',
-                    priority: '高',
-                    description: 'Hoosier 賽車輪胎 FSAE 系列',
-                    detailedContent: 'Hoosier Racing Tire 提供的 Formula Student/FSAE 專用賽車輪胎。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_13',
-                    category: '零件供應商',
-                    name: 'GY Racing - FSAE 產品',
-                    url: 'https://gyracing.com.au/product-category/fsae/',
-                    priority: '中',
-                    description: 'GY Racing 澳洲 FSAE 零件供應商',
-                    detailedContent: 'GY Racing 提供的 FSAE 相關零件與配件。'
-                },
-                
-                // 技術資源
-                {
-                    id: 'res_' + Date.now() + '_14',
-                    category: '學習資源',
-                    name: 'Learn And Compete - FSAE 入門手冊',
-                    url: 'https://www.scribd.com/document/511418795/Learn-And-Compete-A-Primer-For-Formula-SAE',
-                    priority: '高',
-                    description: 'FSAE 入門完整指南',
-                    detailedContent: '適合新手的 Formula SAE 入門手冊，涵蓋基本概念與競賽準備。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_15',
-                    category: '學習資源',
-                    name: 'Race Car Design by Derek Seward',
-                    url: 'https://www.scribd.com/document/868117502/pdfcoffee-com-race-car-design-by-derek-seward-2-pdf-free',
-                    priority: '高',
-                    description: '賽車設計經典教材',
-                    detailedContent: 'Derek Seward 的賽車設計教科書，Formula Student 必讀經典。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_16',
-                    category: '學習資源',
-                    name: 'FSAE 概念與客觀設計',
-                    url: 'https://www.designjudges.com/articles/conceptual-and-objective-design-in-fsae',
-                    priority: '高',
-                    description: 'Design Event 評審觀點文章',
-                    detailedContent: '來自資深 Design Judge 的文章，解釋如何在 FSAE 中進行概念設計與客觀設計。'
-                },
-                {
-                    id: 'res_' + Date.now() + '_17',
-                    category: '學習資源',
-                    name: 'FSAE TO WIN - 技術資源網站',
-                    url: 'https://xxkizashi.github.io/FSAE_TO_WIN/',
-                    priority: '高',
-                    description: '綜合性 FSAE 技術資源網站',
-                    detailedContent: '包含設計理論、計算工具、技術文章的綜合性 Formula SAE 技術資源網站。'
-                }
+                // ── 學習資源 ──────────────────────────────────
+                { id:`res_${t}_1`,  category:'學習資源', name:'台灣 FS 官網 - SES 文件審查',       url:'https://www.fstaiwan.net/3-ses-document-review',                                                                                                                                                                                         tag:'手冊', priority:'high',   description:'Formula Student Taiwan 官方 SES（結構等效性檢查）文件審查說明', learnFields:'通用' },
+                { id:`res_${t}_2`,  category:'學習資源', name:'FSAEOnline 官方文件資源',             url:'https://www.fsaeonline.com/cdsweb/gen/documentresources.aspx',                                                                                                                                                                              tag:'手冊', priority:'high',   description:'FSAE 官方線上文件資源中心，含規則、技術文件、表格',             learnFields:'通用' },
+                { id:`res_${t}_4`,  category:'學習資源', name:'JSAE Formula 2025 數位手冊',          url:'https://digitalbook.jsae.or.jp/library/books/fsaej2025/book/?_gl=1*47e67o*_ga*ODI0MDY0MTY3LjE2ODUzNjc0MjA.*_ga_TPEZ3HK0HG*czE3NzUyMjI3NDMkbzg4JGcxJHQxNzc1MjIyNzU5JGo0NCRsMCRoMA..#target/page_no=1',                              tag:'手冊', priority:'high',   description:'2025 年日本賽事官方完整規則與技術規範數位版',                   learnFields:'通用' },
+                { id:`res_${t}_14`, category:'學習資源', name:'Learn And Compete - FSAE 入門手冊',  url:'https://www.scribd.com/document/511418795/Learn-And-Compete-A-Primer-For-Formula-SAE',                                                                                                                                                     tag:'書籍', priority:'high',   description:'適合新手的 Formula SAE 完整入門指南',                          learnFields:'通用' },
+                { id:`res_${t}_15`, category:'學習資源', name:'Race Car Design - Derek Seward',      url:'https://www.scribd.com/document/868117502/pdfcoffee-com-race-car-design-by-derek-seward-2-pdf-free',                                                                                                                                        tag:'書籍', priority:'high',   description:'Formula Student 必讀賽車設計經典教材',                         learnFields:'車體,懸吊' },
+                { id:`res_${t}_16`, category:'學習資源', name:'FSAE 概念與客觀設計',                 url:'https://www.designjudges.com/articles/conceptual-and-objective-design-in-fsae',                                                                                                                                                              tag:'其他', priority:'high',   description:'資深 Design Judge 解析 FSAE 概念設計與客觀設計思維',           learnFields:'通用' },
+                { id:`res_${t}_17`, category:'學習資源', name:'FSAE TO WIN',                         url:'https://xxkizashi.github.io/FSAE_TO_WIN/',                                                                                                                                                                                                  tag:'其他', priority:'high',   description:'綜合 FSAE 設計理論、計算工具、技術文章資源站',                 learnFields:'通用' },
+                // 贊助商
+                { id:`res_${t}_5`,  category:'學習資源', name:'Realis Simulation 學術贊助申請',      url:'https://www.realis-simulation.com/zh/support/academia/formula-sae-grant-request/',                                                                                                                                                           tag:'其他', priority:'medium', description:'Realis 模擬軟體 FSAE 學術贊助計畫（支援中文）',                 learnFields:'通用' },
+                { id:`res_${t}_6`,  category:'學習資源', name:'Altair 技術贊助申請',                 url:'https://altair.com/technology-sponsorship-request',                                                                                                                                                                                         tag:'其他', priority:'medium', description:'Altair HyperWorks / SimSolid 工程模擬軟體贊助申請',            learnFields:'通用' },
+                { id:`res_${t}_7`,  category:'學習資源', name:'ANSYS 學生車隊計畫',                  url:'https://www.ansys.com/academic/students/student-teams',                                                                                                                                                                                      tag:'其他', priority:'medium', description:'ANSYS 針對學生競賽團隊提供軟體授權與技術支援',                  learnFields:'通用' },
+                { id:`res_${t}_8`,  category:'學習資源', name:'MATLAB 學術競賽支持',                 url:'https://jp.mathworks.com/academia/student-competitions/formula-student-michigan.html',                                                                                                                                                       tag:'其他', priority:'medium', description:'MathWorks MATLAB / Simulink Formula Student 學術支援資源',      learnFields:'通用' },
+                // ── 零件供應商 ────────────────────────────────
+                { id:`res_${t}_9`,  category:'零件供應商', name:'OZ Racing - FSAE 輪圈',             url:'https://www.ozracing.com/motorsport/formula-student/wheels',                                                                                                                                                                                 partCategories:'懸吊', tag:'懸吊', priority:'high',   description:'義大利 OZ Racing FSAE 競賽專用輕量化輪圈' },
+                { id:`res_${t}_10`, category:'零件供應商', name:'Keizer Wheels - FSAE',              url:'https://keizerwheels.com/product-category/fsae/',                                                                                                                                                                                           partCategories:'懸吊', tag:'懸吊', priority:'high',   description:'Keizer 鋁合金 FSAE 競賽輪圈系列' },
+                { id:`res_${t}_11`, category:'零件供應商', name:'Enkei SF-01 規格書',                url:'https://www.enkei.co.jp/upload/product/wheels/_2512_SF-01_web_02.pdf',                                                                                                                                                                      partCategories:'懸吊', tag:'懸吊', priority:'medium', description:'Enkei SF-01 輪圈日本原廠技術規格 PDF' },
+                { id:`res_${t}_12`, category:'零件供應商', name:'Hoosier Tire - FSAE',               url:'https://www.hoosiertirewest.com/categories/circuit-racing-road-course-rally/formula-student-fsae.html',                                                                                                                                     partCategories:'懸吊', tag:'懸吊', priority:'high',   description:'Hoosier Racing Tire FSAE 專用賽車輪胎系列' },
+                { id:`res_${t}_13`, category:'零件供應商', name:'GY Racing - FSAE 產品',             url:'https://gyracing.com.au/product-category/fsae/',                                                                                                                                                                                            partCategories:'其他', tag:'其他', priority:'medium', description:'GY Racing 澳洲 FSAE 零件與配件供應商' },
+                // ── 賽事資訊 ──────────────────────────────────
+                { id:`res_${t}_3`,  category:'賽事資訊', isPlan:true, name:'JSAE 第23屆 ICV 官方公告', url:'https://www.jsae.or.jp/formula/past-result/23rd_official_announce_icvclass/', content:'日本第23屆全日本學生賽車大賽 ICV 組官方公告（JSAE）', tag:'已結束', priority:'high' }
             ];
-            
             resources = learningResources;
             saveData();
         }
+
 
         function saveData() {
             localStorage.setItem('fsaeResources', JSON.stringify(resources));
@@ -3303,6 +3205,7 @@
 
             card.innerHTML = `
                 <div class="plan-card-actions">
+                    <button class="icon-btn" onclick="togglePin('${plan.id}'); event.stopPropagation();" title="釘選">${plan.pinned ? '📍' : '📌'}</button>
                     <button class="icon-btn" onclick="editResource('${plan.id}'); event.stopPropagation();">✏️</button>
                     <button class="icon-btn" onclick="deleteResource('${plan.id}'); event.stopPropagation();">🗑️</button>
                 </div>
@@ -3643,37 +3546,110 @@
             const priorityMap2 = {high: '重要', medium: '中等', low: '參考', '高': '重要', '中': '中等', '低': '參考'};
             const priorityText = priorityMap2[resource.priority] || resource.priority || '';
             const priorityCls = ({high: 'high', medium: 'medium', low: 'low', '高': 'high', '中': 'medium', '低': 'low'}[resource.priority]) || 'medium';
+            const cat = resource.category;
+
+            // 依分類組額外欄位 HTML
+            let extraFields = '';
+            let bottomEmbed = '';   // iframe / maps 放在內容下方
+
+            if (cat === '零件供應商') {
+                // 基本欄位列
+                if (resource.partCategories || resource.tag) extraFields += `<div class="plan-detail-field"><span class="detail-label">零件分類</span><span class="plan-card-tag">${resource.partCategories || resource.tag}</span></div>`;
+                if (resource.price)    extraFields += `<div class="plan-detail-field"><span class="detail-label">參考價格</span><span>${resource.price}</span></div>`;
+                if (resource.contact)  extraFields += `<div class="plan-detail-field"><span class="detail-label">聯絡人</span><span>👤 ${resource.contact}</span></div>`;
+                if (resource.phone)    extraFields += `<div class="plan-detail-field"><span class="detail-label">電話</span><a href="tel:${resource.phone}" style="color:var(--primary-orange);text-decoration:none;">📞 ${resource.phone}</a></div>`;
+
+                // Google Maps iframe（有地址才顯示）
+                if (resource.address) {
+                    const q = encodeURIComponent(resource.address);
+                    bottomEmbed += `
+                        <div class="part-detail-section">
+                            <div class="part-detail-section-title">📍 地圖</div>
+                            <iframe
+                                src="https://maps.google.com/maps?q=${q}&output=embed&hl=zh-TW"
+                                width="100%" height="220"
+                                style="border:0;border-radius:10px;margin-top:8px;"
+                                allowfullscreen loading="lazy">
+                            </iframe>
+                            <div style="margin-top:4px;font-size:12px;color:var(--text-secondary);">${resource.address}</div>
+                        </div>`;
+                }
+
+                // 網頁預覽 iframe
+                if (resource.url) {
+                    bottomEmbed += `
+                        <div class="part-detail-section">
+                            <div class="part-detail-section-title">🌐 網頁預覽</div>
+                            <div style="position:relative;padding-top:56.25%;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+                                <iframe
+                                    src="${resource.url}"
+                                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+                                    loading="lazy"
+                                    sandbox="allow-scripts allow-same-origin allow-popups">
+                                </iframe>
+                            </div>
+                            <div style="margin-top:6px;text-align:right;">
+                                <a href="${resource.url}" target="_blank" style="color:var(--primary-orange);font-size:13px;">↗ 在新頁籤開啟</a>
+                            </div>
+                        </div>`;
+                }
+
+            } else if (cat === '學習資源') {
+                if (resource.tag) extraFields += `<div class="plan-detail-field"><span class="detail-label">類型</span><span class="plan-card-tag">${resource.tag}</span></div>`;
+                if (resource.learnFields) extraFields += `<div class="plan-detail-field"><span class="detail-label">適用領域</span><span>${resource.learnFields}</span></div>`;
+            } else if (cat === '賽事資訊') {
+                if (resource.tag) extraFields += `<div class="plan-detail-field"><span class="detail-label">狀態</span><span class="plan-card-tag">${resource.tag}</span></div>`;
+                if (resource.eventDate) extraFields += `<div class="plan-detail-field"><span class="detail-label">日期</span><span>${resource.eventDate}</span></div>`;
+                if (resource.location) extraFields += `<div class="plan-detail-field"><span class="detail-label">地點</span><span>${resource.location}</span></div>`;
+            }
+
+            // og:image preview（非零件商才顯示，零件商改用 iframe）
+            const imgSrc = cat !== '零件供應商' ? (resource.image || ogImageCache[resource.url] || '') : '';
+            const imgHTML = imgSrc ? `<div style="margin-bottom:16px;border-radius:10px;overflow:hidden;"><img src="${imgSrc}" style="width:100%;height:auto;display:block;"></div>` : '';
 
             document.getElementById('worklogDetailContent').innerHTML = `
                 <div class="plan-detail-modal">
                     <div class="plan-detail-content">
+                        ${imgHTML}
                         <div class="plan-detail-header">
                             <div class="plan-detail-title">${resource.name}</div>
                             <div class="plan-detail-meta">
                                 ${priorityText ? `<span class="priority-badge priority-${priorityCls}">${priorityText}</span>` : ''}
-                                <span>${resource.category}</span>
+                                <span>${cat}</span>
                             </div>
                         </div>
-                        ${resource.url ? `
-                            <div style="margin-bottom: 16px;">
-                                <a href="${resource.url}" target="_blank" style="color: var(--primary-orange); text-decoration: none;">
-                                    🔗 ${resource.url}
-                                </a>
+                        ${extraFields}
+                        ${resource.url && cat !== '零件供應商' ? `
+                            <div style="margin:12px 0;">
+                                <a href="${resource.url}" target="_blank" style="color:var(--primary-orange);text-decoration:none;word-break:break-all;">🔗 ${resource.url}</a>
                             </div>
                         ` : ''}
-                        ${resource.description ? `
-                            <div style="font-size: 16px; color: var(--text-secondary); margin-bottom: 16px;">${resource.description}</div>
-                        ` : ''}
-                        ${resource.detailedContent ? `
-                            <div class="plan-detail-body">${resource.detailedContent}</div>
-                        ` : ''}
+                        ${resource.description ? `<div style="font-size:15px;color:var(--text-secondary);margin-bottom:12px;">${resource.description}</div>` : ''}
+                        ${resource.content ? `<div class="plan-detail-body">${resource.content}</div>` : ''}
+                        ${resource.detailedContent ? `<div class="plan-detail-body">${resource.detailedContent}</div>` : ''}
+                        ${bottomEmbed}
                         <div class="plan-detail-actions">
+                            <button class="icon-btn" onclick="togglePin('${resource.id}'); closeWorklogDetail(); renderResources();" title="釘選">${resource.pinned ? '📍 取消釘選' : '📌 釘選'}</button>
                             <button class="icon-btn" onclick="editResource('${resource.id}'); closeWorklogDetail();" title="編輯">✏️</button>
                             <button class="icon-btn" onclick="deleteResourceFromDetail('${resource.id}')" title="刪除">🗑️</button>
                         </div>
                     </div>
                 </div>
             `;
+
+            // 如果還沒有 og:image 就非同步補
+            if (!imgSrc && resource.url) {
+                fetch(`https://api.microlink.io/?url=${encodeURIComponent(resource.url)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        const url = data?.data?.image?.url;
+                        if (url) {
+                            ogImageCache[resource.url] = url;
+                            const wrap = document.querySelector('#worklogDetailContent img[data-og-placeholder]');
+                            if (wrap) { wrap.src = url; wrap.style.display = 'block'; }
+                        }
+                    }).catch(() => {});
+            }
 
             document.getElementById('worklogDetailModal').classList.add('show');
         }
@@ -3811,12 +3787,15 @@
         function editResource(id) {
             currentEditId = id;
             const resource = resources.find(r => r.id === id);
+            if (!resource) return;
             
             document.getElementById('modalTitle').textContent = '編輯';
             document.getElementById('formCategory').value = resource.category;
             toggleFormFields();
 
-            if (resource.isPerson) {
+            const cat = resource.category;
+
+            if (cat === '人員管理') {
                 document.getElementById('formPersonName').value = resource.name || '';
                 document.getElementById('formJoinDate').value = resource.joinDate || '';
                 document.getElementById('formEmail').value = resource.email || '';
@@ -3824,7 +3803,6 @@
                 document.getElementById('formSkills').value = resource.skills || '';
                 document.getElementById('formOtherInfo').value = resource.otherInfo || '';
                 
-                // Set checkboxes + sync pills
                 const types = resource.workTypes ? resource.workTypes.split(',').map(t => t.trim()) : [];
                 resetWorkTypePills();
                 document.querySelectorAll('.work-type-checkbox').forEach(cb => { cb.checked = types.includes(cb.value); });
@@ -3845,8 +3823,6 @@
                     setPillOption('formDepartment-pills', 'formDepartment', dept);
                     document.getElementById('formDepartmentOther').style.display = 'none';
                 }
-
-                // Update weekday
                 updateWeekday('formJoinDate', 'joinWeekday');
 
                 if (resource.avatar) {
@@ -3858,7 +3834,8 @@
                     }
                     currentAvatarData = resource.avatar;
                 }
-            } else if (resource.isWorklog) {
+
+            } else if (cat === '工作日誌') {
                 document.getElementById('formWorkType').value = resource.workType || '';
                 setPillOption('formWorkType-pills', 'formWorkType', resource.workType || '');
                 document.getElementById('formWorklogTitle').value = resource.name || '';
@@ -3866,55 +3843,75 @@
                 document.getElementById('formStartDate').value = resource.startDate || '';
                 document.getElementById('formEndDate').value = resource.endDate || '';
                 document.getElementById('formWorklogNotes').value = resource.notes || '';
-                
                 updateWeekday('formStartDate', 'startWeekday');
                 updateWeekday('formEndDate', 'endWeekday');
-            } else if (resource.isPlan) {
+
+            } else if (cat === '計畫') {
                 document.getElementById('formPlanTitle').value = resource.name || '';
                 document.getElementById('formPlanUrl').value = resource.url || '';
                 document.getElementById('formPlanContent').value = resource.content || '';
-                document.getElementById('formPlanTag').value = resource.tag || '討論中';
-                
+                setPillOption('formPlanTag-pills', 'formPlanTag', resource.tag || '討論中');
                 if (resource.image) {
                     currentPlanImageData = resource.image;
                     document.getElementById('planImagePreview').style.display = 'block';
                     document.getElementById('planImagePreviewImg').src = resource.image;
                 }
-                
                 if (resource.url) {
                     document.getElementById('planUrlInput').style.display = 'block';
                 }
-            } else if (resource.category === '工程工具') {
+
+            } else if (cat === '賽事資訊') {
+                document.getElementById('formEventTitle').value = resource.name || '';
+                document.getElementById('formEventDesc').value = resource.content || resource.description || '';
+                document.getElementById('formEventDate').value = resource.eventDate || '';
+                document.getElementById('formEventLocation').value = resource.location || '';
+                setPillOption('formEventTag-pills', 'formEventTag', resource.tag || '即將到來');
+                setPillOption('formEventPriority-pills', 'formEventPriority', resource.priority || 'medium');
+                updateWeekday('formEventDate', 'eventWeekday');
+                if (resource.image) {
+                    currentEventImageData = resource.image;
+                    document.getElementById('eventImagePreview').style.display = 'block';
+                    document.getElementById('eventImagePreviewImg').src = resource.image;
+                }
+                if (resource.url) {
+                    document.getElementById('eventUrlInput').style.display = 'block';
+                    document.getElementById('formEventUrl').value = resource.url;
+                }
+
+            } else if (cat === '工程工具') {
                 document.getElementById('formToolName').value = resource.name || '';
                 document.getElementById('formToolUrl').value = resource.url || '';
                 setPillOption('formToolType-pills', 'formToolType', resource.tag || '');
                 setPillOption('formToolPriority-pills', 'formToolPriority', resource.priority || 'medium');
                 document.getElementById('formToolDesc').value = resource.description || '';
-            } else if (resource.category === '零件供應商') {
+
+            } else if (cat === '零件供應商') {
                 document.getElementById('formPartName').value = resource.name || '';
                 document.getElementById('formPartUrl').value = resource.url || '';
                 setActivePills('partCategory-pills', resource.partCategories || resource.tag || '');
                 document.getElementById('formPartPrice').value = resource.price || '';
+                document.getElementById('formPartPhone').value = resource.phone || '';
+                document.getElementById('formPartContact').value = resource.contact || '';
+                document.getElementById('formPartAddress').value = resource.address || '';
                 setPillOption('formPartPriority-pills', 'formPartPriority', resource.priority || 'medium');
                 document.getElementById('formPartDesc').value = resource.description || '';
-            } else if (resource.category === '學習資源') {
+
+            } else if (cat === '學習資源') {
                 document.getElementById('formLearnName').value = resource.name || '';
                 document.getElementById('formLearnUrl').value = resource.url || '';
                 setPillOption('formLearnType-pills', 'formLearnType', resource.tag || '');
                 setActivePills('learnField-pills', resource.learnFields || '');
                 setPillOption('formLearnPriority-pills', 'formLearnPriority', resource.priority || 'medium');
                 document.getElementById('formLearnDesc').value = resource.description || '';
+
             } else {
-                document.getElementById('formName').value = resource.name;
+                document.getElementById('formName').value = resource.name || '';
                 document.getElementById('formUrl').value = resource.url || '';
-                document.getElementById('formPriority').value = resource.priority;
-                document.getElementById('formDescription').value = resource.description;
-                document.getElementById('formDetailedContent').value = resource.detailedContent || '';
+                document.getElementById('formDescription').value = resource.description || '';
             }
 
             document.getElementById('editModal').classList.add('show');
         }
-
         function closeModal() {
             document.getElementById('editModal').classList.remove('show');
             currentEditId = null;
@@ -4039,6 +4036,9 @@
                 resource.partCategories = getActivePills('partCategory-pills');
                 resource.tag = resource.partCategories;
                 resource.price = document.getElementById('formPartPrice').value;
+                resource.phone = document.getElementById('formPartPhone').value;
+                resource.contact = document.getElementById('formPartContact').value;
+                resource.address = document.getElementById('formPartAddress').value;
                 resource.priority = document.getElementById('formPartPriority').value;
                 resource.description = document.getElementById('formPartDesc').value;
             } else if (category === '學習資源') {
