@@ -375,6 +375,23 @@
             .search-input-header.active {
                 width: 140px;
             }
+            /* Header pill: icon-only on mobile */
+            .pill-label {
+                display: none;
+            }
+            .header-pill {
+                padding: 6px 10px;
+                gap: 3px;
+            }
+            /* Gantt chart inner content: min-width so container scrolls */
+            .timeline-scale,
+            .timeline-tracks {
+                min-width: 560px;
+            }
+            /* 7-col worklog cards: horizontal scroll */
+            .worklog-columns {
+                grid-template-columns: repeat(7, minmax(150px, 150px));
+            }
         }
 
         /* Person Card - Horizontal compact layout */
@@ -517,6 +534,7 @@
 
         .plan-card-image {
             width: 100%;
+            aspect-ratio: 16 / 9;
             background: var(--bg-secondary);
             display: flex;
             align-items: center;
@@ -524,17 +542,6 @@
             color: var(--text-secondary);
             font-size: 48px;
             overflow: hidden;
-            position: relative;
-        }
-
-        /* Manual upload: keep 16:9 */
-        .plan-card-image.has-manual-img {
-            aspect-ratio: 16 / 9;
-        }
-
-        /* No image: fixed placeholder height */
-        .plan-card-image.no-img {
-            min-height: 80px;
         }
 
         .plan-card-image img {
@@ -542,14 +549,12 @@
             height: 100%;
             object-fit: cover;
             object-position: top;
-            display: block;
         }
 
-        /* og:image — natural aspect ratio */
+        /* og:image from URL — show completely at natural ratio */
         .plan-og-img {
             width: 100%;
-            height: auto;
-            display: block;
+            height: 100%;
             object-fit: contain;
             background: var(--bg-secondary);
         }
@@ -677,34 +682,6 @@
             padding-top: 20px;
             border-top: 1px solid var(--border);
             justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .plan-detail-field {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .detail-label {
-            color: var(--text-secondary);
-            min-width: 60px;
-            font-size: 13px;
-        }
-
-        .part-detail-section {
-            margin-top: 20px;
-            border-top: 1px solid var(--border);
-            padding-top: 16px;
-        }
-
-        .part-detail-section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
         }
 
         /* Person Detail Modal - Horizontal Layout */
@@ -784,8 +761,11 @@
             font-size: 11px;
             font-weight: 600;
             color: var(--text-primary);
-            line-height: 1.3;
-            word-break: break-all;
+            line-height: 1.35;
+            overflow: hidden;
+            max-height: 4.1em;
+            overflow-wrap: break-word;
+            word-break: break-word;
             min-width: 0;
         }
         .wc-dates {
@@ -800,6 +780,28 @@
             color: var(--text-secondary);
             text-align: center;
             padding: 12px 0;
+        }
+        /* Part column card: vertical layout */
+        .part-col-card {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .part-col-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .part-col-price {
+            font-size: 10px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 2px;
         }
 
         /* 人員分頁展開式圖卡 */
@@ -1066,7 +1068,10 @@
             color: var(--accent-blue);
             font-size: 12px;
             text-decoration: none;
-            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: block;
             margin-top: auto;
         }
 
@@ -1321,13 +1326,14 @@
             position: absolute;
             height: 50px;
             border-radius: 6px;
-            padding: 8px 12px;
+            padding: 8px 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
             box-shadow: 0 2px 8px var(--shadow);
+            overflow: visible;
         }
 
         .timeline-item:hover {
@@ -1337,12 +1343,14 @@
         }
 
         .timeline-item-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            overflow: visible;
             color: white;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .timeline-item-progress {
@@ -1778,11 +1786,11 @@
             <div class="header-right">
                 <!-- 人數 -->
                 <div class="header-pill">
-                    👥 人員 <span class="header-pill-value" id="peopleCount">0</span>
+                    👥<span class="pill-label"> 人員 </span><span class="header-pill-value" id="peopleCount">0</span>
                 </div>
                 <!-- 最近更新 -->
                 <div class="header-pill">
-                    🗓️ 更新 <span class="header-pill-value" id="lastLogDate">-</span>
+                    🗓️<span class="pill-label"> 更新 </span><span class="header-pill-value" id="lastLogDate">-</span>
                 </div>
                 <!-- 搜尋 -->
                 <button class="header-pill" id="searchToggle" onclick="toggleSearch()">
@@ -1790,7 +1798,7 @@
                 </button>
                 <!-- 夜間模式 -->
                 <button class="header-pill" onclick="toggleTheme()" id="themeBtn">
-                    🌙 夜間
+                    🌙<span class="pill-label"> 夜間</span>
                 </button>
             </div>
         </header>
@@ -2179,20 +2187,6 @@
                             <input type="text" id="formPartPrice" placeholder="例如：NT$500/件">
                         </div>
                     </div>
-                    <div class="form-two-col">
-                        <div class="form-group">
-                            <label>電話</label>
-                            <input type="text" id="formPartPhone" placeholder="02-1234-5678 / 0912-345-678">
-                        </div>
-                        <div class="form-group">
-                            <label>職稱 / 聯絡人</label>
-                            <input type="text" id="formPartContact" placeholder="例如：張先生">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>地址（支援 Google Maps）</label>
-                        <input type="text" id="formPartAddress" placeholder="例如：台灣市中山區...">
-                    </div>
                     <div class="form-group">
                         <label>重要程度</label>
                         <div class="pill-selector" id="formPartPriority-pills">
@@ -2204,7 +2198,7 @@
                     </div>
                     <div class="form-group">
                         <label>採購備註</label>
-                        <textarea id="formPartDesc" rows="3" placeholder="規格、交期、注意事項..."></textarea>
+                        <textarea id="formPartDesc" rows="3" placeholder="規格、交期、聯絡人..."></textarea>
                     </div>
                 </div>
 
@@ -2336,7 +2330,10 @@
                         resources = Object.values(data).filter(Boolean);
                     } else {
                         loadData();
-                        if (resources.length === 0) loadSampleData();
+                    }
+                    const before = resources.length;
+                    loadSampleData();
+                    if (resources.length !== before) {
                         window._fbSet(window._fbRef(window._fbDb, 'resources'), resources);
                     }
                     renderResources();
@@ -2350,7 +2347,7 @@
             } else {
                 window.addEventListener('firebase-ready', startFirebase, { once: true });
                 loadData();
-                if (resources.length === 0) loadSampleData();
+                loadSampleData();
                 renderResources();
                 updateHeaderStats();
             }
@@ -2471,99 +2468,349 @@
 
         function loadSampleData() {
             const today = new Date();
-            
-            resources.push(
+            const existingIds = new Set(resources.map(r => r.id));
+
+            const samples = [
+                // ── 人員管理 ──────────────────────────────────────────
                 {
-                    id: 'person1',
-                    category: '人員管理',
-                    isPerson: true,
-                    name: '張天翰',
-                    workTypes: '車體,底盤,空力,引擎,其他',
-                    phone: '0906551785',
-                    email: 'jjioxc@gmail.com',
-                    skills: '四機二乙',
-                    department: '機械工程系',
-                    otherInfo: '隊長',
-                    avatar: '👤',
-                    priority: 'medium',
+                    id: 'person1', category: '人員管理', isPerson: true,
+                    name: '張天翰', position: '隊長',
+                    workTypes: '車體,空力,引擎',
+                    phone: '0906551785', email: 'jjioxc@gmail.com',
+                    department: '機械工程系', grade: '大四', joinDate: '2023-09-01',
+                    skills: 'SolidWorks、FEA 分析、賽車底盤設計',
+                    otherInfo: '負責整體進度協調與對外聯繫',
+                    avatar: '👤', priority: 'medium',
                     createdAt: new Date(today.getTime() - 60*24*60*60*1000).toISOString()
                 },
                 {
-                    id: 'person2',
-                    category: '人員管理',
-                    isPerson: true,
-                    name: '林韋生',
-                    workTypes: '教授',
+                    id: 'person2', category: '人員管理', isPerson: true,
+                    name: '林韋生', position: '指導教授',
+                    workTypes: '引擎',
                     email: 'lin@nkust.edu.tw',
-                    skills: '指導教授',
-                    avatar: '💡',
-                    priority: 'medium',
+                    department: '機械工程系', grade: '',
+                    skills: '內燃機動力學、車輛工程',
+                    avatar: '💡', priority: 'medium',
+                    createdAt: new Date(today.getTime() - 90*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'person3', category: '人員管理', isPerson: true,
+                    name: '張子佑', position: '車架組長',
+                    workTypes: '車體,懸吊',
+                    email: 'zhang@nkust.edu.tw', phone: '0912345678',
+                    department: '機械工程系', grade: '大三', joinDate: '2024-02-15',
+                    skills: 'TIG 焊接、鋁合金加工',
+                    avatar: '😎', priority: 'medium',
                     createdAt: new Date(today.getTime() - 50*24*60*60*1000).toISOString()
                 },
                 {
-                    id: 'person3',
-                    category: '人員管理',
-                    isPerson: true,
-                    name: '張子佑',
-                    workTypes: '底盤,懸吊',
-                    email: 'zhang@nkust.edu.tw',
-                    avatar: '😎',
-                    priority: 'medium',
-                    createdAt: new Date(today.getTime() - 40*24*60*60*1000).toISOString()
+                    id: 'person4', category: '人員管理', isPerson: true,
+                    name: '楊政頡', position: '煞車系統負責人',
+                    workTypes: '煞車,懸吊',
+                    email: 'yang@nkust.edu.tw', phone: '0922334455',
+                    department: '車輛工程系', grade: '大三', joinDate: '2024-03-01',
+                    skills: 'Brembo 系統調校、液壓計算',
+                    avatar: '🔥', priority: 'medium',
+                    createdAt: new Date(today.getTime() - 45*24*60*60*1000).toISOString()
                 },
                 {
-                    id: 'person4',
-                    category: '人員管理',
-                    isPerson: true,
-                    name: '楊政頡',
-                    workTypes: '車體,煞車,懸吊',
-                    email: 'yang@nkust.edu.tw',
-                    avatar: '🔥',
-                    priority: 'medium',
-                    createdAt: new Date(today.getTime() - 35*24*60*60*1000).toISOString()
+                    id: 'person5', category: '人員管理', isPerson: true,
+                    name: '陳柏宇', position: '電裝負責人',
+                    workTypes: '電裝',
+                    email: 'chen@nkust.edu.tw', phone: '0933445566',
+                    department: '電機工程系', grade: '大二', joinDate: '2024-09-10',
+                    skills: 'Arduino、CAN Bus、ECU 調校',
+                    avatar: '⚡', priority: 'medium',
+                    createdAt: new Date(today.getTime() - 30*24*60*60*1000).toISOString()
                 },
                 {
-                    id: 'log1',
-                    category: '工作日誌',
-                    isWorklog: true,
+                    id: 'person6', category: '人員管理', isPerson: true,
+                    name: '吳品潔', position: '空力組員',
+                    workTypes: '空力',
+                    email: 'wu@nkust.edu.tw',
+                    department: '機械工程系', grade: '大二', joinDate: '2025-02-20',
+                    skills: 'CFD 模擬、ANSYS Fluent',
+                    avatar: '🌪️', priority: 'medium',
+                    createdAt: new Date(today.getTime() - 20*24*60*60*1000).toISOString()
+                },
+
+                // ── 工作日誌 ──────────────────────────────────────────
+                {
+                    id: 'log1', category: '工作日誌', isWorklog: true,
                     workType: '引擎',
-                    name: '引擎採購',
+                    name: '引擎採購與安裝',
                     progress: 60,
-                    startDate: '2026-04-15',
-                    endDate: '2026-07-01',
-                    notes: '比較 Honda CBR600RR vs Yamaha R6\n最終選定 R6\n已聯絡供應商，等待報價\n預算控制在 15 萬以內',
+                    startDate: '2026-04-15', endDate: '2026-07-01',
+                    notes: '比較 Honda CBR600RR vs Yamaha R6，最終選定 R6\n已聯絡供應商，等待報價\n預算控制在 15 萬以內',
                     priority: 'medium',
                     createdAt: new Date(today.getTime() - 17*24*60*60*1000).toISOString()
                 },
                 {
-                    id: 'log2',
-                    category: '工作日誌',
-                    isWorklog: true,
+                    id: 'log2', category: '工作日誌', isWorklog: true,
                     workType: '車體',
-                    name: '車架設計',
+                    name: '主車架設計與製造',
                     progress: 75,
-                    startDate: '2026-04-01',
-                    endDate: '2026-06-15',
+                    startDate: '2026-04-01', endDate: '2026-06-15',
                     notes: 'SolidWorks 建模完成 80%\n需進行 FEA 應力分析\n預計下週完成分析報告',
                     priority: 'medium',
                     createdAt: new Date(today.getTime() - 31*24*60*60*1000).toISOString()
                 },
                 {
-                    id: 'log3',
-                    category: '工作日誌',
-                    isWorklog: true,
+                    id: 'log3', category: '工作日誌', isWorklog: true,
                     workType: '懸吊',
                     name: '懸吊系統調校',
                     progress: 45,
-                    startDate: '2026-05-01',
-                    endDate: '2026-07-20',
+                    startDate: '2026-05-01', endDate: '2026-07-20',
                     notes: '完成基礎設定\n待實車測試後微調\nOhlins 避震器已到貨',
                     priority: 'medium',
-                    createdAt: new Date(today.getTime() - 1*24*60*60*1000).toISOString()
-                }
-            );
+                    createdAt: new Date(today.getTime() - 10*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'log4', category: '工作日誌', isWorklog: true,
+                    workType: '煞車',
+                    name: '煞車系統組裝',
+                    progress: 30,
+                    startDate: '2026-05-10', endDate: '2026-06-30',
+                    notes: '前後碟盤已採購完成\n卡鉗安裝待車架完工後進行\n煞車油選用 Castrol DOT5.1',
+                    priority: 'medium',
+                    createdAt: new Date(today.getTime() - 5*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'log5', category: '工作日誌', isWorklog: true,
+                    workType: '電裝',
+                    name: 'ECU 線路配置',
+                    progress: 20,
+                    startDate: '2026-05-15', endDate: '2026-08-01',
+                    notes: '線路圖設計中\n預計使用 MoTeC M150 ECU\n需完成感測器選型',
+                    priority: 'medium',
+                    createdAt: new Date(today.getTime() - 3*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'log6', category: '工作日誌', isWorklog: true,
+                    workType: '空力',
+                    name: '前定風翼設計',
+                    progress: 55,
+                    startDate: '2026-04-20', endDate: '2026-07-10',
+                    notes: 'CFD 模擬完成初版\n下壓力目標 80kg@200km/h\n碳纖維材料樣品已取得',
+                    priority: 'medium',
+                    createdAt: new Date(today.getTime() - 12*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'log7', category: '工作日誌', isWorklog: true,
+                    workType: '車體',
+                    name: '座艙人體工學調整',
+                    progress: 90,
+                    startDate: '2026-03-15', endDate: '2026-05-20',
+                    notes: '已完成三位車手坐姿測量\n方向盤角度與踏板位置確定\n安全帶掛點強度驗證通過',
+                    priority: 'medium',
+                    createdAt: new Date(today.getTime() - 20*24*60*60*1000).toISOString()
+                },
 
-            saveData();
+                // ── 計畫 ──────────────────────────────────────────────
+                {
+                    id: 'plan1', category: '計畫', isPlan: true,
+                    name: '2026 賽季整體計畫',
+                    url: 'https://www.fsaeta.org/',
+                    content: '本賽季目標：完成完整賽車設計製造，參加台灣方程式賽車大賽（FSAETA）。重點項目包括動力系統優化、底盤剛性提升、空力套件開發，預計於 2026 年 10 月完成整車測試。',
+                    tag: '整體規劃',
+                    order: 1, priority: 'medium',
+                    createdAt: new Date(today.getTime() - 80*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'plan2', category: '計畫', isPlan: true,
+                    name: '引擎動力升級方案',
+                    url: '',
+                    content: '評估更換高性能凸輪軸與進排氣系統，目標提升馬力 15%。同步進行 ECU 重新映射，搭配新進氣歧管改善扭力輸出曲線。',
+                    tag: '引擎',
+                    order: 2, priority: 'medium',
+                    createdAt: new Date(today.getTime() - 40*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'plan3', category: '計畫', isPlan: true,
+                    name: '輕量化工程計畫',
+                    url: '',
+                    content: '目標整車減重 8kg。採用碳纖維車身覆蓋件、鈦合金螺絲，以及鏤空設計的非承載件。完成後預計整車重量低於 180kg（含車手）。',
+                    tag: '車體',
+                    order: 3, priority: 'medium',
+                    createdAt: new Date(today.getTime() - 25*24*60*60*1000).toISOString()
+                },
+
+                // ── 賽事資訊 ──────────────────────────────────────────
+                {
+                    id: 'event1', category: '賽事資訊', isPlan: true,
+                    name: 'FSAETA 2026 方程式賽車大賽',
+                    url: 'https://www.fsaeta.org/',
+                    content: '台灣最大學生方程式賽車競賽，設有靜態審查（設計報告、成本報告、商業計畫）與動態競賽（直線加速、8字繞錐、耐久賽）等項目。',
+                    location: '台灣賽車公園，龍潭',
+                    eventDate: '2026-11-15',
+                    tag: '國內賽事',
+                    priority: 'high',
+                    createdAt: new Date(today.getTime() - 60*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'event2', category: '賽事資訊', isPlan: true,
+                    name: '2026 期末成果發表',
+                    url: '',
+                    content: '學校內部成果展示，邀請業界評審與教師參觀，展示本學年設計製造進度與技術文件。',
+                    location: '國立高雄科技大學 建工校區',
+                    eventDate: '2026-06-20',
+                    tag: '學校活動',
+                    priority: 'medium',
+                    createdAt: new Date(today.getTime() - 15*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'event3', category: '賽事資訊', isPlan: true,
+                    name: '賽車技術研討會',
+                    url: '',
+                    content: '由台灣機械工程學會主辦，邀請各大學賽車隊分享技術經驗，包含 CFD 分析、輕量化材料應用等主題。',
+                    location: '台北國際會議中心',
+                    eventDate: '2026-08-05',
+                    tag: '研討會',
+                    priority: 'low',
+                    createdAt: new Date(today.getTime() - 5*24*60*60*1000).toISOString()
+                },
+
+                // ── 零件供應商 ────────────────────────────────────────
+                {
+                    id: 'part1', category: '零件供應商',
+                    name: '台灣鋁業股份有限公司',
+                    url: 'https://www.aluminium.com.tw',
+                    partCategories: '車體,懸吊',
+                    tag: '車體,懸吊',
+                    price: '依規格報價',
+                    priority: 'high',
+                    description: '提供 7075-T6 航太鋁合金板材與型材，供應車架與懸吊臂製作。最小訂購量 5kg，交期 7 個工作天。',
+                    createdAt: new Date(today.getTime() - 30*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'part2', category: '零件供應商',
+                    name: 'Brembo 台灣代理商',
+                    url: 'https://www.brembo.com',
+                    partCategories: '煞車',
+                    tag: '煞車',
+                    price: 'NT$ 45,000 / 套',
+                    priority: 'high',
+                    description: '義大利 Brembo 賽用煞車系統，含前後對四卡鉗、浮動碟盤。提供學生賽車隊折扣優惠。',
+                    createdAt: new Date(today.getTime() - 25*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'part3', category: '零件供應商',
+                    name: 'Ohlins 避震器台灣總代理',
+                    url: 'https://www.ohlins.com',
+                    partCategories: '懸吊',
+                    tag: '懸吊',
+                    price: 'NT$ 38,000 / 對',
+                    priority: 'medium',
+                    description: '瑞典 Ohlins TTX GP 系列避震器，可調阻尼與預載，適合學生方程式賽車使用。',
+                    createdAt: new Date(today.getTime() - 20*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'part4', category: '零件供應商',
+                    name: 'MoTeC 亞太授權經銷商',
+                    url: 'https://www.motec.com.au',
+                    partCategories: '電裝',
+                    tag: '電裝',
+                    price: 'NT$ 85,000 / 套',
+                    priority: 'medium',
+                    description: '澳洲 MoTeC M150 ECU 及 ADL3 數據記錄儀，提供完整賽車電子控制解決方案，支援 CAN Bus 擴充。',
+                    createdAt: new Date(today.getTime() - 15*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'part5', category: '零件供應商',
+                    name: '瑞聖碳纖維科技',
+                    url: '',
+                    partCategories: '空力,車體',
+                    tag: '空力,車體',
+                    price: '依面積報價',
+                    priority: 'low',
+                    description: '台灣本土碳纖維複合材料廠商，可客製化製作空力套件、車身板件。提供 2x2 Twill 及 UD 碳纖維選項。',
+                    createdAt: new Date(today.getTime() - 10*24*60*60*1000).toISOString()
+                },
+
+                // ── 工程工具 ──────────────────────────────────────────
+                {
+                    id: 'tool1', category: '工程工具',
+                    name: 'SolidWorks 2024',
+                    url: 'https://www.solidworks.com',
+                    tag: '3D 設計',
+                    priority: 'high',
+                    description: '主要 3D CAD 設計軟體，用於車架、懸吊幾何、空力套件建模。學校提供教育授權，支援 FEA 應力分析模組。',
+                    createdAt: new Date(today.getTime() - 90*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'tool2', category: '工程工具',
+                    name: 'ANSYS Fluent',
+                    url: 'https://www.ansys.com',
+                    tag: 'CFD 模擬',
+                    priority: 'high',
+                    description: '計算流體力學模擬軟體，用於空力套件下壓力分析與冷卻系統設計。需搭配高效能工作站執行。',
+                    createdAt: new Date(today.getTime() - 80*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'tool3', category: '工程工具',
+                    name: 'OptimumLap',
+                    url: 'https://www.optimumg.com/software/optimumlap/',
+                    tag: '賽車模擬',
+                    priority: 'medium',
+                    description: '車輛動力學與圈速模擬工具，可輸入賽道地圖與車輛參數，預測圈速並優化車輛調校方向。',
+                    createdAt: new Date(today.getTime() - 40*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'tool4', category: '工程工具',
+                    name: 'MathWorks MATLAB',
+                    url: 'https://www.mathworks.com',
+                    tag: '數值計算',
+                    priority: 'medium',
+                    description: '用於懸吊幾何計算、動力傳動分析、資料後處理。搭配 Simulink 進行控制系統模擬。',
+                    createdAt: new Date(today.getTime() - 60*24*60*60*1000).toISOString()
+                },
+
+                // ── 學習資源 ──────────────────────────────────────────
+                {
+                    id: 'learn1', category: '學習資源',
+                    name: 'Formula SAE Design Guides',
+                    url: 'https://www.sae.org/attend/student-events/formula-sae-electric/resources',
+                    tag: '官方文件',
+                    learnFields: '車體,懸吊',
+                    priority: 'high',
+                    description: 'SAE International 官方提供的學生方程式賽車設計指南，包含規則說明、設計建議與歷屆優秀作品分析。',
+                    createdAt: new Date(today.getTime() - 50*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'learn2', category: '學習資源',
+                    name: 'Carroll Smith 賽車工程系列書籍',
+                    url: 'https://www.amazon.com/s?k=carroll+smith+racing',
+                    tag: '書籍',
+                    learnFields: '懸吊,車體,煞車',
+                    priority: 'high',
+                    description: '《Tune to Win》、《Engineer to Win》等經典賽車工程書籍，涵蓋懸吊設定、煞車系統、材料選擇等核心知識。',
+                    createdAt: new Date(today.getTime() - 45*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'learn3', category: '學習資源',
+                    name: 'YouTube: Driver61 賽車物理頻道',
+                    url: 'https://www.youtube.com/@Driver61',
+                    tag: '影片教學',
+                    learnFields: '空力,懸吊',
+                    priority: 'medium',
+                    description: '專業賽車物理與技術分析頻道，以動畫與實例解說空力原理、輪胎特性、圈速優化技巧，適合工程與駕駛學習。',
+                    createdAt: new Date(today.getTime() - 20*24*60*60*1000).toISOString()
+                },
+                {
+                    id: 'learn4', category: '學習資源',
+                    name: 'GrabCAD 賽車模型庫',
+                    url: 'https://grabcad.com/library?query=formula+student',
+                    tag: '3D 模型',
+                    learnFields: '車體,引擎',
+                    priority: 'low',
+                    description: '開源 3D 模型共享平台，可下載歷屆 Formula Student 賽車模型作為設計參考。格式支援 SolidWorks、STEP、IGES。',
+                    createdAt: new Date(today.getTime() - 10*24*60*60*1000).toISOString()
+                }
+            ];
+
+            samples.forEach(item => {
+                if (!existingIds.has(item.id)) resources.push(item);
+            });
         }
 
         function toggleTheme() {
@@ -2579,7 +2826,9 @@
             const btn = document.getElementById('themeBtn');
             if (!btn) return;
             const isDark = document.body.getAttribute('data-theme') === 'dark';
-            btn.innerHTML = isDark ? '☀️ 日間' : '🌙 夜間';
+            btn.innerHTML = isDark
+                ? '☀️<span class="pill-label"> 日間</span>'
+                : '🌙<span class="pill-label"> 夜間</span>';
         }
 
         function toggleSearch() {
@@ -2663,34 +2912,174 @@
         }
 
         function initializeLearningResources() {
-            const t = Date.now();
             const learningResources = [
-                // ── 學習資源 ──────────────────────────────────
-                { id:`res_${t}_1`,  category:'學習資源', name:'台灣 FS 官網 - SES 文件審查',       url:'https://www.fstaiwan.net/3-ses-document-review',                                                                                                                                                                                         tag:'手冊', priority:'high',   description:'Formula Student Taiwan 官方 SES（結構等效性檢查）文件審查說明', learnFields:'通用' },
-                { id:`res_${t}_2`,  category:'學習資源', name:'FSAEOnline 官方文件資源',             url:'https://www.fsaeonline.com/cdsweb/gen/documentresources.aspx',                                                                                                                                                                              tag:'手冊', priority:'high',   description:'FSAE 官方線上文件資源中心，含規則、技術文件、表格',             learnFields:'通用' },
-                { id:`res_${t}_4`,  category:'學習資源', name:'JSAE Formula 2025 數位手冊',          url:'https://digitalbook.jsae.or.jp/library/books/fsaej2025/book/?_gl=1*47e67o*_ga*ODI0MDY0MTY3LjE2ODUzNjc0MjA.*_ga_TPEZ3HK0HG*czE3NzUyMjI3NDMkbzg4JGcxJHQxNzc1MjIyNzU5JGo0NCRsMCRoMA..#target/page_no=1',                              tag:'手冊', priority:'high',   description:'2025 年日本賽事官方完整規則與技術規範數位版',                   learnFields:'通用' },
-                { id:`res_${t}_14`, category:'學習資源', name:'Learn And Compete - FSAE 入門手冊',  url:'https://www.scribd.com/document/511418795/Learn-And-Compete-A-Primer-For-Formula-SAE',                                                                                                                                                     tag:'書籍', priority:'high',   description:'適合新手的 Formula SAE 完整入門指南',                          learnFields:'通用' },
-                { id:`res_${t}_15`, category:'學習資源', name:'Race Car Design - Derek Seward',      url:'https://www.scribd.com/document/868117502/pdfcoffee-com-race-car-design-by-derek-seward-2-pdf-free',                                                                                                                                        tag:'書籍', priority:'high',   description:'Formula Student 必讀賽車設計經典教材',                         learnFields:'車體,懸吊' },
-                { id:`res_${t}_16`, category:'學習資源', name:'FSAE 概念與客觀設計',                 url:'https://www.designjudges.com/articles/conceptual-and-objective-design-in-fsae',                                                                                                                                                              tag:'其他', priority:'high',   description:'資深 Design Judge 解析 FSAE 概念設計與客觀設計思維',           learnFields:'通用' },
-                { id:`res_${t}_17`, category:'學習資源', name:'FSAE TO WIN',                         url:'https://xxkizashi.github.io/FSAE_TO_WIN/',                                                                                                                                                                                                  tag:'其他', priority:'high',   description:'綜合 FSAE 設計理論、計算工具、技術文章資源站',                 learnFields:'通用' },
-                // 贊助商
-                { id:`res_${t}_5`,  category:'學習資源', name:'Realis Simulation 學術贊助申請',      url:'https://www.realis-simulation.com/zh/support/academia/formula-sae-grant-request/',                                                                                                                                                           tag:'其他', priority:'medium', description:'Realis 模擬軟體 FSAE 學術贊助計畫（支援中文）',                 learnFields:'通用' },
-                { id:`res_${t}_6`,  category:'學習資源', name:'Altair 技術贊助申請',                 url:'https://altair.com/technology-sponsorship-request',                                                                                                                                                                                         tag:'其他', priority:'medium', description:'Altair HyperWorks / SimSolid 工程模擬軟體贊助申請',            learnFields:'通用' },
-                { id:`res_${t}_7`,  category:'學習資源', name:'ANSYS 學生車隊計畫',                  url:'https://www.ansys.com/academic/students/student-teams',                                                                                                                                                                                      tag:'其他', priority:'medium', description:'ANSYS 針對學生競賽團隊提供軟體授權與技術支援',                  learnFields:'通用' },
-                { id:`res_${t}_8`,  category:'學習資源', name:'MATLAB 學術競賽支持',                 url:'https://jp.mathworks.com/academia/student-competitions/formula-student-michigan.html',                                                                                                                                                       tag:'其他', priority:'medium', description:'MathWorks MATLAB / Simulink Formula Student 學術支援資源',      learnFields:'通用' },
-                // ── 零件供應商 ────────────────────────────────
-                { id:`res_${t}_9`,  category:'零件供應商', name:'OZ Racing - FSAE 輪圈',             url:'https://www.ozracing.com/motorsport/formula-student/wheels',                                                                                                                                                                                 partCategories:'懸吊', tag:'懸吊', priority:'high',   description:'義大利 OZ Racing FSAE 競賽專用輕量化輪圈' },
-                { id:`res_${t}_10`, category:'零件供應商', name:'Keizer Wheels - FSAE',              url:'https://keizerwheels.com/product-category/fsae/',                                                                                                                                                                                           partCategories:'懸吊', tag:'懸吊', priority:'high',   description:'Keizer 鋁合金 FSAE 競賽輪圈系列' },
-                { id:`res_${t}_11`, category:'零件供應商', name:'Enkei SF-01 規格書',                url:'https://www.enkei.co.jp/upload/product/wheels/_2512_SF-01_web_02.pdf',                                                                                                                                                                      partCategories:'懸吊', tag:'懸吊', priority:'medium', description:'Enkei SF-01 輪圈日本原廠技術規格 PDF' },
-                { id:`res_${t}_12`, category:'零件供應商', name:'Hoosier Tire - FSAE',               url:'https://www.hoosiertirewest.com/categories/circuit-racing-road-course-rally/formula-student-fsae.html',                                                                                                                                     partCategories:'懸吊', tag:'懸吊', priority:'high',   description:'Hoosier Racing Tire FSAE 專用賽車輪胎系列' },
-                { id:`res_${t}_13`, category:'零件供應商', name:'GY Racing - FSAE 產品',             url:'https://gyracing.com.au/product-category/fsae/',                                                                                                                                                                                            partCategories:'其他', tag:'其他', priority:'medium', description:'GY Racing 澳洲 FSAE 零件與配件供應商' },
-                // ── 賽事資訊 ──────────────────────────────────
-                { id:`res_${t}_3`,  category:'賽事資訊', isPlan:true, name:'JSAE 第23屆 ICV 官方公告', url:'https://www.jsae.or.jp/formula/past-result/23rd_official_announce_icvclass/', content:'日本第23屆全日本學生賽車大賽 ICV 組官方公告（JSAE）', tag:'已結束', priority:'high' }
+                // 官方文件與規則
+                {
+                    id: 'res_' + Date.now() + '_1',
+                    category: '學習資源',
+                    name: '台灣 FS 官網 - SES 文件審查',
+                    url: 'https://www.fstaiwan.net/3-ses-document-review',
+                    priority: '高',
+                    description: 'Formula Student Taiwan 官方文件審查說明',
+                    detailedContent: '台灣賽事官方網站，包含 SES（結構等效性檢查）文件審查相關資訊與規範。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_2',
+                    category: '學習資源',
+                    name: 'FSAEOnline 官方文件資源',
+                    url: 'https://www.fsaeonline.com/cdsweb/gen/documentresources.aspx',
+                    priority: '高',
+                    description: 'FSAE 官方線上文件資源中心',
+                    detailedContent: 'Formula SAE 官方網站的文件資源頁面，包含規則、技術文件、表格等。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_3',
+                    category: '賽事資訊',
+                    name: 'JSAE 官方公告 - 第23屆 ICV',
+                    url: 'https://www.jsae.or.jp/formula/past-result/23rd_official_announce_icvclass/',
+                    priority: '高',
+                    description: '日本第23屆全日本學生賽車大賽 ICV 組公告',
+                    detailedContent: '日本自動車技術會（JSAE）主辦的 Formula Student Japan 第23屆賽事 ICV 組官方公告。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_4',
+                    category: '學習資源',
+                    name: 'JSAE Formula 2025 數位手冊',
+                    url: 'https://digitalbook.jsae.or.jp/library/books/fsaej2025/book/?_gl=1*47e67o*_ga*ODI0MDY0MTY3LjE2ODUzNjc0MjA.*_ga_TPEZ3HK0HG*czE3NzUyMjI3NDMkbzg4JGcxJHQxNzc1MjIyNzU5JGo0NCRsMCRoMA..#target/page_no=1',
+                    priority: '高',
+                    description: '2025 年日本賽事官方數位手冊',
+                    detailedContent: 'JSAE Formula 2025 完整賽事規則與技術規範數位版。'
+                },
+                
+                // 贊助商申請
+                {
+                    id: 'res_' + Date.now() + '_5',
+                    category: '學習資源',
+                    name: 'Realis Simulation 學術贊助申請',
+                    url: 'https://www.realis-simulation.com/zh/support/academia/formula-sae-grant-request/',
+                    priority: '中',
+                    description: 'Realis 模擬軟體學術贊助計畫',
+                    detailedContent: 'Realis Simulation 提供給 Formula SAE 車隊的軟體贊助申請頁面，支援中文介面。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_6',
+                    category: '學習資源',
+                    name: 'Altair 技術贊助申請',
+                    url: 'https://altair.com/technology-sponsorship-request',
+                    priority: '中',
+                    description: 'Altair CAE 軟體技術贊助計畫',
+                    detailedContent: 'Altair 提供的技術贊助申請，包含 HyperWorks、SimSolid 等工程模擬軟體。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_7',
+                    category: '學習資源',
+                    name: 'ANSYS 學生車隊計畫',
+                    url: 'https://www.ansys.com/academic/students/student-teams',
+                    priority: '中',
+                    description: 'ANSYS 學生車隊支持計畫',
+                    detailedContent: 'ANSYS 針對學生競賽團隊提供的軟體授權與技術支援計畫。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_8',
+                    category: '學習資源',
+                    name: 'MATLAB 學術競賽支持',
+                    url: 'https://jp.mathworks.com/academia/student-competitions/formula-student-michigan.html',
+                    priority: '中',
+                    description: 'MathWorks Formula Student 支持計畫',
+                    detailedContent: 'MATLAB 和 Simulink 針對 Formula Student 車隊的學術支援資源。'
+                },
+                
+                // 零件供應商 - 輪圈
+                {
+                    id: 'res_' + Date.now() + '_9',
+                    category: '零件供應商',
+                    name: 'OZ Racing - Formula Student 輪圈',
+                    url: 'https://www.ozracing.com/motorsport/formula-student/wheels',
+                    priority: '高',
+                    description: 'OZ Racing Formula Student 專用輪圈',
+                    detailedContent: '義大利 OZ Racing 提供的 Formula Student 競賽輪圈產品線。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_10',
+                    category: '零件供應商',
+                    name: 'Keizer Wheels - FSAE',
+                    url: 'https://keizerwheels.com/product-category/fsae/',
+                    priority: '高',
+                    description: 'Keizer 鋁合金賽車輪圈 FSAE 系列',
+                    detailedContent: 'Keizer Wheels 專為 FSAE 設計的輕量化鋁合金輪圈。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_11',
+                    category: '零件供應商',
+                    name: 'Enkei SF-01 規格書',
+                    url: 'https://www.enkei.co.jp/upload/product/wheels/_2512_SF-01_web_02.pdf',
+                    priority: '中',
+                    description: 'Enkei SF-01 輪圈技術規格 PDF',
+                    detailedContent: 'Enkei 日本原廠 SF-01 輪圈詳細技術規格文件。'
+                },
+                
+                // 零件供應商 - 輪胎
+                {
+                    id: 'res_' + Date.now() + '_12',
+                    category: '零件供應商',
+                    name: 'Hoosier Tire - Formula Student/FSAE',
+                    url: 'https://www.hoosiertirewest.com/categories/circuit-racing-road-course-rally/formula-student-fsae.html',
+                    priority: '高',
+                    description: 'Hoosier 賽車輪胎 FSAE 系列',
+                    detailedContent: 'Hoosier Racing Tire 提供的 Formula Student/FSAE 專用賽車輪胎。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_13',
+                    category: '零件供應商',
+                    name: 'GY Racing - FSAE 產品',
+                    url: 'https://gyracing.com.au/product-category/fsae/',
+                    priority: '中',
+                    description: 'GY Racing 澳洲 FSAE 零件供應商',
+                    detailedContent: 'GY Racing 提供的 FSAE 相關零件與配件。'
+                },
+                
+                // 技術資源
+                {
+                    id: 'res_' + Date.now() + '_14',
+                    category: '學習資源',
+                    name: 'Learn And Compete - FSAE 入門手冊',
+                    url: 'https://www.scribd.com/document/511418795/Learn-And-Compete-A-Primer-For-Formula-SAE',
+                    priority: '高',
+                    description: 'FSAE 入門完整指南',
+                    detailedContent: '適合新手的 Formula SAE 入門手冊，涵蓋基本概念與競賽準備。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_15',
+                    category: '學習資源',
+                    name: 'Race Car Design by Derek Seward',
+                    url: 'https://www.scribd.com/document/868117502/pdfcoffee-com-race-car-design-by-derek-seward-2-pdf-free',
+                    priority: '高',
+                    description: '賽車設計經典教材',
+                    detailedContent: 'Derek Seward 的賽車設計教科書，Formula Student 必讀經典。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_16',
+                    category: '學習資源',
+                    name: 'FSAE 概念與客觀設計',
+                    url: 'https://www.designjudges.com/articles/conceptual-and-objective-design-in-fsae',
+                    priority: '高',
+                    description: 'Design Event 評審觀點文章',
+                    detailedContent: '來自資深 Design Judge 的文章，解釋如何在 FSAE 中進行概念設計與客觀設計。'
+                },
+                {
+                    id: 'res_' + Date.now() + '_17',
+                    category: '學習資源',
+                    name: 'FSAE TO WIN - 技術資源網站',
+                    url: 'https://xxkizashi.github.io/FSAE_TO_WIN/',
+                    priority: '高',
+                    description: '綜合性 FSAE 技術資源網站',
+                    detailedContent: '包含設計理論、計算工具、技術文章的綜合性 Formula SAE 技術資源網站。'
+                }
             ];
+            
             resources = learningResources;
             saveData();
         }
-
 
         function saveData() {
             localStorage.setItem('fsaeResources', JSON.stringify(resources));
@@ -2763,7 +3152,7 @@
                             <div class="wc-mid">${w.name || ''}</div>
                             <div class="wc-dates"><div>${startFmt}</div><div>${endFmt}</div></div>
                         `;
-                        card.onclick = () => editResource(w.id);
+                        card.onclick = () => showWorklogDetail(w.id);
                         col.appendChild(card);
                     });
                 }
@@ -2804,12 +3193,14 @@
                         const card = document.createElement('div');
                         card.className = 'worklog-col-card';
                         card.style.borderLeftColor = color;
-                        const priceText = p.price ? `$${p.price}` : '';
+                        const priceText = p.price ? p.price : '';
                         card.innerHTML = `
-                            <div class="wc-mid">${p.name || ''}</div>
-                            ${priceText ? `<div class="wc-dates"><div>${priceText}</div></div>` : ''}
+                            <div class="part-col-card">
+                                <div class="part-col-name">${p.name || ''}</div>
+                                ${priceText ? `<div class="part-col-price">${priceText}</div>` : ''}
+                            </div>
                         `;
-                        card.onclick = () => editResource(p.id);
+                        card.onclick = () => showResourceDetail(p.id);
                         col.appendChild(card);
                     });
                 }
@@ -3193,23 +3584,16 @@
             card.draggable = true;
             card.dataset.id = plan.id;
 
-            const hasManualImg = !!plan.image;
-            const hasUrl = !!plan.url;
-            const imageDivClass = hasManualImg ? 'plan-card-image has-manual-img'
-                                : hasUrl       ? 'plan-card-image no-img'
-                                               : 'plan-card-image no-img';
-
             const imageHTML = plan.image ? 
                 `<img src="${plan.image}" alt="${plan.name}">` : 
-                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">⛓️</span>`;
+                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">⛓️💥</span>`;
 
             card.innerHTML = `
                 <div class="plan-card-actions">
-                    <button class="icon-btn" onclick="togglePin('${plan.id}'); event.stopPropagation();" title="釘選">${plan.pinned ? '📍' : '📌'}</button>
                     <button class="icon-btn" onclick="editResource('${plan.id}'); event.stopPropagation();">✏️</button>
                     <button class="icon-btn" onclick="deleteResource('${plan.id}'); event.stopPropagation();">🗑️</button>
                 </div>
-                <div class="${imageDivClass}">${imageHTML}</div>
+                <div class="plan-card-image">${imageHTML}</div>
                 <div class="plan-card-content">
                     <div class="plan-card-header">
                         <div class="plan-card-title">${plan.name}</div>
@@ -3225,25 +3609,14 @@
                 </div>
             `;
 
-            const imageDiv = card.querySelector('.plan-card-image');
-
             // 沒有手動圖片但有 URL → 抓 og:image
             if (!plan.image && plan.url) {
                 const img = card.querySelector('.plan-og-img');
                 const placeholder = card.querySelector('.plan-img-placeholder');
-
-                const showOgImg = (url) => {
-                    img.onload = () => {
-                        img.style.display = 'block';
-                        if (placeholder) placeholder.style.display = 'none';
-                        imageDiv.classList.remove('no-img');
-                    };
-                    img.onerror = () => { /* 保留 placeholder */ };
-                    img.src = url;
-                };
-
                 if (ogImageCache[plan.url]) {
-                    showOgImg(ogImageCache[plan.url]);
+                    img.src = ogImageCache[plan.url];
+                    img.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
                 } else {
                     fetch(`https://api.microlink.io/?url=${encodeURIComponent(plan.url)}`)
                         .then(r => r.json())
@@ -3251,7 +3624,9 @@
                             const imgUrl = data?.data?.image?.url;
                             if (imgUrl && img) {
                                 ogImageCache[plan.url] = imgUrl;
-                                showOgImg(imgUrl);
+                                img.src = imgUrl;
+                                img.style.display = 'block';
+                                if (placeholder) placeholder.style.display = 'none';
                             }
                         })
                         .catch(() => {});
@@ -3473,11 +3848,11 @@
                                     ${person.otherInfo ? `<div class="person-detail-field"><div class="person-detail-label">其他資訊</div><div class="person-detail-value">${person.otherInfo}</div></div>` : ''}
                                 </div>
                             ` : ''}
-                            <div class="person-modal-bottom-actions">
-                                <button class="icon-btn" onclick="editResource('${person.id}'); closeWorklogDetail();" title="編輯">✏️ 編輯</button>
-                                <button class="icon-btn" onclick="deleteResourceFromDetail('${person.id}')" title="刪除">🗑️ 刪除</button>
-                            </div>
                         </div>
+                    </div>
+                    <div class="person-modal-bottom-actions">
+                        <button class="icon-btn" onclick="editResource('${person.id}'); closeWorklogDetail();" title="編輯">✏️ 編輯</button>
+                        <button class="icon-btn" onclick="deleteResourceFromDetail('${person.id}')" title="刪除">🗑️ 刪除</button>
                     </div>
                 </div>
             `;
@@ -3546,110 +3921,46 @@
             const priorityMap2 = {high: '重要', medium: '中等', low: '參考', '高': '重要', '中': '中等', '低': '參考'};
             const priorityText = priorityMap2[resource.priority] || resource.priority || '';
             const priorityCls = ({high: 'high', medium: 'medium', low: 'low', '高': 'high', '中': 'medium', '低': 'low'}[resource.priority]) || 'medium';
-            const cat = resource.category;
 
-            // 依分類組額外欄位 HTML
-            let extraFields = '';
-            let bottomEmbed = '';   // iframe / maps 放在內容下方
-
-            if (cat === '零件供應商') {
-                // 基本欄位列
-                if (resource.partCategories || resource.tag) extraFields += `<div class="plan-detail-field"><span class="detail-label">零件分類</span><span class="plan-card-tag">${resource.partCategories || resource.tag}</span></div>`;
-                if (resource.price)    extraFields += `<div class="plan-detail-field"><span class="detail-label">參考價格</span><span>${resource.price}</span></div>`;
-                if (resource.contact)  extraFields += `<div class="plan-detail-field"><span class="detail-label">聯絡人</span><span>👤 ${resource.contact}</span></div>`;
-                if (resource.phone)    extraFields += `<div class="plan-detail-field"><span class="detail-label">電話</span><a href="tel:${resource.phone}" style="color:var(--primary-orange);text-decoration:none;">📞 ${resource.phone}</a></div>`;
-
-                // Google Maps iframe（有地址才顯示）
-                if (resource.address) {
-                    const q = encodeURIComponent(resource.address);
-                    bottomEmbed += `
-                        <div class="part-detail-section">
-                            <div class="part-detail-section-title">📍 地圖</div>
-                            <iframe
-                                src="https://maps.google.com/maps?q=${q}&output=embed&hl=zh-TW"
-                                width="100%" height="220"
-                                style="border:0;border-radius:10px;margin-top:8px;"
-                                allowfullscreen loading="lazy">
-                            </iframe>
-                            <div style="margin-top:4px;font-size:12px;color:var(--text-secondary);">${resource.address}</div>
-                        </div>`;
-                }
-
-                // 網頁預覽 iframe
-                if (resource.url) {
-                    bottomEmbed += `
-                        <div class="part-detail-section">
-                            <div class="part-detail-section-title">🌐 網頁預覽</div>
-                            <div style="position:relative;padding-top:56.25%;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
-                                <iframe
-                                    src="${resource.url}"
-                                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
-                                    loading="lazy"
-                                    sandbox="allow-scripts allow-same-origin allow-popups">
-                                </iframe>
-                            </div>
-                            <div style="margin-top:6px;text-align:right;">
-                                <a href="${resource.url}" target="_blank" style="color:var(--primary-orange);font-size:13px;">↗ 在新頁籤開啟</a>
-                            </div>
-                        </div>`;
-                }
-
-            } else if (cat === '學習資源') {
-                if (resource.tag) extraFields += `<div class="plan-detail-field"><span class="detail-label">類型</span><span class="plan-card-tag">${resource.tag}</span></div>`;
-                if (resource.learnFields) extraFields += `<div class="plan-detail-field"><span class="detail-label">適用領域</span><span>${resource.learnFields}</span></div>`;
-            } else if (cat === '賽事資訊') {
-                if (resource.tag) extraFields += `<div class="plan-detail-field"><span class="detail-label">狀態</span><span class="plan-card-tag">${resource.tag}</span></div>`;
-                if (resource.eventDate) extraFields += `<div class="plan-detail-field"><span class="detail-label">日期</span><span>${resource.eventDate}</span></div>`;
-                if (resource.location) extraFields += `<div class="plan-detail-field"><span class="detail-label">地點</span><span>${resource.location}</span></div>`;
-            }
-
-            // og:image preview（非零件商才顯示，零件商改用 iframe）
-            const imgSrc = cat !== '零件供應商' ? (resource.image || ogImageCache[resource.url] || '') : '';
-            const imgHTML = imgSrc ? `<div style="margin-bottom:16px;border-radius:10px;overflow:hidden;"><img src="${imgSrc}" style="width:100%;height:auto;display:block;"></div>` : '';
+            // Part categories as tags
+            const partCatTags = (resource.partCategories || '')
+                .split(',').map(s => s.trim()).filter(Boolean)
+                .map(c => `<span class="priority-badge priority-medium" style="background:${workTypeColors[c]||'var(--bg-secondary)'}; color:#fff; border:none;">${c}</span>`)
+                .join(' ');
 
             document.getElementById('worklogDetailContent').innerHTML = `
                 <div class="plan-detail-modal">
                     <div class="plan-detail-content">
-                        ${imgHTML}
                         <div class="plan-detail-header">
                             <div class="plan-detail-title">${resource.name}</div>
                             <div class="plan-detail-meta">
                                 ${priorityText ? `<span class="priority-badge priority-${priorityCls}">${priorityText}</span>` : ''}
-                                <span>${cat}</span>
+                                ${partCatTags}
                             </div>
                         </div>
-                        ${extraFields}
-                        ${resource.url && cat !== '零件供應商' ? `
-                            <div style="margin:12px 0;">
-                                <a href="${resource.url}" target="_blank" style="color:var(--primary-orange);text-decoration:none;word-break:break-all;">🔗 ${resource.url}</a>
+                        ${resource.price ? `
+                            <div style="font-size:15px; font-weight:700; color:var(--primary-orange); margin-bottom:12px;">💰 ${resource.price}</div>
+                        ` : ''}
+                        ${resource.url ? `
+                            <div style="margin-bottom: 16px;">
+                                <a href="${resource.url}" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-size:13px; word-break:break-all;">
+                                    🔗 ${resource.url}
+                                </a>
                             </div>
                         ` : ''}
-                        ${resource.description ? `<div style="font-size:15px;color:var(--text-secondary);margin-bottom:12px;">${resource.description}</div>` : ''}
-                        ${resource.content ? `<div class="plan-detail-body">${resource.content}</div>` : ''}
-                        ${resource.detailedContent ? `<div class="plan-detail-body">${resource.detailedContent}</div>` : ''}
-                        ${bottomEmbed}
+                        ${resource.description ? `
+                            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; line-height:1.6;">${resource.description}</div>
+                        ` : ''}
+                        ${resource.detailedContent ? `
+                            <div class="plan-detail-body">${resource.detailedContent}</div>
+                        ` : ''}
                         <div class="plan-detail-actions">
-                            <button class="icon-btn" onclick="togglePin('${resource.id}'); closeWorklogDetail(); renderResources();" title="釘選">${resource.pinned ? '📍 取消釘選' : '📌 釘選'}</button>
-                            <button class="icon-btn" onclick="editResource('${resource.id}'); closeWorklogDetail();" title="編輯">✏️</button>
-                            <button class="icon-btn" onclick="deleteResourceFromDetail('${resource.id}')" title="刪除">🗑️</button>
+                            <button class="icon-btn" onclick="editResource('${resource.id}'); closeWorklogDetail();" title="編輯">✏️ 編輯</button>
+                            <button class="icon-btn" onclick="deleteResourceFromDetail('${resource.id}')" title="刪除">🗑️ 刪除</button>
                         </div>
                     </div>
                 </div>
             `;
-
-            // 如果還沒有 og:image 就非同步補
-            if (!imgSrc && resource.url) {
-                fetch(`https://api.microlink.io/?url=${encodeURIComponent(resource.url)}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        const url = data?.data?.image?.url;
-                        if (url) {
-                            ogImageCache[resource.url] = url;
-                            const wrap = document.querySelector('#worklogDetailContent img[data-og-placeholder]');
-                            if (wrap) { wrap.src = url; wrap.style.display = 'block'; }
-                        }
-                    }).catch(() => {});
-            }
 
             document.getElementById('worklogDetailModal').classList.add('show');
         }
@@ -3787,15 +4098,12 @@
         function editResource(id) {
             currentEditId = id;
             const resource = resources.find(r => r.id === id);
-            if (!resource) return;
             
             document.getElementById('modalTitle').textContent = '編輯';
             document.getElementById('formCategory').value = resource.category;
             toggleFormFields();
 
-            const cat = resource.category;
-
-            if (cat === '人員管理') {
+            if (resource.isPerson) {
                 document.getElementById('formPersonName').value = resource.name || '';
                 document.getElementById('formJoinDate').value = resource.joinDate || '';
                 document.getElementById('formEmail').value = resource.email || '';
@@ -3803,6 +4111,7 @@
                 document.getElementById('formSkills').value = resource.skills || '';
                 document.getElementById('formOtherInfo').value = resource.otherInfo || '';
                 
+                // Set checkboxes + sync pills
                 const types = resource.workTypes ? resource.workTypes.split(',').map(t => t.trim()) : [];
                 resetWorkTypePills();
                 document.querySelectorAll('.work-type-checkbox').forEach(cb => { cb.checked = types.includes(cb.value); });
@@ -3823,6 +4132,8 @@
                     setPillOption('formDepartment-pills', 'formDepartment', dept);
                     document.getElementById('formDepartmentOther').style.display = 'none';
                 }
+
+                // Update weekday
                 updateWeekday('formJoinDate', 'joinWeekday');
 
                 if (resource.avatar) {
@@ -3834,8 +4145,7 @@
                     }
                     currentAvatarData = resource.avatar;
                 }
-
-            } else if (cat === '工作日誌') {
+            } else if (resource.isWorklog) {
                 document.getElementById('formWorkType').value = resource.workType || '';
                 setPillOption('formWorkType-pills', 'formWorkType', resource.workType || '');
                 document.getElementById('formWorklogTitle').value = resource.name || '';
@@ -3843,75 +4153,55 @@
                 document.getElementById('formStartDate').value = resource.startDate || '';
                 document.getElementById('formEndDate').value = resource.endDate || '';
                 document.getElementById('formWorklogNotes').value = resource.notes || '';
+                
                 updateWeekday('formStartDate', 'startWeekday');
                 updateWeekday('formEndDate', 'endWeekday');
-
-            } else if (cat === '計畫') {
+            } else if (resource.isPlan) {
                 document.getElementById('formPlanTitle').value = resource.name || '';
                 document.getElementById('formPlanUrl').value = resource.url || '';
                 document.getElementById('formPlanContent').value = resource.content || '';
-                setPillOption('formPlanTag-pills', 'formPlanTag', resource.tag || '討論中');
+                document.getElementById('formPlanTag').value = resource.tag || '討論中';
+                
                 if (resource.image) {
                     currentPlanImageData = resource.image;
                     document.getElementById('planImagePreview').style.display = 'block';
                     document.getElementById('planImagePreviewImg').src = resource.image;
                 }
+                
                 if (resource.url) {
                     document.getElementById('planUrlInput').style.display = 'block';
                 }
-
-            } else if (cat === '賽事資訊') {
-                document.getElementById('formEventTitle').value = resource.name || '';
-                document.getElementById('formEventDesc').value = resource.content || resource.description || '';
-                document.getElementById('formEventDate').value = resource.eventDate || '';
-                document.getElementById('formEventLocation').value = resource.location || '';
-                setPillOption('formEventTag-pills', 'formEventTag', resource.tag || '即將到來');
-                setPillOption('formEventPriority-pills', 'formEventPriority', resource.priority || 'medium');
-                updateWeekday('formEventDate', 'eventWeekday');
-                if (resource.image) {
-                    currentEventImageData = resource.image;
-                    document.getElementById('eventImagePreview').style.display = 'block';
-                    document.getElementById('eventImagePreviewImg').src = resource.image;
-                }
-                if (resource.url) {
-                    document.getElementById('eventUrlInput').style.display = 'block';
-                    document.getElementById('formEventUrl').value = resource.url;
-                }
-
-            } else if (cat === '工程工具') {
+            } else if (resource.category === '工程工具') {
                 document.getElementById('formToolName').value = resource.name || '';
                 document.getElementById('formToolUrl').value = resource.url || '';
                 setPillOption('formToolType-pills', 'formToolType', resource.tag || '');
                 setPillOption('formToolPriority-pills', 'formToolPriority', resource.priority || 'medium');
                 document.getElementById('formToolDesc').value = resource.description || '';
-
-            } else if (cat === '零件供應商') {
+            } else if (resource.category === '零件供應商') {
                 document.getElementById('formPartName').value = resource.name || '';
                 document.getElementById('formPartUrl').value = resource.url || '';
                 setActivePills('partCategory-pills', resource.partCategories || resource.tag || '');
                 document.getElementById('formPartPrice').value = resource.price || '';
-                document.getElementById('formPartPhone').value = resource.phone || '';
-                document.getElementById('formPartContact').value = resource.contact || '';
-                document.getElementById('formPartAddress').value = resource.address || '';
                 setPillOption('formPartPriority-pills', 'formPartPriority', resource.priority || 'medium');
                 document.getElementById('formPartDesc').value = resource.description || '';
-
-            } else if (cat === '學習資源') {
+            } else if (resource.category === '學習資源') {
                 document.getElementById('formLearnName').value = resource.name || '';
                 document.getElementById('formLearnUrl').value = resource.url || '';
                 setPillOption('formLearnType-pills', 'formLearnType', resource.tag || '');
                 setActivePills('learnField-pills', resource.learnFields || '');
                 setPillOption('formLearnPriority-pills', 'formLearnPriority', resource.priority || 'medium');
                 document.getElementById('formLearnDesc').value = resource.description || '';
-
             } else {
-                document.getElementById('formName').value = resource.name || '';
+                document.getElementById('formName').value = resource.name;
                 document.getElementById('formUrl').value = resource.url || '';
-                document.getElementById('formDescription').value = resource.description || '';
+                document.getElementById('formPriority').value = resource.priority;
+                document.getElementById('formDescription').value = resource.description;
+                document.getElementById('formDetailedContent').value = resource.detailedContent || '';
             }
 
             document.getElementById('editModal').classList.add('show');
         }
+
         function closeModal() {
             document.getElementById('editModal').classList.remove('show');
             currentEditId = null;
@@ -4036,9 +4326,6 @@
                 resource.partCategories = getActivePills('partCategory-pills');
                 resource.tag = resource.partCategories;
                 resource.price = document.getElementById('formPartPrice').value;
-                resource.phone = document.getElementById('formPartPhone').value;
-                resource.contact = document.getElementById('formPartContact').value;
-                resource.address = document.getElementById('formPartAddress').value;
                 resource.priority = document.getElementById('formPartPriority').value;
                 resource.description = document.getElementById('formPartDesc').value;
             } else if (category === '學習資源') {
