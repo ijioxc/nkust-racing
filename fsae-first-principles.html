@@ -471,36 +471,26 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
-.gate-inner {
-  max-width: 520px; width: 100%;
-  display: flex; flex-direction: column; gap: 0;
+.gate-choices {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  max-width: 560px; width: 100%;
 }
-.gate-title {
-  font-size: 30px; font-weight: 900;
-  line-height: 1.2; letter-spacing: -0.02em;
-  color: var(--bg);
-  padding: 0 0 28px 0;
-}
-.gate-title em { font-style: normal; color: var(--red); }
-.gate-card {
-  background: var(--bg);
-  padding: 36px 40px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.65);
-}
-.gate-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .gate-choice {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
   letter-spacing: 0.1em; line-height: 1.7;
-  border: 1px solid var(--ink); padding: 20px 22px;
-  cursor: pointer; background: none; color: var(--ink);
-  text-align: left; transition: all 0.15s;
+  border: 1px solid rgba(244,239,230,0.4); padding: 28px 28px;
+  cursor: pointer; background: transparent; color: var(--bg);
+  text-align: left; transition: all 0.2s;
 }
-.gate-choice:hover { background: var(--ink); color: var(--bg); }
+.gate-choice:hover {
+  background: rgba(244,239,230,0.08);
+  border-color: rgba(244,239,230,0.85);
+}
 .gate-choice small {
-  display: block; font-size: 8.5px; letter-spacing: 0.2em;
-  color: var(--faint); margin-bottom: 6px;
+  display: block; font-size: 8.5px; letter-spacing: 0.22em;
+  color: rgba(244,239,230,0.4); margin-bottom: 10px;
 }
-.gate-choice:hover small { color: rgba(244,239,230,0.5); }
+.gate-choice:hover small { color: rgba(244,239,230,0.6); }
 
 /* ======================== WORK BADGE ======================== */
 #work-badge {
@@ -572,20 +562,15 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 <!-- ROLE GATE MODAL -->
 <div id="role-gate">
-  <div class="gate-inner">
-    <div class="gate-title">機械的<em>第一性原則</em><br>× 學生方程式</div>
-    <div class="gate-card">
-      <div class="gate-choices">
-        <button class="gate-choice" onclick="setRole('insider')">
-          <small>MEMBER · 內部人士</small>
-          直接進入<br>WORK →
-        </button>
-        <button class="gate-choice" onclick="setRole('newcomer')">
-          <small>NEWCOMER · 新人</small>
-          帶我了解框架<br>逐頁閱讀 →
-        </button>
-      </div>
-    </div>
+  <div class="gate-choices">
+    <button class="gate-choice" onclick="setRole('insider')">
+      <small>MEMBER · 內部人士</small>
+      直接進入<br>WORK →
+    </button>
+    <button class="gate-choice" onclick="setRole('newcomer')">
+      <small>NEWCOMER · 新人</small>
+      帶我了解框架<br>逐頁閱讀 →
+    </button>
   </div>
 </div>
 
