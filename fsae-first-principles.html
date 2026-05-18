@@ -33,21 +33,31 @@
 ::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 
 body {
-  background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: var(--bg);
+  background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
   font-family: 'Noto Serif TC', serif;
   color: var(--ink);
-  padding: 48px 20px 96px;
+  margin: 0;
+  padding: 0;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .sheet {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  min-height: 100vh;
   background: var(--bg);
-  padding: 56px 60px 48px;
-  box-shadow: 0 32px 96px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.08);
+  padding: 64px 80px 80px;
   border-top: 4px solid var(--red);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 60px rgba(0,0,0,0.03);
 }
+
+.sheet > #pages { flex: 1; }
 
 /* ======================== PAGINATION ======================== */
 .page { display: none; min-height: 500px; }
@@ -121,9 +131,10 @@ body {
   padding: 10px 24px;
   cursor: pointer;
   color: var(--ink);
-  transition: all 0.18s;
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.pager-btn:hover:not(:disabled) { background: var(--ink); color: var(--bg); }
+.pager-btn:hover:not(:disabled) { background: var(--ink); color: var(--bg); transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
 .pager-btn:disabled { opacity: 0.2; cursor: default; border-left-color: var(--rule); }
 
 /* ======================== SHARED ======================== */
@@ -211,12 +222,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .diag-q {
   background: var(--red-bg);
   border-left: 3px solid var(--red);
+  border-radius: 8px;
   padding: 28px 28px 24px;
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.diag-q:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,48,37,0.1); }
+.diag-q:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(184,48,37,0.15); border-color: #d13d31; }
 .q-big {
   font-family: 'Space Mono', monospace;
   font-size: 80px;
@@ -235,9 +247,10 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   background: var(--ink); color: var(--bg);
   padding: 28px 28px 24px;
   border-top: 3px solid var(--red);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.diag-black:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+.diag-black:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
 .db-label {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 9px;
@@ -266,12 +279,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .p-card {
   border: 1px solid var(--rule);
   border-top: 3px solid var(--red);
-  padding: 20px 16px;
+  padding: 24px 16px;
   background: white;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
 }
-.p-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.p-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(0,0,0,0.08); border-color: var(--red); }
 .p-num {
   font-family: 'Space Mono', monospace;
   font-size: 28px;
@@ -295,12 +309,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   font-size: 10px;
   color: var(--faint);
   line-height: 1.9;
-  padding: 10px 12px;
-  border-left: 1px solid var(--rule);
+  padding: 12px 14px;
+  border-left: 2px solid var(--rule);
   background: var(--red-bg);
-  transition: background 0.15s;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.p-fsae-item:hover { background: #f0e0de; }
+.p-fsae-item:hover { background: #f0e0de; transform: translateX(2px); border-left-color: var(--red); color: var(--ink); }
 .p-fsae-item::before {
   content: 'FSAE →';
   display: block;
@@ -426,13 +441,16 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   background: var(--blue-bg);
   border: 1px solid var(--blue);
   border-top: 3px solid var(--blue);
-  padding: 36px 36px;
+  border-radius: 12px;
+  padding: 40px 40px;
   margin-bottom: 32px;
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 40px;
+  gap: 48px;
   align-items: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.eq-block:hover { box-shadow: 0 16px 40px rgba(28,61,94,0.12); transform: translateY(-2px); }
 .eq-formula {
   font-family: 'Space Mono', monospace;
   font-size: 18px;
@@ -481,9 +499,12 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .vision-left {
   background: var(--ink);
   color: var(--bg);
-  padding: 36px 36px;
+  padding: 40px 40px;
   border-top: 3px solid var(--red);
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
+.vision-left:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.25); transform: translateY(-2px); }
 .vision-big {
   font-size: 26px;
   font-weight: 900;
@@ -498,9 +519,12 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .gold-box {
   background: var(--gold-bg);
   border-left: 3px solid var(--gold);
-  padding: 22px 24px;
+  border-radius: 8px;
+  padding: 24px 28px;
   flex: 1;
+  transition: all 0.3s ease;
 }
+.gold-box:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(138,102,16,0.1); }
 .gold-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 12px; }
 .gold-body  { font-size: 13px; line-height: 1.9; }
 .gold-body strong { color: var(--gold); }
@@ -508,8 +532,11 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .stack-box {
   background: var(--green-bg);
   border-left: 3px solid var(--green);
-  padding: 22px 24px;
+  border-radius: 8px;
+  padding: 24px 28px;
+  transition: all 0.3s ease;
 }
+.stack-box:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(42,107,56,0.1); }
 .stack-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--green); margin-bottom: 12px; }
 .stack-eq    { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; line-height: 2; color: var(--green); }
 .stack-eq-sub{ font-size: 10px; color: var(--faint); font-family: 'IBM Plex Mono', monospace; display: block; margin-top: -4px; margin-bottom: 10px; }
@@ -545,13 +572,19 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 /* ======================== ROLE GATE ======================== */
 #role-gate {
   position: fixed; inset: 0; z-index: 1000;
-  background: radial-gradient(ellipse at center, #1a0a08 0%, #111 60%, #0a0a0a 100%);
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
 .gate-inner {
   max-width: 560px; width: 100%;
   display: flex; flex-direction: column; gap: 28px;
+}
+@keyframes gateFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .gate-heading {
   font-size: 38px; font-weight: 900;
@@ -570,15 +603,18 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   font-family: 'IBM Plex Mono', monospace; font-size: 12px;
   letter-spacing: 0.1em; line-height: 1.7;
   border: 1px solid rgba(244,239,230,0.3); padding: 28px 28px;
-  cursor: pointer; background: transparent; color: var(--bg);
-  text-align: left; transition: all 0.2s;
+  cursor: pointer;
+  background: transparent;
+  color: var(--bg);
+  text-align: left; transition: all 0.2s ease;
   position: relative; overflow: hidden;
 }
 .gate-choice::before {
   content: '';
   position: absolute; left: 0; top: 0; bottom: 0;
-  width: 3px; background: var(--red);
-  transform: scaleY(0); transition: transform 0.2s ease;
+  width: 4px; background: var(--red);
+  transform: scaleY(0); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: bottom;
 }
 .gate-choice:hover {
   background: rgba(244,239,230,0.06);
@@ -588,8 +624,9 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .gate-choice small {
   display: block; font-size: 8.5px; letter-spacing: 0.22em;
   color: rgba(244,239,230,0.35); margin-bottom: 10px;
+  transition: color 0.3s;
 }
-.gate-choice:hover small { color: rgba(244,239,230,0.55); }
+.gate-choice:hover small { color: rgba(244,239,230,0.6); }
 
 /* ======================== WORK BADGE ======================== */
 #work-badge {
@@ -621,17 +658,60 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .nav-hint-l {
   left: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.07) 0%, transparent 100%);
+  background: linear-gradient(to right, rgba(0,0,0,0.06) 0%, transparent 100%);
 }
 .nav-hint-r {
   right: 0;
-  background: linear-gradient(to left, rgba(0,0,0,0.07) 0%, transparent 100%);
+  background: linear-gradient(to left, rgba(0,0,0,0.06) 0%, transparent 100%);
 }
 .nav-hint-r.work-ready {
   background: linear-gradient(to left, rgba(184,48,37,0.14) 0%, transparent 100%);
 }
 #btn-prev, #btn-next { display: none; }
 .pager-nav { justify-content: center; }
+
+/* ======================== NEXT PAGE HINT (P1 only) ======================== */
+@keyframes nudgeRight {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50%       { transform: translateX(8px); opacity: 1; }
+}
+#next-hint {
+  display: none;
+  position: fixed;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+#next-hint.show { display: flex; }
+#next-hint .nh-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--faint);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  animation: nudgeRight 2s ease-in-out infinite;
+}
+#next-hint .nh-arrow {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--rule);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  animation: nudgeRight 2s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+#next-hint .nh-arrow::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--red);
+  border-bottom: 2px solid var(--red);
+  transform: rotate(-45deg) translate(-2px, 2px);
+}
 
 /* ======================== P1 ROLE FALLBACK ======================== */
 #role-fallback {
@@ -655,9 +735,11 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .rf-btn:hover { background: var(--ink); color: var(--bg); }
 
 /* ======================== RESPONSIVE ======================== */
+@media (max-width: 1024px) {
+  .sheet { padding: 48px 48px 64px; }
+}
 @media (max-width: 768px) {
-  body { padding: 24px 12px 60px; }
-  .sheet { padding: 32px 24px 36px; }
+  .sheet { padding: 32px 24px 60px; }
   .main-title { font-size: 28px; }
   .diagnosis-grid, .vision-grid { grid-template-columns: 1fr; }
   .principles-row, .p-fsae-row   { grid-template-columns: repeat(2, 1fr); }
@@ -681,7 +763,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   .main-title  { font-size: 22px; }
   .principles-row, .p-fsae-row { grid-template-columns: 1fr; }
   .layers-grid { grid-template-columns: 1fr; }
-  .sheet       { padding: 24px 16px 28px; }
+  .sheet       { padding: 24px 16px 60px; }
   .gate-heading { font-size: 22px; }
 }
 </style>
@@ -691,6 +773,12 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 <!-- PAGE FLIP HINT OVERLAYS -->
 <div id="nav-left"  class="nav-hint nav-hint-l"></div>
 <div id="nav-right" class="nav-hint nav-hint-r"></div>
+
+<!-- NEXT PAGE ANIMATED HINT (shown on P1 after role selected) -->
+<div id="next-hint">
+  <div class="nh-label">繼續閱讀</div>
+  <div class="nh-arrow"></div>
+</div>
 
 <!-- ROLE GATE MODAL -->
 <div id="role-gate">
@@ -703,16 +791,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
       </button>
       <button class="gate-choice" onclick="setRole('newcomer')">
         <small>NEWCOMER · 新人</small>
-        帶我了解框架<br>逐頁閱讀 →
+        閱讀框架<br>READ →
       </button>
     </div>
   </div>
 </div>
 
 <div class="sheet">
-  <!-- INSIDER WORK BADGE -->
-  <button id="work-badge" onclick="window.location.href='nkust_racing.html'">▸ 進入 WORK</button>
-
   <div id="pages">
 
     <!-- ==================== PAGE 1 · 診斷 ==================== -->
@@ -720,7 +805,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
       <div class="header">
         <div>
           <div class="doc-tag">PHILOSOPHICAL FRAMEWORK · ENGINEERING SYSTEMS · V1.0</div>
-          <div class="main-title">機械的<em>第一性原則</em>危機<br>與學生方程式的重建路徑</div>
+          <div class="main-title">機械的<em>第一性原則</em><br>× 學生方程式</div>
           <div class="sub-title">First Principles of Mechanical Engineering × Formula Student as System Platform</div>
         </div>
         <div class="header-right">
@@ -1171,27 +1256,30 @@ var pageLabels = ['診斷', '五個原則', '系統分解樹', '四層工具棧'
 /* ── Role selection ── */
 function setRole(r) {
   role = r;
-  document.getElementById('role-gate').style.display    = 'none';
+  document.getElementById('role-gate').style.display = 'none';
   document.getElementById('role-fallback').classList.remove('show');
 
   if (r === 'insider') {
-    document.getElementById('work-badge').style.display = 'block';
-  } else {
-    // inject step-strip into each page
-    for (var i = 1; i <= N; i++) {
-      var pg    = document.getElementById('p' + i);
-      var strip = document.createElement('div');
-      strip.className = 'step-strip' + (i === cur ? ' show' : '');
-      strip.id        = 'strip' + i;
-      strip.innerHTML =
-        '<span>STEP ' + String(i).padStart(2,'0') + ' / 0' + N +
-        ' · ' + pageLabels[i - 1] + '</span>' +
-        '<div class="step-track"><div class="step-fill" style="width:' +
-        Math.round(i / N * 100) + '%"></div></div>';
-      var anchor = i === 1 ? pg.querySelector('.header') : pg.querySelector('.slim-header');
-      anchor.insertAdjacentElement('afterend', strip);
-    }
+    // Immediate redirect — no badge needed
+    window.location.href = 'nkust_racing.html';
+    return;
   }
+
+  // Newcomer: inject step-strips + show next-page hint on P1
+  for (var i = 1; i <= N; i++) {
+    var pg    = document.getElementById('p' + i);
+    var strip = document.createElement('div');
+    strip.className = 'step-strip' + (i === cur ? ' show' : '');
+    strip.id        = 'strip' + i;
+    strip.innerHTML =
+      '<span>STEP ' + String(i).padStart(2,'0') + ' / 0' + N +
+      ' · ' + pageLabels[i - 1] + '</span>' +
+      '<div class="step-track"><div class="step-fill" style="width:' +
+      Math.round(i / N * 100) + '%"></div></div>';
+    var anchor = i === 1 ? pg.querySelector('.header') : pg.querySelector('.slim-header');
+    anchor.insertAdjacentElement('afterend', strip);
+  }
+  document.getElementById('next-hint').classList.add('show');
   update();
 }
 
