@@ -471,16 +471,21 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
-.gate-card {
-  background: var(--bg);
+.gate-inner {
   max-width: 520px; width: 100%;
-  padding: 56px 60px 56px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.65);
+  display: flex; flex-direction: column; gap: 0;
 }
 .gate-title {
-  font-size: 28px; font-weight: 900;
+  font-size: 30px; font-weight: 900;
   line-height: 1.2; letter-spacing: -0.02em;
-  margin-bottom: 40px;
+  color: var(--bg);
+  padding: 0 0 28px 0;
+}
+.gate-title em { font-style: normal; color: var(--red); }
+.gate-card {
+  background: var(--bg);
+  padding: 36px 40px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.65);
 }
 .gate-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .gate-choice {
@@ -567,17 +572,19 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 <!-- ROLE GATE MODAL -->
 <div id="role-gate">
-  <div class="gate-card">
-    <div class="gate-title">機械第一性原則<br>× 學生方程式</div>
-    <div class="gate-choices">
-      <button class="gate-choice" onclick="setRole('insider')">
-        <small>MEMBER · 內部人士</small>
-        直接進入<br>WORK →
-      </button>
-      <button class="gate-choice" onclick="setRole('newcomer')">
-        <small>NEWCOMER · 新人</small>
-        帶我了解框架<br>逐頁閱讀 →
-      </button>
+  <div class="gate-inner">
+    <div class="gate-title">機械的<em>第一性原則</em><br>× 學生方程式</div>
+    <div class="gate-card">
+      <div class="gate-choices">
+        <button class="gate-choice" onclick="setRole('insider')">
+          <small>MEMBER · 內部人士</small>
+          直接進入<br>WORK →
+        </button>
+        <button class="gate-choice" onclick="setRole('newcomer')">
+          <small>NEWCOMER · 新人</small>
+          帶我了解框架<br>逐頁閱讀 →
+        </button>
+      </div>
     </div>
   </div>
 </div>
