@@ -33,35 +33,76 @@
 ::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 
 body {
-  background: var(--bg);
-  background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
-  font-family: 'Noto Serif TC', serif;
+  background: #f5f5f7;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(184, 48, 37, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(28, 61, 94, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(138, 102, 16, 0.05) 0%, transparent 60%);
+  background-attachment: fixed;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Serif TC", serif;
   color: var(--ink);
   margin: 0;
-  padding: 0;
+  padding: 40px;
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 .sheet {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: var(--bg);
-  padding: 64px 80px 80px;
-  border-top: 4px solid var(--red);
+  max-width: 1400px;
+  height: 85vh;
+  min-height: 720px;
+  max-height: 860px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(40px);
+  -webkit-backdrop-filter: saturate(180%) blur(40px);
+  padding: 56px 120px; /* Increased side padding to make room for arrows */
+  box-shadow: 0 40px 120px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.8) inset;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 40px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 60px rgba(0,0,0,0.03);
+  overflow: hidden;
+  position: relative;
 }
 
-.sheet > #pages { flex: 1; }
+.sheet::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+.side-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: all 0.3s ease;
+  opacity: 0.2;
+}
+.sheet:hover .side-nav { opacity: 0.8; }
+.side-nav:hover { background: rgba(0, 0, 0, 0.1); opacity: 1 !important; transform: translateY(-50%) scale(1.05); }
+.side-nav:disabled { opacity: 0 !important; cursor: default; }
+.side-nav-left { left: 24px; }
+.side-nav-right { right: 24px; }
+
+.sheet > #pages { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
 /* ======================== PAGINATION ======================== */
-.page { display: none; min-height: 500px; }
-.page.active { display: block; animation: fadeIn 0.28s ease; }
+.page { display: none; flex-direction: column; flex: 1; }
+.page.active { display: flex; animation: fadeIn 0.28s ease; }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -76,31 +117,29 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 18px;
-  margin-bottom: 36px;
-  border-bottom: 1px solid var(--rule);
+  padding-bottom: 24px;
+  margin-bottom: 40px;
 }
 .slim-doc {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
+  font-size: 14px;
   letter-spacing: 0.24em;
   color: var(--faint);
   text-transform: uppercase;
 }
 .slim-pg {
   font-family: 'Space Mono', monospace;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
 }
 
 .pager-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-top: 44px;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
+  margin-top: auto;
+  padding-top: 40px;
 }
 .pager-center { display: flex; align-items: center; gap: 16px; }
 .pager-dots   { display: flex; gap: 8px; align-items: center; }
@@ -117,13 +156,13 @@ body {
 .dot:hover:not(.active){ background: var(--faint); transform: scale(1.2); }
 .pager-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.12em;
   color: var(--faint);
 }
 .pager-btn {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.18em;
   background: none;
   border: 1px solid var(--ink);
@@ -140,7 +179,7 @@ body {
 /* ======================== SHARED ======================== */
 .label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--faint);
@@ -173,7 +212,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .doc-tag {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.25em;
   color: var(--faint);
   margin-bottom: 10px;
@@ -181,24 +220,26 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   align-items: center;
   gap: 8px;
 }
-.doc-tag::before { content: '●'; color: var(--red); font-size: 6px; }
+.doc-tag::before { content: '●'; color: var(--red); font-size: 9px; }
 .main-title {
-  font-size: 40px;
+  font-size: 64px;
   font-weight: 900;
-  line-height: 1.12;
-  letter-spacing: -0.03em;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
 }
 .main-title em { font-style: normal; color: var(--red); }
 .sub-title {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
+  font-size: 16px;
+  letter-spacing: 0.05em;
   color: var(--faint);
-  margin-top: 10px;
+  margin-top: 12px;
 }
 .header-right {
   text-align: right;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--faint);
   white-space: nowrap;
   display: flex;
@@ -216,219 +257,220 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .diagnosis-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 40px;
+  gap: 40px;
+  margin-bottom: 24px;
 }
 .diag-q {
-  background: var(--red-bg);
-  border-left: 3px solid var(--red);
-  border-radius: 8px;
-  padding: 28px 28px 24px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 32px;
+  padding: 56px 48px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.04);
 }
-.diag-q:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(184,48,37,0.15); border-color: #d13d31; }
+
 .q-big {
   font-family: 'Space Mono', monospace;
-  font-size: 80px;
+  font-size: 160px;
   color: var(--red);
-  opacity: 0.08;
-  line-height: 1;
+  opacity: 0.04;
+  line-height: 0.8;
   position: absolute;
-  top: 8px; right: 12px;
+  top: 0px; right: -10px;
   pointer-events: none; user-select: none;
 }
-.q-title { font-size: 15px; font-weight: 700; color: var(--red); margin-bottom: 12px; }
-.q-body  { font-size: 13px; line-height: 1.85; color: #3a3a3a; }
+.q-title { font-size: 22px; font-weight: 700; color: var(--red); margin-bottom: 16px; letter-spacing: -0.01em; }
+.q-body  { font-size: 17px; line-height: 1.8; color: #222; }
 .q-body em { font-style: italic; color: var(--faint); }
 
 .diag-black {
-  background: var(--ink); color: var(--bg);
-  padding: 28px 28px 24px;
-  border-top: 3px solid var(--red);
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(15, 15, 15, 0.85); 
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  color: var(--bg);
+  padding: 48px 40px 40px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  
 }
-.diag-black:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+
 .db-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
+  font-size: 14px;
   letter-spacing: 0.25em;
   color: var(--red);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
-.db-body    { font-size: 13px; line-height: 1.85; }
-.db-body em { font-style: italic; color: #aaa; }
+.db-body    { font-size: 17px; line-height: 1.8; color: rgba(255,255,255,0.9); }
+.db-body em { font-style: italic; color: rgba(255,255,255,0.5); }
 
 /* ======================== PAGE 2 — PRINCIPLES ======================== */
 .principles-intro {
-  font-size: 13px;
-  line-height: 1.85;
+  font-size: 18px;
+  line-height: 1.8;
   color: #555;
   font-style: italic;
   margin-bottom: 24px;
-  max-width: 700px;
+  max-width: 860px;
 }
 .principles-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 28px;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 .p-card {
-  border: 1px solid var(--rule);
-  border-top: 3px solid var(--red);
-  padding: 24px 16px;
-  background: white;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 32px;
+  padding: 40px 32px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.03);
   cursor: default;
 }
-.p-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(0,0,0,0.08); border-color: var(--red); }
+
 .p-num {
   font-family: 'Space Mono', monospace;
-  font-size: 28px;
+  font-size: 48px;
   font-weight: 700;
   color: var(--red);
-  opacity: 0.15;
+  opacity: 0.12;
   line-height: 1;
-  margin-bottom: 10px;
+  margin-bottom: 24px;
 }
-.p-title    { font-size: 13px; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
-.p-question { font-size: 11.5px; line-height: 1.7; color: var(--faint); font-style: italic; }
+.p-title    { font-size: 18px; font-weight: 700; line-height: 1.4; margin-bottom: 12px; letter-spacing: -0.01em;}
+.p-question { font-size: 15px; line-height: 1.7; color: var(--faint); font-style: italic; }
 
 .p-fsae-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 40px;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 .p-fsae-item {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 16px;
   color: var(--faint);
-  line-height: 1.9;
-  padding: 12px 14px;
-  border-left: 2px solid var(--rule);
-  background: var(--red-bg);
-  border-radius: 6px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1.8;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  background: rgba(245, 232, 230, 0.5);
+  backdrop-filter: blur(10px);
+  transition: background 0.3s, transform 0.3s;
 }
-.p-fsae-item:hover { background: #f0e0de; transform: translateX(2px); border-left-color: var(--red); color: var(--ink); }
+
 .p-fsae-item::before {
   content: 'FSAE →';
   display: block;
-  font-size: 8px;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  letter-spacing: 0.15em;
   color: var(--red);
-  opacity: 0.5;
-  margin-bottom: 4px;
+  opacity: 0.6;
+  margin-bottom: 6px;
 }
 
-/* ======================== PAGE 3 — TREE ======================== */
+/* ======================== PAGE 3 — TREE (REBORN AS APPLE GRID) ======================== */
 .tree-caption {
-  font-size: 12.5px;
-  color: var(--faint);
-  line-height: 1.75;
-  font-style: italic;
-  margin-bottom: 20px;
-  max-width: 720px;
-}
-.tree-container {
-  background: white;
-  border: 1px solid var(--rule);
-  padding: 28px 24px 24px;
-  overflow-x: auto;
-  margin-bottom: 18px;
-}
-.tree-legend {
-  display: flex;
-  gap: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.6;
   margin-bottom: 40px;
-  border: 1px solid var(--rule);
-  overflow: hidden;
+  text-align: center;
 }
-.legend-item {
-  flex: 1;
-  padding: 14px 16px;
-  border-right: 1px solid var(--rule);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  line-height: 1.7;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  transition: background 0.15s;
-}
-.legend-item:hover { background: rgba(0,0,0,0.02); }
-.legend-item:last-child { border-right: none; }
-.legend-swatch {
-  width: 8px; flex-shrink: 0; align-self: stretch;
-  border-radius: 2px; margin-top: 1px;
-}
-.legend-text { color: var(--faint); }
-.legend-text strong { font-weight: 600; }
+.tree-caption span { font-weight: 400; color: var(--faint); font-size: 16px; display: block; margin-top: 8px;}
 
-/* ======================== PAGE 4 — TOOL STACK ======================== */
-.layers-grid {
+.apple-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid var(--rule);
-  margin-bottom: 20px;
+  gap: 24px;
 }
-.layer-col {
-  padding: 24px 20px;
-  border-right: 1px solid var(--rule);
-  transition: background 0.2s ease;
+.apple-card {
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 32px;
+  padding: 40px 32px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  
 }
-.layer-col:last-child { border-right: none; }
-.c-ai:hover   { background: var(--gold-bg); }
-.c-vis:hover  { background: var(--grey-bg); }
-.c-phy:hover  { background: var(--red-bg); }
-.c-iter:hover { background: var(--green-bg); }
-.layer-tag {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  font-weight: 600;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid;
-  line-height: 1.6;
-}
-.c-ai   .layer-tag { color: var(--gold);  border-color: var(--gold); }
-.c-vis  .layer-tag { color: var(--grey);  border-color: var(--grey); }
-.c-phy  .layer-tag { color: var(--red);   border-color: var(--red);  }
-.c-iter .layer-tag { color: var(--green); border-color: var(--green);}
 
-.layer-item {
-  font-size: 12px;
-  line-height: 2.15;
+.ac-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
+.ac-subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; margin-bottom: 40px; }
+.ac-list { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.ac-item { font-size: 17px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;}
+.ac-item:last-child { border-bottom: none; padding-bottom: 0; }
+.ac-tag { font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 8px; color: rgba(255,255,255,0.9); }
+.ac-footer { font-size: 16px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-top: 40px; padding-top: 24px; border-top: 1px dashed rgba(255,255,255,0.15); }
+
+/* ======================== PAGE 4 — TOOL STACK (APPLE ARCHITECTURE) ======================== */
+.stack-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stack-slab {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 32px;
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.03);
+}
+.slab-left { flex: 0 0 280px; }
+.slab-tag { font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.15em; font-weight: 700; margin-bottom: 8px; }
+.slab-title { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
+.slab-right { flex: 1; display: flex; flex-wrap: wrap; gap: 12px; }
+.slab-item {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 40px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--ink);
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
-.layer-item::before {
-  content: '—';
-  color: var(--rule);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-}
+.slab-item::before { content: ''; width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.s-ai .slab-tag { color: var(--gold); }
+.s-ai .slab-item::before { background: var(--gold); }
+.s-vis .slab-tag { color: var(--faint); }
+.s-vis .slab-item::before { background: var(--faint); }
+.s-phy .slab-tag { color: var(--red); }
+.s-phy .slab-item::before { background: var(--red); }
+.s-iter .slab-tag { color: var(--green); }
+.s-iter .slab-item::before { background: var(--green); }
 
 .stack-note {
   background: var(--ink);
   color: var(--bg);
   padding: 22px 28px;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.85;
   margin-bottom: 40px;
   border-left: 4px solid var(--red);
 }
 .stack-note-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   color: var(--red);
   display: block;
@@ -438,109 +480,123 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 /* ======================== PAGE 5 — EQUATION & TABLE ======================== */
 .eq-block {
-  background: var(--blue-bg);
-  border: 1px solid var(--blue);
-  border-top: 3px solid var(--blue);
-  border-radius: 12px;
-  padding: 40px 40px;
-  margin-bottom: 32px;
+  background: rgba(226, 234, 242, 0.7);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32px;
+  padding: 56px;
+  margin-bottom: 24px;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 48px;
   align-items: center;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 40px rgba(28,61,94,0.05);
 }
-.eq-block:hover { box-shadow: 0 16px 40px rgba(28,61,94,0.12); transform: translateY(-2px); }
 .eq-formula {
   font-family: 'Space Mono', monospace;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--blue);
   line-height: 2;
   white-space: nowrap;
-  text-shadow: 0 0 20px rgba(28,61,94,0.15);
 }
-.eq-formula + .eq-formula { margin-top: 14px; }
-.eq-sub { font-size: 10px; color: #888; font-weight: 400; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
-.eq-explain { font-size: 13px; line-height: 1.9; }
+.eq-formula + .eq-formula { margin-top: 16px; }
+.eq-sub { font-size: 14px; color: #888; font-weight: 400; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; }
+.eq-explain { font-size: 18px; line-height: 1.8; color: #222;}
 .eq-explain strong { color: var(--blue); }
 
 .compare-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;
   margin-bottom: 40px;
-  font-size: 13px;
+  font-size: 16px;
 }
-.compare-table thead tr { background: var(--blue); color: var(--bg); }
 .compare-table thead th {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  padding: 14px 16px;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  padding: 0 24px 16px;
   text-align: left;
-  font-weight: 400;
+  font-weight: 600;
+  color: var(--faint);
+  border: none;
 }
-.compare-table tbody tr     { border-bottom: 1px solid var(--rule); }
-.compare-table tbody tr:nth-child(odd) { background: white; }
-.compare-table tbody tr:hover { background: var(--blue-bg); }
-.compare-table tbody td     { padding: 12px 16px; vertical-align: top; line-height: 1.65; transition: background 0.15s; }
+.compare-table tbody tr { 
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+}
+.compare-table tbody td {
+  padding: 24px;
+  border: none;
+}
+.compare-table tbody td:first-child { border-radius: 16px 0 0 16px; font-weight: 700; color: var(--ink); }
+.compare-table tbody td:last-child { border-radius: 0 16px 16px 0; }
+.compare-table tbody tr td:nth-child(2) { color: var(--faint); }
+.compare-table tbody tr td:nth-child(3) { color: var(--blue); font-weight: 600; }
 .col-dim { font-weight: 700; }
 .col-old { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--red); }
 .col-new { color: var(--blue); font-weight: 700; }
-.col-p   { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--red); letter-spacing: 0.1em; font-weight: 700; }
+.col-p   { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--red); letter-spacing: 0.1em; font-weight: 700; }
 
 /* ======================== PAGE 6 — VISION ======================== */
 .vision-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 40px;
+  gap: 32px;
+  margin-bottom: 56px;
 }
 .vision-left {
-  background: var(--ink);
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
   color: var(--bg);
-  padding: 40px 40px;
-  border-top: 3px solid var(--red);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  padding: 56px 48px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
-.vision-left:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.25); transform: translateY(-2px); }
 .vision-big {
-  font-size: 26px;
+  font-size: 40px;
   font-weight: 900;
-  line-height: 1.6;
-  margin-bottom: 22px;
+  line-height: 1.4;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
 }
 .vision-big em { font-style: normal; color: #e8a090; }
-.vision-body   { font-size: 13px; line-height: 1.95; color: #bbb; }
+.vision-body   { font-size: 17px; line-height: 1.8; color: #ddd; }
 
-.vision-right  { display: flex; flex-direction: column; gap: 16px; }
+.vision-right  { display: flex; flex-direction: column; gap: 24px; }
 
 .gold-box {
-  background: var(--gold-bg);
-  border-left: 3px solid var(--gold);
-  border-radius: 8px;
-  padding: 24px 28px;
+  background: rgba(242, 232, 206, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 40px;
   flex: 1;
-  transition: all 0.3s ease;
 }
-.gold-box:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(138,102,16,0.1); }
-.gold-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 12px; }
-.gold-body  { font-size: 13px; line-height: 1.9; }
+.gold-label { font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 20px; }
+.gold-body  { font-size: 17px; line-height: 1.8; }
 .gold-body strong { color: var(--gold); }
 
 .stack-box {
-  background: var(--green-bg);
-  border-left: 3px solid var(--green);
-  border-radius: 8px;
-  padding: 24px 28px;
+  background: rgba(224, 240, 228, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 40px;
   transition: all 0.3s ease;
 }
-.stack-box:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(42,107,56,0.1); }
-.stack-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--green); margin-bottom: 12px; }
-.stack-eq    { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; line-height: 2; color: var(--green); }
-.stack-eq-sub{ font-size: 10px; color: var(--faint); font-family: 'IBM Plex Mono', monospace; display: block; margin-top: -4px; margin-bottom: 10px; }
-.stack-body  { font-size: 12px; line-height: 1.8; color: #444; }
+.stack-box:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(42,107,56,0.08); }
+.stack-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.2em; color: var(--green); margin-bottom: 12px; }
+.stack-eq    { font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; line-height: 2; color: var(--green); }
+.stack-eq-sub{ font-size: 13px; color: var(--faint); font-family: 'IBM Plex Mono', monospace; display: block; margin-top: -4px; margin-bottom: 10px; }
+.stack-body  { font-size: 15px; line-height: 1.8; color: #444; }
 .stack-body em { font-style: italic; }
 
 .footer {
@@ -548,7 +604,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   justify-content: space-between;
   align-items: center;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--faint);
   letter-spacing: 0.12em;
 }
@@ -600,7 +656,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   width: 100%;
 }
 .gate-choice {
-  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 15px;
   letter-spacing: 0.1em; line-height: 1.7;
   border: 1px solid rgba(244,239,230,0.3); padding: 28px 28px;
   cursor: pointer;
@@ -622,7 +678,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .gate-choice:hover::before { transform: scaleY(1); }
 .gate-choice small {
-  display: block; font-size: 8.5px; letter-spacing: 0.22em;
+  display: block; font-size: 11px; letter-spacing: 0.22em;
   color: rgba(244,239,230,0.35); margin-bottom: 10px;
   transition: color 0.3s;
 }
@@ -631,7 +687,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 /* ======================== WORK BADGE ======================== */
 #work-badge {
   display: none; position: fixed; top: 24px; right: 24px; z-index: 20;
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px;
   letter-spacing: 0.18em; background: var(--ink); color: var(--bg);
   border: none; border-left: 3px solid var(--red);
   padding: 10px 22px; cursor: pointer;
@@ -642,7 +698,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 /* ======================== NEWCOMER PROGRESS ======================== */
 .step-strip {
   display: none; align-items: center; gap: 14px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
   letter-spacing: 0.18em; color: var(--faint);
   margin-bottom: 24px;
 }
@@ -690,7 +746,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 #next-hint.show { display: flex; }
 #next-hint .nh-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.22em;
   color: var(--faint);
   text-transform: uppercase;
@@ -720,13 +776,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 #role-fallback.show { display: block; }
 .rf-label {
-  font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
   letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--faint); margin-bottom: 14px;
 }
 .rf-btns { display: flex; gap: 10px; }
 .rf-btn {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px;
   letter-spacing: 0.14em; border: 1px solid var(--ink);
   border-left: 4px solid var(--red);
   padding: 10px 22px; cursor: pointer; background: none; color: var(--ink);
@@ -747,7 +803,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   .layer-col    { border-right: none; border-bottom: 1px solid var(--rule); }
   .layer-col:last-child { border-bottom: none; }
   .eq-block     { grid-template-columns: 1fr; gap: 20px; }
-  .eq-formula   { font-size: 14px; white-space: normal; }
+  .eq-formula   { font-size: 17px; white-space: normal; }
   .gate-heading { font-size: 26px; }
   .gate-choices { grid-template-columns: 1fr; }
   .header { flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -798,6 +854,14 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 </div>
 
 <div class="sheet">
+  <!-- SIDE NAVIGATION ARROWS -->
+  <button class="side-nav side-nav-left" id="btn-side-prev" onclick="changePage(-1)" disabled>
+    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <button class="side-nav side-nav-right" id="btn-side-next" onclick="changePage(1)">
+    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+
   <div id="pages">
 
     <!-- ==================== PAGE 1 · 診斷 ==================== -->
@@ -815,7 +879,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
         </div>
       </div>
 
-      <div class="label">§ 01 · 診斷 — 機械系在解決什麼問題？</div>
+      
       <div class="diagnosis-grid">
         <div class="diag-q">
           <div class="q-big">?</div>
@@ -854,12 +918,9 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
     <!-- ==================== PAGE 2 · 第一性原則 ==================== -->
     <div class="page" id="p2">
-      <div class="slim-header">
-        <span class="slim-doc">PHIL. FRAMEWORK · NKUST FST · 2025–2026</span>
-        <span class="slim-pg">02 / 06</span>
-      </div>
+      
 
-      <div class="label">§ 02 · 機械工程的五個第一性原則問題</div>
+      
       <p class="principles-intro">
         第一性原則思維要求我們不從現有框架出發，而是從根本問題重建理解。
         以下五個問題是機械工程的根本出發點，也是 FST 設計框架的哲學底層。
@@ -904,186 +965,118 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
     <!-- ==================== PAGE 3 · 系統分解樹 ==================== -->
     <div class="page" id="p3">
-      <div class="slim-header">
-        <span class="slim-doc">PHIL. FRAMEWORK · NKUST FST · 2025–2026</span>
-        <span class="slim-pg">03 / 06</span>
+      
+
+      
+      <div class="tree-caption">
+        賽車性能系統分解
+        <span>System Decomposition Tree · 從整車需求向下的追溯設計</span>
       </div>
 
-      <div class="label">§ 03 · 賽車系統分解樹 — System Decomposition Tree</div>
-      <p class="tree-caption">
-        本圖展示 FSAE 賽車的四大子系統分解結構。每個子系統對應不同的工程原則優先序，並由不同工具棧支撐。
-        決策樹從「整車性能」頂層需求向下拆解，確保每個零件設計都能追溯至系統層需求。
-      </p>
-
-      <div class="tree-container">
-        <svg viewBox="0 0 670 265" width="100%" style="display:block;overflow:visible;">
-
-          <!-- MAIN ROOT SPINE -->
-          <!-- Root right edge → spine vertical -->
-          <line stroke="#d0c8b8" stroke-width="1.5" x1="186" y1="143" x2="230" y2="143"/>
-          <line stroke="#d0c8b8" stroke-width="1.5" x1="230" y1="60"  x2="230" y2="225"/>
-          <!-- Spine → L1 branches -->
-          <line stroke="#d0c8b8" stroke-width="1.5" x1="230" y1="60"  x2="265" y2="60"/>
-          <line stroke="#d0c8b8" stroke-width="1.5" x1="230" y1="115" x2="265" y2="115"/>
-          <line stroke="#d0c8b8" stroke-width="1.5" x1="230" y1="170" x2="265" y2="170"/>
-          <line stroke="#d0c8b8" stroke-width="1.5" x1="230" y1="225" x2="265" y2="225"/>
-
-          <!-- 動力 L1 → L2 (L1 center y=60; L2 centers 46, 74) -->
-          <line stroke="#b83025" stroke-width="1.2" opacity="0.55" x1="415" y1="60"  x2="452" y2="60"/>
-          <line stroke="#b83025" stroke-width="1.2" opacity="0.55" x1="452" y1="46"  x2="452" y2="74"/>
-          <line stroke="#b83025" stroke-width="1.2" opacity="0.55" x1="452" y1="46"  x2="490" y2="46"/>
-          <line stroke="#b83025" stroke-width="1.2" opacity="0.55" x1="452" y1="74"  x2="490" y2="74"/>
-
-          <!-- 底盤 L1 → L2 (L1 center y=115; L2 centers 101, 129) -->
-          <line stroke="#1c3d5e" stroke-width="1.2" opacity="0.55" x1="415" y1="115" x2="452" y2="115"/>
-          <line stroke="#1c3d5e" stroke-width="1.2" opacity="0.55" x1="452" y1="101" x2="452" y2="129"/>
-          <line stroke="#1c3d5e" stroke-width="1.2" opacity="0.55" x1="452" y1="101" x2="490" y2="101"/>
-          <line stroke="#1c3d5e" stroke-width="1.2" opacity="0.55" x1="452" y1="129" x2="490" y2="129"/>
-
-          <!-- 氣動 L1 → L2 (L1 center y=170; L2 centers 156, 184) -->
-          <line stroke="#8a6610" stroke-width="1.2" opacity="0.55" x1="415" y1="170" x2="452" y2="170"/>
-          <line stroke="#8a6610" stroke-width="1.2" opacity="0.55" x1="452" y1="156" x2="452" y2="184"/>
-          <line stroke="#8a6610" stroke-width="1.2" opacity="0.55" x1="452" y1="156" x2="490" y2="156"/>
-          <line stroke="#8a6610" stroke-width="1.2" opacity="0.55" x1="452" y1="184" x2="490" y2="184"/>
-
-          <!-- 電控 L1 → L2 (L1 center y=225; L2 centers 211, 239) -->
-          <line stroke="#2a6b38" stroke-width="1.2" opacity="0.55" x1="415" y1="225" x2="452" y2="225"/>
-          <line stroke="#2a6b38" stroke-width="1.2" opacity="0.55" x1="452" y1="211" x2="452" y2="239"/>
-          <line stroke="#2a6b38" stroke-width="1.2" opacity="0.55" x1="452" y1="211" x2="490" y2="211"/>
-          <line stroke="#2a6b38" stroke-width="1.2" opacity="0.55" x1="452" y1="239" x2="490" y2="239"/>
-
-          <!-- ROOT (y=121, h=44, center=143) -->
-          <rect x="10" y="121" width="176" height="44" rx="2" fill="#0f0f0f"/>
-          <text x="98" y="139" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#f4efe6">賽車性能</text>
-          <text x="98" y="154" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#f4efe6">系統分解</text>
-
-          <!-- L1: 動力系統 (rect y=45, h=30, center y=60) -->
-          <rect x="265" y="45" width="150" height="30" rx="2" fill="#f5e8e6" stroke="#b83025" stroke-width="1.5"/>
-          <text x="340" y="64" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#b83025">動力系統</text>
-
-          <!-- L1: 底盤結構 (rect y=100, center y=115) -->
-          <rect x="265" y="100" width="150" height="30" rx="2" fill="#e2eaf2" stroke="#1c3d5e" stroke-width="1.5"/>
-          <text x="340" y="119" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#1c3d5e">底盤結構</text>
-
-          <!-- L1: 氣動力學 (rect y=155, center y=170) -->
-          <rect x="265" y="155" width="150" height="30" rx="2" fill="#f2e8ce" stroke="#8a6610" stroke-width="1.5"/>
-          <text x="340" y="174" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#8a6610">氣動力學</text>
-
-          <!-- L1: 電控整合 (rect y=210, center y=225) -->
-          <rect x="265" y="210" width="150" height="30" rx="2" fill="#e0f0e4" stroke="#2a6b38" stroke-width="1.5"/>
-          <text x="340" y="229" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2a6b38">電控整合</text>
-
-          <!-- L2: 動力 (rects y=33, y=61; centers 46, 74) -->
-          <rect x="490" y="33" width="155" height="26" rx="2" fill="#f5e8e6" stroke="#b83025" stroke-width="1"/>
-          <text x="567" y="50" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#b83025">引擎調校</text>
-          <rect x="490" y="61" width="155" height="26" rx="2" fill="#f5e8e6" stroke="#b83025" stroke-width="1"/>
-          <text x="567" y="78" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#b83025">傳動設計</text>
-
-          <!-- L2: 底盤 (rects y=88, y=116; centers 101, 129) -->
-          <rect x="490" y="88"  width="155" height="26" rx="2" fill="#e2eaf2" stroke="#1c3d5e" stroke-width="1"/>
-          <text x="567" y="105" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#1c3d5e">車架分析</text>
-          <rect x="490" y="116" width="155" height="26" rx="2" fill="#e2eaf2" stroke="#1c3d5e" stroke-width="1"/>
-          <text x="567" y="133" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#1c3d5e">懸吊幾何</text>
-
-          <!-- L2: 氣動 (rects y=143, y=171; centers 156, 184) -->
-          <rect x="490" y="143" width="155" height="26" rx="2" fill="#f2e8ce" stroke="#8a6610" stroke-width="1"/>
-          <text x="567" y="160" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#8a6610">下壓力優化</text>
-          <rect x="490" y="171" width="155" height="26" rx="2" fill="#f2e8ce" stroke="#8a6610" stroke-width="1"/>
-          <text x="567" y="188" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#8a6610">阻力管理</text>
-
-          <!-- L2: 電控 (rects y=198, y=226; centers 211, 239) -->
-          <rect x="490" y="198" width="155" height="26" rx="2" fill="#e0f0e4" stroke="#2a6b38" stroke-width="1"/>
-          <text x="567" y="215" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#2a6b38">資料採集</text>
-          <rect x="490" y="226" width="155" height="26" rx="2" fill="#e0f0e4" stroke="#2a6b38" stroke-width="1"/>
-          <text x="567" y="243" text-anchor="middle"
-            font-family="'IBM Plex Mono', monospace" font-size="10" fill="#2a6b38">制動控制</text>
-
-          <!-- Principle tags (far right) -->
-          <text x="660" y="50"  text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#b83025" opacity="0.65">P1 P2</text>
-          <text x="660" y="78"  text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#b83025" opacity="0.65">P1 P2</text>
-          <text x="660" y="105" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#1c3d5e" opacity="0.65">P1 P3</text>
-          <text x="660" y="133" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#1c3d5e" opacity="0.65">P1 P3</text>
-          <text x="660" y="160" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#8a6610" opacity="0.65">P2 P3</text>
-          <text x="660" y="188" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#8a6610" opacity="0.65">P2 P3</text>
-          <text x="660" y="215" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#2a6b38" opacity="0.65">P4 P5</text>
-          <text x="660" y="243" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#2a6b38" opacity="0.65">P4 P5</text>
-        </svg>
-      </div>
-
-      <div class="tree-legend">
-        <div class="legend-item">
-          <div class="legend-swatch" style="background:#b83025;"></div>
-          <div class="legend-text"><strong style="color:#b83025;">動力系統</strong><br>P1 力控制 · P2 能量效率</div>
+      <div class="apple-grid">
+        <div class="apple-card" style="border-top: 6px solid var(--red);">
+          <div class="ac-title">動力系統</div>
+          <div class="ac-subtitle">POWERTRAIN</div>
+          <div class="ac-list">
+            <div class="ac-item">引擎調校 <span class="ac-tag">P1 · P2</span></div>
+            <div class="ac-item">傳動設計 <span class="ac-tag">P1 · P2</span></div>
+          </div>
+          <div class="ac-footer">核心指標：<br>精確的力控制與極致的能量轉換效率。</div>
         </div>
-        <div class="legend-item">
-          <div class="legend-swatch" style="background:#1c3d5e;"></div>
-          <div class="legend-text"><strong style="color:#1c3d5e;">底盤結構</strong><br>P1 力控制 · P3 結構優化</div>
+
+        <div class="apple-card" style="border-top: 6px solid var(--blue);">
+          <div class="ac-title">底盤結構</div>
+          <div class="ac-subtitle">CHASSIS</div>
+          <div class="ac-list">
+            <div class="ac-item">車架分析 <span class="ac-tag">P1 · P3</span></div>
+            <div class="ac-item">懸吊幾何 <span class="ac-tag">P1 · P3</span></div>
+          </div>
+          <div class="ac-footer">核心指標：<br>控制運動軌跡，並在最小重量下達成最優化結構。</div>
         </div>
-        <div class="legend-item">
-          <div class="legend-swatch" style="background:#8a6610;"></div>
-          <div class="legend-text"><strong style="color:#8a6610;">氣動力學</strong><br>P2 能量效率 · P3 結構</div>
+
+        <div class="apple-card" style="border-top: 6px solid var(--gold);">
+          <div class="ac-title">氣動力學</div>
+          <div class="ac-subtitle">AERODYNAMICS</div>
+          <div class="ac-list">
+            <div class="ac-item">下壓力優化 <span class="ac-tag">P2 · P3</span></div>
+            <div class="ac-item">阻力管理 <span class="ac-tag">P2 · P3</span></div>
+          </div>
+          <div class="ac-footer">核心指標：<br>透過空力結構提升過彎極限，同時管理空氣阻力損失。</div>
         </div>
-        <div class="legend-item">
-          <div class="legend-swatch" style="background:#2a6b38;"></div>
-          <div class="legend-text"><strong style="color:#2a6b38;">電控整合</strong><br>P4 失效預測 · P5 系統邊界</div>
+
+        <div class="apple-card" style="border-top: 6px solid var(--green);">
+          <div class="ac-title">電控整合</div>
+          <div class="ac-subtitle">ELECTRONICS</div>
+          <div class="ac-list">
+            <div class="ac-item">資料採集 <span class="ac-tag">P4 · P5</span></div>
+            <div class="ac-item">制動控制 <span class="ac-tag">P4 · P5</span></div>
+          </div>
+          <div class="ac-footer">核心指標：<br>預測與量化失效模式，並定義各子系統間的通訊邊界。</div>
         </div>
       </div>
     </div>
 
     <!-- ==================== PAGE 4 · 四層工具棧 ==================== -->
     <div class="page" id="p4">
-      <div class="slim-header">
-        <span class="slim-doc">PHIL. FRAMEWORK · NKUST FST · 2025–2026</span>
-        <span class="slim-pg">04 / 06</span>
-      </div>
+      
 
-      <div class="label">§ 04 · 四層工具棧 — Integrated Tool Stack</div>
+      
 
-      <div class="layers-grid">
-        <div class="layer-col c-ai">
-          <div class="layer-tag">L01 · AI 工具層<br>INTELLIGENCE</div>
-          <div class="layer-item">Gemini API 文本生成</div>
-          <div class="layer-item">Claude Code 工程計算</div>
-          <div class="layer-item">生成式設計提案</div>
-          <div class="layer-item">FEA 參數空間探索</div>
-          <div class="layer-item">自然語言設計審查</div>
+      <div class="stack-layout">
+        <div class="stack-slab s-ai">
+          <div class="slab-left">
+            <div class="slab-tag">L01 · INTELLIGENCE</div>
+            <div class="slab-title">AI 工具層</div>
+          </div>
+          <div class="slab-right">
+            <div class="slab-item">Gemini API 文本生成</div>
+            <div class="slab-item">Claude Code 工程計算</div>
+            <div class="slab-item">生成式設計提案</div>
+            <div class="slab-item">FEA 參數空間探索</div>
+            <div class="slab-item">自然語言設計審查</div>
+          </div>
         </div>
-        <div class="layer-col c-vis">
-          <div class="layer-tag">L02 · 視覺化層<br>VISUALIZATION</div>
-          <div class="layer-item">SolidWorks 三維建模</div>
-          <div class="layer-item">MATLAB 數值模擬</div>
-          <div class="layer-item">SVG 動態工程圖</div>
-          <div class="layer-item">性能儀表板設計</div>
-          <div class="layer-item">設計審查簡報生成</div>
+
+        <div class="stack-slab s-vis">
+          <div class="slab-left">
+            <div class="slab-tag">L02 · VISUALIZATION</div>
+            <div class="slab-title">視覺化層</div>
+          </div>
+          <div class="slab-right">
+            <div class="slab-item">SolidWorks 三維建模</div>
+            <div class="slab-item">MATLAB 數值模擬</div>
+            <div class="slab-item">SVG 動態工程圖</div>
+            <div class="slab-item">性能儀表板設計</div>
+            <div class="slab-item">設計審查簡報生成</div>
+          </div>
         </div>
-        <div class="layer-col c-phy">
-          <div class="layer-tag">L03 · 工程計算層<br>PHYSICS</div>
-          <div class="layer-item">懸吊運動學分析</div>
-          <div class="layer-item">結構有限元分析</div>
-          <div class="layer-item">空氣動力學 CFD</div>
-          <div class="layer-item">熱管理系統設計</div>
-          <div class="layer-item">制動力矩計算</div>
+
+        <div class="stack-slab s-phy">
+          <div class="slab-left">
+            <div class="slab-tag">L03 · PHYSICS</div>
+            <div class="slab-title">工程計算層</div>
+          </div>
+          <div class="slab-right">
+            <div class="slab-item">懸吊運動學分析</div>
+            <div class="slab-item">結構有限元分析</div>
+            <div class="slab-item">空氣動力學 CFD</div>
+            <div class="slab-item">熱管理系統設計</div>
+            <div class="slab-item">制動力矩計算</div>
+          </div>
         </div>
-        <div class="layer-col c-iter">
-          <div class="layer-tag">L04 · 迭代管理層<br>ITERATION</div>
-          <div class="layer-item">每週原型測試</div>
-          <div class="layer-item">Git 版本控制</div>
-          <div class="layer-item">FMEA 失效分析</div>
-          <div class="layer-item">賽前系統整合測試</div>
-          <div class="layer-item">跨部門設計審查</div>
+
+        <div class="stack-slab s-iter">
+          <div class="slab-left">
+            <div class="slab-tag">L04 · ITERATION</div>
+            <div class="slab-title">迭代管理層</div>
+          </div>
+          <div class="slab-right">
+            <div class="slab-item">每週原型測試</div>
+            <div class="slab-item">Git 版本控制</div>
+            <div class="slab-item">FMEA 失效分析</div>
+            <div class="slab-item">賽前系統整合測試</div>
+            <div class="slab-item">跨部門設計審查</div>
+          </div>
         </div>
       </div>
 
@@ -1098,12 +1091,9 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
     <!-- ==================== PAGE 5 · 方程式 & 比較表 ==================== -->
     <div class="page" id="p5">
-      <div class="slim-header">
-        <span class="slim-doc">PHIL. FRAMEWORK · NKUST FST · 2025–2026</span>
-        <span class="slim-pg">05 / 06</span>
-      </div>
+      
 
-      <div class="label">§ 05 · 核心方程式 — Core Performance Equations</div>
+      
 
       <div class="eq-block">
         <div>
@@ -1131,7 +1121,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
         </div>
       </div>
 
-      <div class="label">§ 06 · 框架比較 — Old vs. New Paradigm</div>
+      
       <table class="compare-table">
         <thead>
           <tr>
@@ -1178,12 +1168,9 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
     <!-- ==================== PAGE 6 · 願景框架 ==================== -->
     <div class="page" id="p6">
-      <div class="slim-header">
-        <span class="slim-doc">PHIL. FRAMEWORK · NKUST FST · 2025–2026</span>
-        <span class="slim-pg">06 / 06</span>
-      </div>
+      
 
-      <div class="label">§ 07 · 願景框架 — Vision Statement</div>
+      
 
       <div class="vision-grid">
         <div class="vision-left">
@@ -1313,13 +1300,21 @@ function goTo(n) { setActivePage(n); }
 /* ── UI sync ── */
 function update() {
   document.getElementById('btn-prev').disabled = cur === 1;
+  document.getElementById('btn-side-prev').disabled = cur === 1;
+  
   var nextBtn = document.getElementById('btn-next');
+  var sideNextBtn = document.getElementById('btn-side-next');
+  
   if (role === 'newcomer') {
     nextBtn.disabled    = false;
     nextBtn.textContent = cur === 1 ? '開始閱讀 →' : cur === N ? '進入 WORK →' : '繼續 →';
+    
+    sideNextBtn.disabled = false;
   } else {
     nextBtn.textContent = 'NEXT →';
     nextBtn.disabled    = (cur === N);
+    
+    sideNextBtn.disabled = (cur === N);
   }
   document.querySelectorAll('.dot').forEach(function(d, i) {
     d.classList.toggle('active', i + 1 === cur);

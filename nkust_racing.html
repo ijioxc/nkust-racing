@@ -76,9 +76,9 @@
 
         [data-theme="dark"] {
             /* ── Apple iOS/Mac Dark Mode ── */
-            --bg:            #000000;
-            --bg-secondary:  #1d1d1f;
-            --bg-tertiary:   #2c2c2e;
+            --bg:            #161618;
+            --bg-secondary:  #242426;
+            --bg-tertiary:   #323235;
             --ink:           #f5f5f7;
             --faint:         #86868b;
             --rule:          rgba(255,255,255,0.15);
@@ -370,16 +370,13 @@
 
         .overview-person-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 16px;
         }
 
         @media (max-width: 1400px) {
             .resources-grid {
                 grid-template-columns: repeat(4, 1fr);
-            }
-            .overview-person-grid {
-                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -457,9 +454,10 @@
 
         .person-card-content {
             display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            gap: 11px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
         }
 
         .person-avatar-col {
@@ -471,10 +469,10 @@
         }
 
         .person-avatar-large {
-            width: 46px;
-            height: 46px;
+            width: 56px;
+            height: 56px;
             background: var(--bg-tertiary);
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -501,11 +499,12 @@
         }
 
         .person-info {
-            flex: 1;
+            width: 100%;
             min-width: 0;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            align-items: center;
+            gap: 6px;
             padding-top: 2px;
         }
 
@@ -526,19 +525,20 @@
         .person-work-types {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 3px;
         }
 
         .work-type-tag {
-            padding: 1px 5px;
-            border: 1px solid var(--rule);
-            border-radius: 1px;
+            padding: 2px 6px;
+            border: none;
+            border-radius: 4px;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 9px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            color: var(--faint);
+            color: #ffffff;
             background: transparent;
         }
 
