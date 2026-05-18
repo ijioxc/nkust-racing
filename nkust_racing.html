@@ -35,6 +35,12 @@
         window.dispatchEvent(new Event('firebase-ready'));
     </script>
      <style>
+
+        /* SYSTEMIC ARCHITECTURE FIX: Prevent CSS Grid / Flexbox Blow-outs */
+        .plan-card, .worklog-col-card, .person-full-card, .worklog-card, .person-card, .resource-card {
+            min-width: 0;
+        }
+
         :root {
             /* ── Legacy JS aliases ── */
             --primary-orange: #ef4444;
@@ -561,7 +567,6 @@
             opacity: 1;
         }
 
-        /* Plan Card */
         .plan-card {
             background: var(--bg-secondary);
             border: none;
@@ -571,6 +576,7 @@
             cursor: move;
             position: relative;
             box-shadow: var(--card-shadow);
+            min-width: 0;
         }
 
         .plan-card:hover {
@@ -1032,6 +1038,7 @@
             flex-direction: column;
             height: 100%;
             box-shadow: var(--card-shadow);
+            min-width: 0;
         }
 
         .resource-card:hover {
@@ -1049,6 +1056,7 @@
             align-items: flex-start;
             margin-bottom: 6px;
             gap: 6px;
+            min-width: 0;
         }
 
         .resource-name {

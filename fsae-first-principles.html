@@ -54,13 +54,13 @@ body {
 .sheet {
   width: 100%;
   max-width: 1400px;
-  height: 85vh;
+  height: 92vh;
   min-height: 720px;
-  max-height: 860px;
+  max-height: 960px;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: saturate(180%) blur(40px);
   -webkit-backdrop-filter: saturate(180%) blur(40px);
-  padding: 56px 120px; /* Increased side padding to make room for arrows */
+  padding: 40px 100px; /* Increased side padding to make room for arrows */
   box-shadow: 0 40px 120px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.8) inset;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 40px;
@@ -118,18 +118,18 @@ body {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 .slim-doc {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.24em;
   color: var(--faint);
   text-transform: uppercase;
 }
 .slim-pg {
   font-family: 'Space Mono', monospace;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--ink);
 }
@@ -156,13 +156,13 @@ body {
 .dot:hover:not(.active){ background: var(--faint); transform: scale(1.2); }
 .pager-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: 0.12em;
   color: var(--faint);
 }
 .pager-btn {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.18em;
   background: none;
   border: 1px solid var(--ink);
@@ -179,7 +179,7 @@ body {
 /* ======================== SHARED ======================== */
 .label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--faint);
@@ -199,7 +199,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   align-items: flex-end;
   border-bottom: 2px solid var(--ink);
   padding-bottom: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   gap: 40px;
   position: relative;
 }
@@ -212,7 +212,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .doc-tag {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.25em;
   color: var(--faint);
   margin-bottom: 10px;
@@ -220,9 +220,9 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   align-items: center;
   gap: 8px;
 }
-.doc-tag::before { content: '●'; color: var(--red); font-size: 9px; }
+.doc-tag::before { content: '●'; color: var(--red); font-size: 10px; }
 .main-title {
-  font-size: 64px;
+  font-size: 74px;
   font-weight: 900;
   line-height: 1.1;
   letter-spacing: -0.04em;
@@ -231,7 +231,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .main-title em { font-style: normal; color: var(--red); }
 .sub-title {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 0.05em;
   color: var(--faint);
   margin-top: 12px;
@@ -239,7 +239,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .header-right {
   text-align: right;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--faint);
   white-space: nowrap;
   display: flex;
@@ -266,7 +266,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   -webkit-backdrop-filter: blur(40px);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 32px;
-  padding: 56px 48px;
+  padding: 40px 48px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 24px 64px rgba(0,0,0,0.04);
@@ -274,7 +274,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 .q-big {
   font-family: 'Space Mono', monospace;
-  font-size: 160px;
+  font-size: 184px;
   color: var(--red);
   opacity: 0.04;
   line-height: 0.8;
@@ -282,8 +282,8 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   top: 0px; right: -10px;
   pointer-events: none; user-select: none;
 }
-.q-title { font-size: 22px; font-weight: 700; color: var(--red); margin-bottom: 16px; letter-spacing: -0.01em; }
-.q-body  { font-size: 17px; line-height: 1.8; color: #222; }
+.q-title { font-size: 25px; font-weight: 700; color: var(--red); margin-bottom: 16px; letter-spacing: -0.01em; }
+.q-body  { font-size: 20px; line-height: 1.8; color: #222; }
 .q-body em { font-style: italic; color: var(--faint); }
 
 .diag-black {
@@ -300,17 +300,17 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 .db-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.25em;
   color: var(--red);
   margin-bottom: 16px;
 }
-.db-body    { font-size: 17px; line-height: 1.8; color: rgba(255,255,255,0.9); }
+.db-body    { font-size: 20px; line-height: 1.8; color: rgba(255,255,255,0.9); }
 .db-body em { font-style: italic; color: rgba(255,255,255,0.5); }
 
 /* ======================== PAGE 2 — PRINCIPLES ======================== */
 .principles-intro {
-  font-size: 18px;
+  font-size: 21px;
   line-height: 1.8;
   color: #555;
   font-style: italic;
@@ -326,7 +326,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .p-card {
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 32px;
-  padding: 40px 32px;
+  padding: 24px 32px;
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
@@ -336,15 +336,15 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 .p-num {
   font-family: 'Space Mono', monospace;
-  font-size: 48px;
+  font-size: 55px;
   font-weight: 700;
   color: var(--red);
   opacity: 0.12;
   line-height: 1;
   margin-bottom: 24px;
 }
-.p-title    { font-size: 18px; font-weight: 700; line-height: 1.4; margin-bottom: 12px; letter-spacing: -0.01em;}
-.p-question { font-size: 15px; line-height: 1.7; color: var(--faint); font-style: italic; }
+.p-title    { font-size: 21px; font-weight: 700; line-height: 1.4; margin-bottom: 12px; letter-spacing: -0.01em;}
+.p-question { font-size: 17px; line-height: 1.7; color: var(--faint); font-style: italic; }
 
 .p-fsae-row {
   display: grid;
@@ -354,7 +354,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .p-fsae-item {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 16px;
+  font-size: 18px;
   color: var(--faint);
   line-height: 1.8;
   padding: 24px;
@@ -368,7 +368,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .p-fsae-item::before {
   content: 'FSAE →';
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.15em;
   color: var(--red);
   opacity: 0.6;
@@ -377,15 +377,15 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 
 /* ======================== PAGE 3 — TREE (REBORN AS APPLE GRID) ======================== */
 .tree-caption {
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--ink);
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   text-align: center;
 }
-.tree-caption span { font-weight: 400; color: var(--faint); font-size: 16px; display: block; margin-top: 8px;}
+.tree-caption span { font-weight: 400; color: var(--faint); font-size: 18px; display: block; margin-top: 8px;}
 
 .apple-grid {
   display: grid;
@@ -398,20 +398,20 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   -webkit-backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 32px;
-  padding: 40px 32px;
+  padding: 24px 32px;
   color: white;
   display: flex;
   flex-direction: column;
   
 }
 
-.ac-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
-.ac-subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; margin-bottom: 40px; }
+.ac-title { font-size: 30px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
+.ac-subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; margin-bottom: 24px; }
 .ac-list { display: flex; flex-direction: column; gap: 16px; flex: 1; }
-.ac-item { font-size: 17px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;}
+.ac-item { font-size: 20px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;}
 .ac-item:last-child { border-bottom: none; padding-bottom: 0; }
-.ac-tag { font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 8px; color: rgba(255,255,255,0.9); }
-.ac-footer { font-size: 16px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-top: 40px; padding-top: 24px; border-top: 1px dashed rgba(255,255,255,0.15); }
+.ac-tag { font-family: 'IBM Plex Mono', monospace; font-size: 15px; background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 8px; color: rgba(255,255,255,0.9); }
+.ac-footer { font-size: 18px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-top: 40px; padding-top: 24px; border-top: 1px dashed rgba(255,255,255,0.15); }
 
 /* ======================== PAGE 4 — TOOL STACK (APPLE ARCHITECTURE) ======================== */
 .stack-layout {
@@ -426,21 +426,21 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   -webkit-backdrop-filter: blur(40px);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 32px;
-  padding: 32px 48px;
+  padding: 24px 40px;
   display: flex;
   align-items: center;
   box-shadow: 0 16px 40px rgba(0,0,0,0.03);
 }
 .slab-left { flex: 0 0 280px; }
-.slab-tag { font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.15em; font-weight: 700; margin-bottom: 8px; }
-.slab-title { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
+.slab-tag { font-family: 'IBM Plex Mono', monospace; font-size: 16px; letter-spacing: 0.15em; font-weight: 700; margin-bottom: 8px; }
+.slab-title { font-size: 30px; font-weight: 900; letter-spacing: -0.02em; }
 .slab-right { flex: 1; display: flex; flex-wrap: wrap; gap: 12px; }
 .slab-item {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(0,0,0,0.06);
   border-radius: 40px;
   padding: 12px 24px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--ink);
   display: flex;
@@ -460,24 +460,32 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .s-iter .slab-item::before { background: var(--green); }
 
 .stack-note {
-  background: var(--ink);
-  color: var(--bg);
-  padding: 22px 28px;
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 24px 32px;
   font-size: 16px;
-  line-height: 1.85;
-  margin-bottom: 40px;
-  border-left: 4px solid var(--red);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
 }
 .stack-note-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   color: var(--red);
-  display: block;
-  margin-bottom: 10px;
+  flex: 0 0 auto;
+  padding-right: 24px;
+  border-right: 1px dashed rgba(255, 255, 255, 0.2);
 }
-.stack-note strong { color: #e0d0b0; }
-
+.stack-note-text { flex: 1; }
+.stack-note-text strong { color: #ffffff; font-weight: 700; }
 /* ======================== PAGE 5 — EQUATION & TABLE ======================== */
 .eq-block {
   background: rgba(226, 234, 242, 0.7);
@@ -485,7 +493,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   -webkit-backdrop-filter: blur(40px);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
-  padding: 56px;
+  padding: 40px;
   margin-bottom: 24px;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -495,27 +503,27 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .eq-formula {
   font-family: 'Space Mono', monospace;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--blue);
   line-height: 2;
   white-space: nowrap;
 }
 .eq-formula + .eq-formula { margin-top: 16px; }
-.eq-sub { font-size: 14px; color: #888; font-weight: 400; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; }
-.eq-explain { font-size: 18px; line-height: 1.8; color: #222;}
+.eq-sub { font-size: 16px; color: #888; font-weight: 400; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; }
+.eq-explain { font-size: 21px; line-height: 1.8; color: #222;}
 .eq-explain strong { color: var(--blue); }
 
 .compare-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 8px;
-  margin-bottom: 40px;
-  font-size: 16px;
+  margin-bottom: 24px;
+  font-size: 18px;
 }
 .compare-table thead th {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.2em;
   padding: 0 24px 16px;
   text-align: left;
@@ -539,7 +547,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .col-dim { font-weight: 700; }
 .col-old { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--red); }
 .col-new { color: var(--blue); font-weight: 700; }
-.col-p   { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--red); letter-spacing: 0.1em; font-weight: 700; }
+.col-p   { font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: var(--red); letter-spacing: 0.1em; font-weight: 700; }
 
 /* ======================== PAGE 6 — VISION ======================== */
 .vision-grid {
@@ -553,20 +561,20 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   color: var(--bg);
-  padding: 56px 48px;
+  padding: 40px 48px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
 .vision-big {
-  font-size: 40px;
+  font-size: 46px;
   font-weight: 900;
   line-height: 1.4;
   margin-bottom: 32px;
   letter-spacing: -0.02em;
 }
 .vision-big em { font-style: normal; color: #e8a090; }
-.vision-body   { font-size: 17px; line-height: 1.8; color: #ddd; }
+.vision-body   { font-size: 20px; line-height: 1.8; color: #ddd; }
 
 .vision-right  { display: flex; flex-direction: column; gap: 24px; }
 
@@ -579,8 +587,8 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   padding: 40px;
   flex: 1;
 }
-.gold-label { font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 20px; }
-.gold-body  { font-size: 17px; line-height: 1.8; }
+.gold-label { font-family: 'IBM Plex Mono', monospace; font-size: 16px; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 20px; }
+.gold-body  { font-size: 20px; line-height: 1.8; }
 .gold-body strong { color: var(--gold); }
 
 .stack-box {
@@ -593,10 +601,10 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   transition: all 0.3s ease;
 }
 .stack-box:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(42,107,56,0.08); }
-.stack-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.2em; color: var(--green); margin-bottom: 12px; }
-.stack-eq    { font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; line-height: 2; color: var(--green); }
-.stack-eq-sub{ font-size: 13px; color: var(--faint); font-family: 'IBM Plex Mono', monospace; display: block; margin-top: -4px; margin-bottom: 10px; }
-.stack-body  { font-size: 15px; line-height: 1.8; color: #444; }
+.stack-label { font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.2em; color: var(--green); margin-bottom: 12px; }
+.stack-eq    { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; line-height: 2; color: var(--green); }
+.stack-eq-sub{ font-size: 15px; color: var(--faint); font-family: 'IBM Plex Mono', monospace; display: block; margin-top: -4px; margin-bottom: 10px; }
+.stack-body  { font-size: 17px; line-height: 1.8; color: #444; }
 .stack-body em { font-style: italic; }
 
 .footer {
@@ -604,13 +612,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   justify-content: space-between;
   align-items: center;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--faint);
   letter-spacing: 0.12em;
 }
 .footer-c {
   font-family: 'Space Mono', monospace;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--ink);
   position: relative;
@@ -643,7 +651,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   to { opacity: 1; transform: translateY(0); }
 }
 .gate-heading {
-  font-size: 38px; font-weight: 900;
+  font-size: 44px; font-weight: 900;
   line-height: 1.15; letter-spacing: -0.025em;
   color: var(--bg);
 }
@@ -656,7 +664,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   width: 100%;
 }
 .gate-choice {
-  font-family: 'IBM Plex Mono', monospace; font-size: 15px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 17px;
   letter-spacing: 0.1em; line-height: 1.7;
   border: 1px solid rgba(244,239,230,0.3); padding: 28px 28px;
   cursor: pointer;
@@ -678,7 +686,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .gate-choice:hover::before { transform: scaleY(1); }
 .gate-choice small {
-  display: block; font-size: 11px; letter-spacing: 0.22em;
+  display: block; font-size: 13px; letter-spacing: 0.22em;
   color: rgba(244,239,230,0.35); margin-bottom: 10px;
   transition: color 0.3s;
 }
@@ -687,7 +695,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 /* ======================== WORK BADGE ======================== */
 #work-badge {
   display: none; position: fixed; top: 24px; right: 24px; z-index: 20;
-  font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 15px;
   letter-spacing: 0.18em; background: var(--ink); color: var(--bg);
   border: none; border-left: 3px solid var(--red);
   padding: 10px 22px; cursor: pointer;
@@ -698,7 +706,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 /* ======================== NEWCOMER PROGRESS ======================== */
 .step-strip {
   display: none; align-items: center; gap: 14px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 14px;
   letter-spacing: 0.18em; color: var(--faint);
   margin-bottom: 24px;
 }
@@ -746,7 +754,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 #next-hint.show { display: flex; }
 #next-hint .nh-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.22em;
   color: var(--faint);
   text-transform: uppercase;
@@ -776,13 +784,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 #role-fallback.show { display: block; }
 .rf-label {
-  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 14px;
   letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--faint); margin-bottom: 14px;
 }
 .rf-btns { display: flex; gap: 10px; }
 .rf-btn {
-  font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 15px;
   letter-spacing: 0.14em; border: 1px solid var(--ink);
   border-left: 4px solid var(--red);
   padding: 10px 22px; cursor: pointer; background: none; color: var(--ink);
@@ -796,15 +804,15 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 @media (max-width: 768px) {
   .sheet { padding: 32px 24px 60px; }
-  .main-title { font-size: 28px; }
+  .main-title { font-size: 32px; }
   .diagnosis-grid, .vision-grid { grid-template-columns: 1fr; }
   .principles-row, .p-fsae-row   { grid-template-columns: repeat(2, 1fr); }
   .layers-grid  { grid-template-columns: repeat(2, 1fr); }
   .layer-col    { border-right: none; border-bottom: 1px solid var(--rule); }
   .layer-col:last-child { border-bottom: none; }
   .eq-block     { grid-template-columns: 1fr; gap: 20px; }
-  .eq-formula   { font-size: 17px; white-space: normal; }
-  .gate-heading { font-size: 26px; }
+  .eq-formula   { font-size: 20px; white-space: normal; }
+  .gate-heading { font-size: 30px; }
   .gate-choices { grid-template-columns: 1fr; }
   .header { flex-direction: column; align-items: flex-start; gap: 16px; }
   .header-right { align-items: flex-start; }
@@ -812,15 +820,15 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   .legend-item  { border-right: none; border-bottom: 1px solid var(--rule); }
   .legend-item:last-child { border-bottom: none; }
   .vision-left  { padding: 24px; }
-  .vision-big   { font-size: 20px; }
+  .vision-big   { font-size: 23px; }
 }
 
 @media (max-width: 480px) {
-  .main-title  { font-size: 22px; }
+  .main-title  { font-size: 25px; }
   .principles-row, .p-fsae-row { grid-template-columns: 1fr; }
   .layers-grid { grid-template-columns: 1fr; }
   .sheet       { padding: 24px 16px 60px; }
-  .gate-heading { font-size: 22px; }
+  .gate-heading { font-size: 25px; }
 }
 </style>
 </head>
@@ -1081,11 +1089,13 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
       </div>
 
       <div class="stack-note">
-        <span class="stack-note-label">▸ STACK ARCHITECTURE NOTE</span>
-        四層棧的核心邏輯：<strong>AI 層</strong>不替代工程計算，它擴展問題搜索空間；
-        <strong>視覺化層</strong>不只是呈現，它是思維工具；
-        <strong>工程計算層</strong>是邊界的守門者；
-        <strong>迭代管理層</strong>確保知識不在人員流動中消失。
+        <div class="stack-note-label">▸ ARCHITECTURE NOTE</div>
+        <div class="stack-note-text">
+          四層棧的核心邏輯：<strong>AI 層</strong>不替代工程計算，它擴展問題搜索空間；
+          <strong>視覺化層</strong>不只是呈現，它是思維工具；
+          <strong>工程計算層</strong>是邊界守門者；
+          <strong>迭代管理層</strong>確保知識不在人員流動中消失。
+        </div>
       </div>
     </div>
 
@@ -1103,7 +1113,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
                P, C<sub style="font-size:0.62em;vertical-align:sub;">L</sub>, μ, η)
             <div class="eq-sub">質量 · 功率 · 下壓力 · 摩擦係數 · 系統效率</div>
           </div>
-          <div class="eq-formula" style="margin-top:18px;font-size:14px;">
+          <div class="eq-formula" style="margin-top:18px;font-size: 16px;">
             V<sub style="font-size:0.62em;vertical-align:sub;">team</sub>
             = Σ (K<sub style="font-size:0.62em;vertical-align:sub;">i</sub>
                × T<sub style="font-size:0.62em;vertical-align:sub;">i</sub>
