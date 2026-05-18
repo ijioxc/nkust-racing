@@ -473,29 +473,14 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 }
 .gate-card {
   background: var(--bg);
-  max-width: 640px; width: 100%;
-  padding: 52px 60px 48px;
+  max-width: 520px; width: 100%;
+  padding: 56px 60px 56px;
   box-shadow: 0 40px 100px rgba(0,0,0,0.65);
 }
-.gate-tag {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--faint); margin-bottom: 10px;
-}
 .gate-title {
-  font-size: 24px; font-weight: 900;
-  line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 6px;
-}
-.gate-title em { font-style: normal; color: var(--red); }
-.gate-sub {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; color: var(--faint); margin-bottom: 36px;
-}
-.gate-rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 24px; }
-.gate-prompt {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--faint); margin-bottom: 16px;
+  font-size: 28px; font-weight: 900;
+  line-height: 1.2; letter-spacing: -0.02em;
+  margin-bottom: 40px;
 }
 .gate-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .gate-choice {
@@ -533,6 +518,26 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 .step-track { flex: 1; height: 2px; background: var(--rule); }
 .step-fill { height: 100%; background: var(--ink); transition: width 0.3s; }
 
+/* ======================== PAGE-FLIP NAV ======================== */
+.nav-hint {
+  position: fixed; top: 0; bottom: 0; width: 22%;
+  pointer-events: none; z-index: 50;
+  opacity: 0; transition: opacity 0.3s;
+}
+.nav-hint-l {
+  left: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.07) 0%, transparent 100%);
+}
+.nav-hint-r {
+  right: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0.07) 0%, transparent 100%);
+}
+.nav-hint-r.work-ready {
+  background: linear-gradient(to left, rgba(184,48,37,0.14) 0%, transparent 100%);
+}
+#btn-prev, #btn-next { display: none; }
+.pager-nav { justify-content: center; }
+
 /* ======================== P1 ROLE FALLBACK ======================== */
 #role-fallback {
   display: none; border-top: 1px solid var(--rule);
@@ -556,14 +561,14 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
 </head>
 <body>
 
+<!-- PAGE FLIP HINT OVERLAYS -->
+<div id="nav-left"  class="nav-hint nav-hint-l"></div>
+<div id="nav-right" class="nav-hint nav-hint-r"></div>
+
 <!-- ROLE GATE MODAL -->
 <div id="role-gate">
   <div class="gate-card">
-    <div class="gate-tag">PHILOSOPHICAL FRAMEWORK · NKUST FST · V1.0</div>
-    <div class="gate-title">機械的<em>第一性原則</em>危機<br>與學生方程式的重建路徑</div>
-    <div class="gate-sub">First Principles of Mechanical Engineering × Formula Student as System Platform</div>
-    <hr class="gate-rule">
-    <div class="gate-prompt">▸ 選擇你的身份</div>
+    <div class="gate-title">機械第一性原則<br>× 學生方程式</div>
     <div class="gate-choices">
       <button class="gate-choice" onclick="setRole('insider')">
         <small>MEMBER · 內部人士</small>
@@ -1126,6 +1131,31 @@ document.getElementById('role-fallback').classList.add('show');
 document.addEventListener('keydown', function(e) {
   if (e.key === 'ArrowRight' && cur < N) changePage(1);
   if (e.key === 'ArrowLeft'  && cur > 1) changePage(-1);
+});
+
+/* ── Page-flip: click right/left half ── */
+var navL = document.getElementById('nav-left');
+var navR = document.getElementById('nav-right');
+
+document.addEventListener('mousemove', function(e) {
+  if (!role) return;
+  var x = e.clientX, w = window.innerWidth;
+  var canNext = cur < N || (role === 'newcomer' && cur === N);
+  var canPrev = cur > 1;
+  navL.style.opacity = (x < w * 0.25 && canPrev)  ? '1' : '0';
+  navR.style.opacity = (x > w * 0.75 && canNext)   ? '1' : '0';
+  navR.classList.toggle('work-ready', role === 'newcomer' && cur === N);
+  document.body.style.cursor =
+    (x > w * 0.5 && canNext) ? 'e-resize' :
+    (x < w * 0.5 && canPrev) ? 'w-resize' : 'default';
+});
+
+document.addEventListener('click', function(e) {
+  if (!role) return;
+  if (e.target && e.target.closest && e.target.closest('button, a, input, select')) return;
+  var x = e.clientX, mid = window.innerWidth / 2;
+  if (x > mid) changePage(1);
+  else if (x < mid && cur > 1) changePage(-1);
 });
 
 /* ── Touch / swipe ── */
