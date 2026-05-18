@@ -6,7 +6,7 @@
     <title>NKUST Racing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Firebase Realtime Database -->
     <script type="module">
@@ -34,54 +34,77 @@
         // 通知主 script Firebase 已就緒
         window.dispatchEvent(new Event('firebase-ready'));
     </script>
-    <style>
+     <style>
         :root {
-            --primary-orange: #ED6C00;
-            --secondary-yellow: #F6AB00;
-            --accent-blue: #006DAD;
-            
-            --color-chassis: #FF6B6B;
-            --color-engine: #4ECDC4;
-            --color-suspension: #45B7D1;
-            --color-brake: #FFA07A;
-            --color-electrical: #98D8C8;
-            --color-aero: #A8E6CF;
-            --color-other: #95A5A6;
-            
-            --bg: #ffffff;
-            --bg-secondary: #fafafa;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --border: #e0e0e0;
-            --shadow: rgba(0, 0, 0, 0.06);
-            --orange-light: rgba(237, 108, 0, 0.1);
-            --yellow-light: rgba(246, 171, 0, 0.1);
-            --blue-light: rgba(0, 109, 173, 0.1);
+            /* ── Legacy JS aliases ── */
+            --primary-orange: #ef4444;
+            --secondary-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+
+            /* ── Subsystem colours ── */
+            --color-chassis: #ef4444;
+            --color-engine: #f59e0b;
+            --color-suspension: #3b82f6;
+            --color-brake: #f97316;
+            --color-electrical: #10b981;
+            --color-aero: #06b6d4;
+            --color-other: #8b5cf6;
+
+            /* ── Apple Light Mode ── */
+            --bg:            #f5f5f7;
+            --bg-secondary:  #ffffff;
+            --bg-tertiary:   #e5e5ea;
+            --ink:           #1d1d1f;
+            --faint:         #86868b;
+            --rule:          rgba(0,0,0,0.1);
+            --red:           #0066cc; /* Apple uses blue for primary actions, but keeping red if needed, let's change to Apple blue for links/accents, or keep red. I'll keep your red for consistency with NKUST Racing */
+            --red:           #ef4444;
+            --red-bg:        rgba(239,68,68,0.08);
+            --red-mid:       rgba(239,68,68,0.15);
+            --card-shadow:   0 2px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+            --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.08);
+
+            /* ── Semantic aliases ── */
+            --text-primary:   var(--ink);
+            --text-secondary: var(--faint);
+            --border:         var(--rule);
+            --shadow:         rgba(0, 0, 0, 0.08);
+            --orange-light:   var(--red-bg);
+            --yellow-light:   rgba(245, 158, 11, 0.08);
+            --blue-light:     rgba(59, 130, 246, 0.08);
         }
 
         [data-theme="dark"] {
-            --bg: #1a1a1a;
-            --bg-secondary: #2a2a2a;
-            --text-primary: #ececec;
-            --text-secondary: #999999;
-            --border: #3a3a3a;
-            --shadow: rgba(255, 255, 255, 0.05);
+            /* ── Apple iOS/Mac Dark Mode ── */
+            --bg:            #000000;
+            --bg-secondary:  #1d1d1f;
+            --bg-tertiary:   #2c2c2e;
+            --ink:           #f5f5f7;
+            --faint:         #86868b;
+            --rule:          rgba(255,255,255,0.15);
+            --red-bg:        rgba(239,68,68,0.15);
+            --shadow:        rgba(0,0,0,0.4);
+            --card-shadow:   0 2px 8px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.2);
+            --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.3), 0 20px 48px rgba(0,0,0,0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', sans-serif;
             background: var(--bg);
-            color: var(--text-primary);
+            color: var(--ink);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             transition: background 0.3s ease, color 0.3s ease;
         }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 99px; }
+        * { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
 
         .container {
             max-width: 1600px;
@@ -93,55 +116,66 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 16px 0 12px;
             margin-bottom: 20px;
-            border-bottom: 2px solid var(--primary-orange);
+            border-bottom: 0.5px solid var(--rule);
+            position: relative;
         }
 
         .header-left h1 {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--ink);
+        }
+
+        .header-left h1::before {
+            content: 'NKUST FST · ';
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            color: var(--faint);
+            display: block;
+            margin-bottom: 2px;
         }
 
         .header-right {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
         .header-pill {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
+            gap: 5px;
+            padding: 5px 12px;
             background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
+            border: none;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            color: var(--faint);
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
-            font-family: 'Inter', sans-serif;
         }
 
         .header-pill:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
+            background: var(--bg-tertiary);
+            color: var(--ink);
         }
 
         .header-pill-value {
-            color: var(--primary-orange);
+            color: var(--red);
             font-weight: 700;
         }
 
         .header-pill.search-active {
-            border-color: var(--primary-orange);
-            background: var(--orange-light);
+            background: var(--red-bg);
+            color: var(--red);
         }
 
         .search-input-pill {
@@ -235,13 +269,14 @@
         .filter-buttons::-webkit-scrollbar { display: none; }
 
         .filter-btn {
-            padding: 6px 12px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            padding: 6px 16px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 99px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
             font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-weight: 500;
+            color: var(--faint);
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
@@ -249,14 +284,14 @@
         }
 
         .filter-btn:hover {
-            background: var(--yellow-light);
-            border-color: var(--secondary-yellow);
+            background: var(--bg-tertiary);
+            color: var(--ink);
         }
 
         .filter-btn.active {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            color: white;
+            background: var(--red);
+            color: #ffffff;
+            font-weight: 600;
         }
 
         /* Show-more button in category sections */
@@ -291,16 +326,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border);
+            margin-bottom: 24px;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .category-title {
-            font-size: 20px;
+            font-size: 28px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            color: var(--text-primary);
+            color: var(--ink);
         }
 
         .add-category-btn {
@@ -329,13 +364,22 @@
 
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+        }
+
+        .overview-person-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
         @media (max-width: 1400px) {
             .resources-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .overview-person-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -394,21 +438,21 @@
             }
         }
 
-        /* Person Card - Horizontal compact layout */
+        /* Person Card */
         .person-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 11px 13px;
-            transition: all 0.22s ease;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 18px;
+            padding: 16px;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
             position: relative;
             cursor: pointer;
+            box-shadow: var(--card-shadow);
         }
 
         .person-card:hover {
-            box-shadow: 0 4px 14px var(--shadow);
-            border-color: var(--primary-orange);
-            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-3px);
         }
 
         .person-card-content {
@@ -429,8 +473,8 @@
         .person-avatar-large {
             width: 46px;
             height: 46px;
-            background: var(--orange-light);
-            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -445,9 +489,12 @@
         }
 
         .person-position-badge {
-            font-size: 10px;
-            color: var(--text-secondary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
             font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--faint);
             text-align: center;
             max-width: 48px;
             line-height: 1.2;
@@ -463,18 +510,17 @@
         }
 
         .person-name {
-            font-size: 17px;
-            font-weight: 800;
-            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
             line-height: 1.3;
-            letter-spacing: 1.5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .person-card:hover .person-name {
-            color: var(--primary-orange);
+            color: var(--red);
         }
 
         .person-work-types {
@@ -484,11 +530,16 @@
         }
 
         .work-type-tag {
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 1px 5px;
+            border: 1px solid var(--rule);
+            border-radius: 1px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
             font-weight: 600;
-            color: white;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--faint);
+            background: transparent;
         }
 
         .person-card-hint {
@@ -510,21 +561,21 @@
             opacity: 1;
         }
 
-        /* Plan Card - Wide Rectangle with Image */
+        /* Plan Card */
         .plan-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 18px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
             cursor: move;
             position: relative;
+            box-shadow: var(--card-shadow);
         }
 
         .plan-card:hover {
-            box-shadow: 0 6px 24px var(--shadow);
+            box-shadow: var(--card-shadow-hover);
             transform: translateY(-4px);
-            border-color: var(--primary-orange);
         }
 
         .plan-card.dragging {
@@ -539,9 +590,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-secondary);
+            color: var(--faint);
             font-size: 48px;
             overflow: hidden;
+            position: relative;
         }
 
         .plan-card-image img {
@@ -551,7 +603,18 @@
             object-position: top;
         }
 
-        /* og:image from URL — show completely at natural ratio */
+        /* og:image overlay text mask */
+        .plan-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(transparent, rgba(15,15,15,0.55));
+            pointer-events: none;
+        }
+
         .plan-og-img {
             width: 100%;
             height: 100%;
@@ -559,31 +622,16 @@
             background: var(--bg-secondary);
         }
 
-        .plan-card-content {
-            padding: 16px;
-        }
-
-        .plan-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 8px;
-        }
-
-        .plan-card-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-primary);
-            flex: 1;
-        }
+        .plan-card-content { padding: 14px 16px; }
 
         .plan-card-tag {
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 3px 10px;
+            border: none;
+            border-radius: 99px;
             font-size: 11px;
-            font-weight: 600;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
+            font-weight: 500;
+            color: var(--faint);
+            background: var(--bg-tertiary);
         }
 
         .plan-card-meta {
@@ -725,33 +773,39 @@
         }
         .worklog-col { min-width: 0; }
         .worklog-col-header {
-            font-size: 11px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--faint);
             padding-bottom: 6px;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 1px solid var(--rule);
             margin-bottom: 8px;
             text-align: center;
         }
         .worklog-col-card {
             background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--primary-orange);
-            border-radius: 8px;
-            padding: 8px 7px;
+            border: none;
+            border-left: 3px solid var(--red);
+            border-radius: 10px;
+            padding: 8px 10px;
             margin-bottom: 7px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: border-color 0.18s, box-shadow 0.18s;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .worklog-col-card:hover { border-color: var(--primary-orange); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .worklog-col-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
         .wc-pct {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--primary-orange);
+            font-family: 'Space Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--red);
             min-width: 34px;
             text-align: center;
             flex-shrink: 0;
@@ -969,40 +1023,40 @@
         }
 
         .resource-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 16px;
+            padding: 12px;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
             display: flex;
             flex-direction: column;
             height: 100%;
+            box-shadow: var(--card-shadow);
         }
 
         .resource-card:hover {
-            box-shadow: 0 4px 16px var(--shadow);
-            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-3px);
         }
 
         .resource-card.pinned {
             border-left: 3px solid var(--secondary-yellow);
-            background: var(--yellow-light);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 10px;
-            gap: 8px;
+            margin-bottom: 6px;
+            gap: 6px;
         }
 
         .resource-name {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
             flex: 1;
             line-height: 1.3;
-            color: var(--text-primary);
+            color: var(--ink);
         }
 
         .card-actions {
@@ -1016,57 +1070,61 @@
         .resource-card:hover .card-actions { opacity: 1; }
 
         .icon-btn {
-            width: 24px;
-            height: 24px;
-            background: var(--bg-secondary);
+            width: 26px; height: 26px;
+            background: var(--bg-tertiary);
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.2s ease;
-            color: var(--text-primary);
+            color: var(--faint);
         }
 
         .icon-btn:hover {
-            background: var(--orange-light);
-            color: var(--primary-orange);
+            background: var(--red-bg);
+            color: var(--red);
         }
 
         .priority-badge {
             display: inline-block;
             padding: 2px 8px;
-            border-radius: 3px;
+            border-radius: 99px;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 6px;
         }
 
         .priority-high {
-            background: var(--orange-light);
-            color: var(--primary-orange);
+            background: rgba(239,68,68,0.1);
+            color: var(--red);
         }
 
         .priority-medium {
-            background: var(--yellow-light);
-            color: #c48a00;
+            background: rgba(245,158,11,0.1);
+            color: #d97706;
         }
 
         .priority-low {
-            background: var(--blue-light);
+            background: rgba(59,130,246,0.1);
             color: var(--accent-blue);
         }
 
         .resource-description {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.5;
+            color: var(--faint);
+            font-size: 12px;
+            line-height: 1.4;
             margin-bottom: 8px;
             flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .resource-url {
-            color: var(--accent-blue);
-            font-size: 12px;
+            color: var(--red);
+            font-size: 11px;
             text-decoration: none;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1075,22 +1133,26 @@
             margin-top: auto;
         }
 
-        .resource-url:hover {
-            text-decoration: underline;
-        }
+        .resource-url:hover { text-decoration: underline; }
 
         .resource-preview-wrap {
             width: 100%;
-            margin: 0 0 12px 0;
+            margin: 0 0 10px 0;
             overflow: hidden;
-            border-radius: 6px;
-            background: var(--bg-secondary);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
             flex-shrink: 0;
+            /* 預設隱藏，有圖才顯示 */
+            display: none;
+        }
+
+        .resource-preview-wrap.loaded {
+            display: block;
         }
 
         .resource-preview-img {
             width: 100%;
-            height: 150px;
+            height: 90px;
             object-fit: cover;
             display: block;
             transition: transform 0.3s ease;
@@ -1273,9 +1335,8 @@
             position: absolute;
             top: 0;
             bottom: -250px;
-            width: 2px;
-            background: var(--primary-orange);
-            border-left: 2px dashed var(--primary-orange);
+            width: 0;
+            border-left: 2px dashed var(--red);
             z-index: 10;
             pointer-events: none;
         }
@@ -1285,11 +1346,12 @@
             top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--primary-orange);
+            background: var(--red);
             color: white;
             padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
+            border-radius: 2px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
             font-weight: 700;
             white-space: nowrap;
         }
@@ -1324,22 +1386,23 @@
 
         .timeline-item {
             position: absolute;
-            height: 50px;
-            border-radius: 6px;
-            padding: 8px 8px;
+            height: 48px;
+            top: 6px;
+            border-radius: 12px;
+            padding: 8px 12px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            box-shadow: 0 2px 8px var(--shadow);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             overflow: visible;
         }
 
         .timeline-item:hover {
             z-index: 20;
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px var(--shadow);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
         }
 
         .timeline-item-title {
@@ -1361,18 +1424,19 @@
         }
 
         .worklog-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--primary-orange);
-            border-radius: 8px;
-            padding: 16px;
+            background: var(--bg-secondary);
+            border: none;
+            border-left: 4px solid var(--red);
+            border-radius: 18px;
+            padding: 18px;
             margin-bottom: 12px;
-            transition: all 0.2s ease;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
             cursor: pointer;
+            box-shadow: var(--card-shadow);
         }
 
         .worklog-card:hover {
-            box-shadow: 0 4px 16px var(--shadow);
+            box-shadow: var(--card-shadow-hover);
             transform: translateY(-2px);
         }
 
@@ -1394,9 +1458,10 @@
         }
 
         .worklog-progress {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--primary-orange);
+            font-family: 'Space Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--red);
         }
 
         .worklog-card.completed .worklog-progress {
@@ -1452,14 +1517,19 @@
             color: white;
         }
 
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
             overflow-y: auto;
             padding: 40px 20px;
@@ -1472,13 +1542,16 @@
         }
 
         .modal-content {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 30px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 32px 96px rgba(0,0,0,0.3);
+            padding: 32px;
             max-width: 960px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            animation: modalFadeIn 0.35s cubic-bezier(0.16,1,0.3,1);
         }
 
         #worklogDetailModal.person-modal .modal-content {
@@ -1491,29 +1564,33 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--primary-orange);
+            padding-bottom: 14px;
+            border-bottom: 0.5px solid var(--rule);
         }
 
         .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--ink);
         }
 
         .close-btn {
-            width: 32px;
-            height: 32px;
+            width: 28px; height: 28px;
             background: var(--bg-secondary);
             border: none;
-            border-radius: 50%;
+            border-radius: 99px;
             cursor: pointer;
-            font-size: 20px;
-            color: var(--text-primary);
+            font-size: 16px;
+            color: var(--faint);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
 
         .close-btn:hover {
-            background: var(--orange-light);
+            background: var(--bg-tertiary);
+            color: var(--ink);
         }
 
         /* Worklog Detail Card */
@@ -1591,36 +1668,39 @@
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            font-weight: 600;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--faint);
             margin-bottom: 6px;
-            font-size: 13px;
-            color: var(--text-primary);
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            padding: 8px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--rule);
             font-size: 14px;
-            color: var(--text-primary);
+            color: var(--ink);
             font-family: 'Inter', sans-serif;
-            transition: all 0.2s ease;
+            transition: border-color 0.2s cubic-bezier(0.16,1,0.3,1);
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--primary-orange);
+            border-bottom-color: var(--red);
         }
 
         .form-group textarea {
@@ -1773,7 +1853,118 @@
         .emoji-option:hover {
             background: var(--bg-secondary);
         }
+
+        /* ── Phase 9: Stagger fade-in ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-section {
+            animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        /* pill-option active: left border style (Phase 7-2) */
+        .pill-option.active {
+            background: var(--red-bg) !important;
+            border-left: 3px solid var(--red) !important;
+            border-color: var(--rule) !important;
+            border-left-color: var(--red) !important;
+            color: var(--ink) !important;
+        }
+        .pill-option:hover {
+            border-color: var(--red) !important;
+            color: var(--red) !important;
+            background: var(--red-bg) !important;
+        }
+        .work-type-pill.active {
+            background: var(--red) !important;
+            border-color: var(--red) !important;
+            color: white !important;
+        }
+        .work-type-pill:hover {
+            border-color: var(--red) !important;
+            color: var(--red) !important;
+            background: var(--red-bg) !important;
+        }
+
+        /* view-toggle active */
+        .view-toggle-btn.active {
+            background: var(--red) !important;
+            border-color: var(--red) !important;
+            color: white !important;
+        }
+        .view-toggle-btn:hover {
+            background: var(--red-bg) !important;
+            border-color: var(--red) !important;
+        }
+
+        /* category header */
+        .category-header {
+            border-bottom: 1px solid var(--rule);
+        }
+        .category-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+        .add-category-btn { color: var(--red); }
+        .add-category-btn:hover { color: var(--ink); }
+
+        /* timeline range btn active */
+        .timeline-range-btn.active {
+            color: var(--red) !important;
+            border-bottom-color: var(--red) !important;
+        }
+
+        /* search input */
+        .search-box input:focus {
+            border-color: var(--red) !important;
+        }
+
+        /* person-detail position badge */
+        .person-detail-position {
+            background: var(--red-bg) !important;
+            color: var(--red) !important;
+        }
+
+        /* worklog-col-card tag badge */
+        .wc-mid span, .wc-tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* btn global */
+        .btn:hover {
+            background: var(--red-bg) !important;
+            border-color: var(--red) !important;
+        }
+
+        /* show-more btn */
+        .show-more-btn:hover {
+            background: var(--red-bg) !important;
+            border-color: var(--red) !important;
+            color: var(--red) !important;
+        }
+
+        /* icon-btn */
+        .icon-btn:hover {
+            background: var(--red-bg) !important;
+            color: var(--red) !important;
+        }
+
+        /* priority badges */
+        .priority-high {
+            background: var(--red-bg) !important;
+            color: var(--red) !important;
+        }
     </style>
+
 </head>
 <body>
     <div class="notification" id="notification"></div>
@@ -2301,13 +2492,14 @@
         );
 
         const workTypeColors = {
-            '車體': '#FF6B6B',
-            '引擎': '#4ECDC4',
-            '懸吊': '#45B7D1',
-            '煞車': '#FFA07A',
-            '電裝': '#98D8C8',
-            '空力': '#A8E6CF',
-            '其他': '#95A5A6'
+            '車體': '#b83025',
+            '引擎': '#8a6a2a',
+            '懸吊': '#3a6ea8',
+            '煞車': '#c06030',
+            '電裝': '#2a7a6a',
+            '空力': '#4a7a5a',
+            '其他': '#6a6a6a',
+            '教授': '#555555'
         };
 
         const emojis = ['👤', '😀', '😎', '🤓', '🧑‍🔧', '🏎️', '⚙️', '🔧', '🏁', '🎯', '💪', '🚀', '⭐', '🔥', '💡', '🎨'];
@@ -2898,8 +3090,8 @@
             }
         });
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) document.body.setAttribute('data-theme', savedTheme);
+        const savedTheme2 = localStorage.getItem('theme');
+        if (savedTheme2) document.body.setAttribute('data-theme', savedTheme2);
 
         function loadData() {
             const saved = localStorage.getItem('fsaeResources');
@@ -3247,7 +3439,13 @@
 
             {
                 const grid = document.createElement('div');
-                grid.className = (category === '人員管理' && !isOverview) ? 'person-full-grid' : 'resources-grid';
+                if (category === '人員管理' && !isOverview) {
+                    grid.className = 'person-full-grid';
+                } else if (category === '人員管理' && isOverview) {
+                    grid.className = 'overview-person-grid';
+                } else {
+                    grid.className = 'resources-grid';
+                }
 
                 const sortedResources = category === '計畫'
                     ? [...categoryResources].sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -3888,8 +4086,14 @@
             // 載入 og:image（有 cache 就直接用）
             if (resource.url) {
                 const img = card.querySelector('.resource-preview-img');
+                const wrap = card.querySelector('.resource-preview-wrap');
+                const showImg = (url) => {
+                    img.onload = () => wrap.classList.add('loaded');
+                    img.onerror = () => {};
+                    img.src = url;
+                };
                 if (ogImageCache[resource.url]) {
-                    img.src = ogImageCache[resource.url];
+                    showImg(ogImageCache[resource.url]);
                 } else {
                     fetch(`https://api.microlink.io/?url=${encodeURIComponent(resource.url)}`)
                         .then(r => r.json())
@@ -3897,16 +4101,10 @@
                             const imgUrl = data?.data?.image?.url;
                             if (imgUrl) {
                                 ogImageCache[resource.url] = imgUrl;
-                                img.src = imgUrl;
-                            } else {
-                                // 沒有 og:image 就隱藏預覽區
-                                card.querySelector('.resource-preview-wrap').style.display = 'none';
+                                showImg(imgUrl);
                             }
                         })
-                        .catch(() => {
-                            const wrap = card.querySelector('.resource-preview-wrap');
-                            if (wrap) wrap.style.display = 'none';
-                        });
+                        .catch(() => {});
                 }
             }
 
