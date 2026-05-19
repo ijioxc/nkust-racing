@@ -318,9 +318,9 @@ const GROUPS = {
     explodeDir: new THREE.Vector3(0, 0.6, -1).normalize(),
   },
   front_wing: {
-    label: '前翼 / 鼻錐', sub: 'Front Wing & Nose',
-    hex: '#334a5e',
-    patterns: [/front.*wing/i, /frontwing/i, /wing.*front/i, /splitter/i, /nose(?:cone)?/i, /endplate.*front/i],
+    label: '前端結構', sub: 'Front Bulkhead & Nose',
+    hex: '#5a7a5e',
+    patterns: [/front.*wing/i, /frontwing/i, /wing.*front/i, /splitter/i, /nose(?:cone)?/i, /endplate.*front/i, /front.*bulkhead/i, /front.*structure/i],
     explodeDir: new THREE.Vector3(0, 0.3, 1).normalize(),
   },
   suspension: {
@@ -367,10 +367,10 @@ const PARTS = {
     concept:{body:'FSAE 賽車輪胎寬而矮（低扁平比），最大化接觸面積以提升抓地力。輪圈採 10 吋設計方便容納大口徑煞車盤，且市場上有豐富的 FSAE 專用輪胎選擇。\n\nCamber 設定對輪胎接觸面均勻性影響極大：通常靜態設定 −1° 至 −3°，讓側傾時外側輪維持接近 0° 以獲得最大接觸面積。',rules:[]},
     physics:{body:'輪胎的 Magic Formula（Pacejka 模型）描述側向力 Fy 與側滑角 α 的非線性關係：Fy = D·sin(C·arctan(B·α − E·(B·α − arctan(B·α))))。\n\nLoad Sensitivity（負載敏感性）是輪胎重要特性：正向力加倍時，摩擦力不會等比例加倍，因此輕量化比提高下壓力更有效率。',rules:[]}},
   // ── 前翼 ────────────────────────────────────────────────────────────────
-  'front_wing':{system:'Aerodynamics',name:'前翼 / 鼻錐',ref:'Front Wing · FSAE T.7',
-    mfg:{specs:[['材料','碳纖維 / 玻璃纖維複合板'],['翼型','NACA 6409 / 自訂'],['層數','3–6 層 CF 預浸布'],['前端防撞','EPS 鼻錐（FSAE 規定）'],['最大前懸','250 mm（前輪軸前）']],note:'前翼翼端板（Endplate）需於前輪前方 250 mm 以內，超出部分須額外加強防撞。鼻錐需通過 T.4 前端撞擊測試。',rules:['T.7.1','T.4.3']},
-    concept:{body:'前翼產生下壓力（Negative Lift），將前輪壓向地面，增加前輪抓地力與轉向回應速度。\n\n前後下壓力分配（Aero Balance）直接影響車輛轉向特性：前翼下壓力過大 → 轉向過靈敏（Oversteer）；過小 → 轉向不足（Understeer）。',rules:[]},
-    physics:{body:'升力係數 CL 與下壓力的關係：F = ½·ρ·v²·A·CL。以 80 km/h 行駛，典型 FSAE 前翼產生 80–150 N 下壓力。\n\n地面效應（Ground Effect）：翼面距地面越近，有效 CL 越高（Venturi 效應）。多數 FSAE 隊伍設計可調攻角（AoA），在動態測試與高速直線間切換設定。',rules:[]}},
+  'front_wing':{system:'Frontal Protection',name:'前端結構',ref:'Front Bulkhead · FSAE F.3.2.1.a',
+    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['前隔板主管','Size B'],['前隔板支撐管','Size C'],['前端防撞','EPS 鼻錐（Nose Cone）'],['功能','正面撞擊第一道防線']],note:'前隔板後方的 Front Bulkhead Support 須以三角形接入主車架，形成衝擊盒（Crumple Zone），允許有控制地塑性變形以吸收衝擊能量。',rules:['F.3.2.1.a','F.3.2.1.b','T.4.3']},
+    concept:{body:'前端結構定義車輛的「衝擊盒」概念：正面撞擊時，允許前隔板支撐管有控制地塑性變形，延長撞擊時間、降低減速度峰值，保護駕駛艙不受擠壓。\n\n多數隊伍在外側安裝 EPS（發泡聚苯乙烯）鼻錐，進一步延長撞擊距離並吸收額外動能。',rules:['F.3.2.1.a']},
+    physics:{body:'正面撞擊動能：Ek = ½mv²。以 60 km/h 撞擊固定障礙、車重 250 kg 時，動能約 34.7 kJ 需全部由車體結構吸收。\n\n衝擊盒的設計目標是將減速峰值（Peak G）控制在 20–40G 以下，超過此值會造成駕駛脊椎傷害。',rules:['F.4.2.2','F.4.2.3']}},
   // ── 後翼 ────────────────────────────────────────────────────────────────
   'rear_wing':{system:'Aerodynamics',name:'後翼',ref:'Rear Wing · FSAE T.7',
     mfg:{specs:[['材料','碳纖維複合板'],['翼型','高攻角 NACA / Selig'],['層數','4–8 層 CF 預浸布'],['攻角範圍','15°–35°（可調）'],['端板材料','3mm CF 平板'],['最大後懸','FSAE 不限制（需通過靜態審查）']],note:'後翼是全車最大的下壓力來源。翼端板需封閉翼展兩端以防止翼尖渦流洩壓。',rules:['T.7.1','T.7.2']},
