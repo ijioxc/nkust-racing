@@ -7,481 +7,116 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & Tokens ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; }
-
-:root {
-  --bg:       #f5f5f7;
-  --surface:  #ffffff;
-  --ink:      #1d1d1f;
-  --ink-2:    #424245;
-  --ink-3:    #6e6e73;
-  --ink-4:    #aeaeb2;
-  --border:   rgba(0,0,0,0.09);
-  --border-md:rgba(0,0,0,0.14);
-  --accent:   #0071e3;
-  --red:      #ef4444;
-  --blue:     #3b82f6;
-  --amber:    #d97706;
-  --green:    #16a34a;
-  --ease:     cubic-bezier(0.25, 0.1, 0.25, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+:root{
+  --bg:#f5f5f7;--sf:#fff;
+  --ink:#1d1d1f;--ink2:#424245;--ink3:#6e6e73;--ink4:#aeaeb2;
+  --b:.5px solid rgba(0,0,0,.09);--bm:.5px solid rgba(0,0,0,.13);
+  --red:#ef4444;--eout:cubic-bezier(.16,1,.3,1);
 }
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  display: flex;
-  flex-direction: column;
-}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
 
 /* ── Header ── */
-.hdr {
-  flex-shrink: 0;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  background: rgba(255,255,255,0.72);
-  backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: .5px solid var(--border-md);
-  position: relative;
-  z-index: 200;
-}
+.hdr{flex-shrink:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(20px);border-bottom:var(--bm);z-index:300;position:relative}
+.hdr-l{display:flex;align-items:center;gap:10px}
+.mark{width:22px;height:22px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+.mark span{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;color:#fff;letter-spacing:-.3px}
+.wm{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500}
+.sep{color:var(--ink4);margin:0 6px;font-weight:300}
+.sub{color:var(--ink3);font-size:12px}
+.hdr-c{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:2px}
+.ht{font-size:12px;color:var(--ink3);text-decoration:none;padding:5px 12px;border-radius:6px;transition:background .15s,color .15s}
+.ht:hover{color:var(--ink);background:rgba(0,0,0,.05)}
+.ht.on{color:var(--ink);font-weight:500;background:rgba(0,0,0,.06)}
+.hdr-r{display:flex;gap:6px}
+.hb{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--ink2);background:rgba(0,0,0,.05);border:none;cursor:pointer;padding:5px 12px;border-radius:8px;transition:background .15s;text-decoration:none}
+.hb:hover{background:rgba(0,0,0,.09)}
 
-.hdr-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ── Layout ── */
+.app{display:flex;flex:1;overflow:hidden;min-height:0}
 
-.hdr-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: var(--ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hdr-mark span {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: -.3px;
-}
-
-.hdr-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink);
-  letter-spacing: -.01em;
-}
-.hdr-sep {
-  color: var(--ink-4);
-  margin: 0 2px;
-  font-weight: 300;
-}
-.hdr-sub {
-  color: var(--ink-3);
-  font-weight: 400;
-}
-
-.hdr-nav {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.hdr-nav a {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--ink-3);
-  text-decoration: none;
-  padding: 5px 12px;
-  border-radius: 6px;
-  transition: color .15s, background .15s;
-}
-.hdr-nav a:hover {
-  color: var(--ink);
-  background: rgba(0,0,0,0.05);
-}
-
-/* ── App layout ── */
-.app {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  min-height: 0;
-}
-
-/* ── 3D Viewer ── */
-.viewer {
-  flex: 1;
-  position: relative;
-  background: #f0f0f4;
-  overflow: hidden;
-}
-#three-mount {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+/* ── Viewer ── */
+.viewer{flex:1;position:relative;background:#e6e6ea;overflow:hidden;min-width:0}
+#mount{width:100%;height:100%;position:relative}
 
 /* Loading */
-.loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  background: #f0f0f4;
-  z-index: 10;
-}
-.loading-ring {
-  width: 28px;
-  height: 28px;
-  border: 1.5px solid var(--border-md);
-  border-top-color: var(--ink-3);
-  border-radius: 50%;
-  animation: spin .75s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .12em;
-  color: var(--ink-4);
-  text-transform: uppercase;
-}
+.loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#e6e6ea;z-index:20;transition:opacity .5s}
+.ring{width:28px;height:28px;border:1.5px solid rgba(0,0,0,.12);border-top-color:var(--ink3);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ltxt{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--ink4);text-transform:uppercase}
 
-/* Viewer hint */
-.hint {
-  position: absolute;
-  bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .08em;
-  color: var(--ink-3);
-  background: rgba(255,255,255,0.78);
-  backdrop-filter: blur(12px);
-  border: .5px solid var(--border-md);
-  padding: 5px 14px;
-  border-radius: 20px;
-  pointer-events: none;
-  white-space: nowrap;
-}
+/* ── Floating Toolbar ── */
+.vt{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:3px;background:rgba(255,255,255,.93);backdrop-filter:saturate(180%) blur(16px);border:var(--bm);border-radius:14px;padding:5px 7px;box-shadow:0 2px 12px rgba(0,0,0,.10),0 8px 32px rgba(0,0,0,.07);z-index:100;white-space:nowrap}
+.vg{display:flex;align-items:center;gap:1px}
+.vs{width:.5px;height:17px;background:rgba(0,0,0,.12);margin:0 3px;flex-shrink:0}
+.vb{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.04em;color:var(--ink3);background:transparent;border:none;cursor:pointer;padding:5px 8px;border-radius:7px;transition:color .12s,background .12s;display:flex;align-items:center;gap:4px;user-select:none;white-space:nowrap}
+.vb:hover{color:var(--ink);background:rgba(0,0,0,.06)}
+.vb.on{color:var(--ink);background:rgba(0,0,0,.08);font-weight:600}
+.vb svg{stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.vl{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:500;letter-spacing:.10em;color:var(--ink4);text-transform:uppercase;flex-shrink:0}
+.vv{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink3);min-width:24px;text-align:right;flex-shrink:0}
+.esl{-webkit-appearance:none;appearance:none;width:80px;height:3px;border-radius:2px;background:rgba(0,0,0,.14);outline:none;cursor:pointer;flex-shrink:0}
+.esl::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--ink);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.20);transition:transform .15s,background .15s}
+.esl:hover::-webkit-slider-thumb{transform:scale(1.2);background:var(--red)}
 
-/* ── Hotspot labels (CSS2D) ── */
-.hotspot {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  pointer-events: auto;
-  user-select: none;
-}
-.hs-pip {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ink);
-  border: 1.5px solid rgba(255,255,255,0.7);
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.18);
-  flex-shrink: 0;
-  transition: transform .2s var(--ease-out), background .2s;
-}
-.hotspot:hover .hs-pip,
-.hotspot.active .hs-pip {
-  transform: scale(1.5);
-  background: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0,113,227,0.25);
-}
-.hs-tag {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .04em;
-  color: var(--ink);
-  background: rgba(255,255,255,0.86);
-  backdrop-filter: blur(10px);
-  border: .5px solid var(--border-md);
-  padding: 3px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  transition: background .15s, color .15s, border-color .15s;
-}
-.hotspot:hover .hs-tag,
-.hotspot.active .hs-tag {
-  background: var(--ink);
-  color: #fff;
-  border-color: transparent;
-}
+/* ── Viewport Badges ── */
+.ebadge{position:absolute;top:16px;left:16px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--red);background:rgba(239,68,68,.08);border:.5px solid rgba(239,68,68,.22);padding:4px 10px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .3s}
+.ebadge.on{opacity:1}
+.pbadge{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border:var(--bm);border-radius:10px;padding:10px 14px;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s var(--eout);transform:translateY(-4px);max-width:200px}
+.pbadge.on{opacity:1;transform:none}
+.pb-s{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4);margin-bottom:3px}
+.pb-n{font-size:13px;font-weight:600;color:var(--ink)}
+
+/* Hover tooltip */
+.tt{position:absolute;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.93);backdrop-filter:blur(10px);border:var(--bm);padding:4px 10px;border-radius:6px;opacity:0;transition:opacity .10s;z-index:50;white-space:nowrap}
+.tt.on{opacity:1}
 
 /* ── Side Panel ── */
-.panel {
-  width: 360px;
-  flex-shrink: 0;
-  background: var(--surface);
-  border-left: .5px solid var(--border-md);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+.panel{width:360px;flex-shrink:0;background:var(--sf);border-left:var(--bm);display:flex;flex-direction:column;overflow:hidden}
+.pidle{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;text-align:center;gap:16px}
+.pidle-i{width:44px;height:44px;border-radius:12px;background:var(--bg);border:var(--bm);display:flex;align-items:center;justify-content:center}
+.pidle-i svg{width:20px;height:20px;stroke:var(--ink4);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.pidle-t{font-size:13px;font-weight:500;color:var(--ink2)}
+.pidle-b{font-size:12px;color:var(--ink4);line-height:1.65}
+.pc{display:none;flex-direction:column;height:100%}
+.ph{padding:20px 22px 0;flex-shrink:0}
+.psys{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink4);margin-bottom:5px}
+.pnm{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:3px}
+.prf{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);margin-bottom:14px}
+.pbar{height:2px;border-radius:1px;background:var(--red);margin:0 22px 14px;transform-origin:left;animation:barin .4s var(--eout) both}
+@keyframes barin{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-top:var(--b);border-bottom:var(--b);margin:0 -22px;padding:0 22px}
+.tab{padding:9px 0;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:var(--ink4);background:transparent;border:none;cursor:pointer;border-bottom:1.5px solid transparent;transition:color .15s,border-color .15s;position:relative;top:.5px}
+.tab:hover{color:var(--ink2)}
+.tab.on{color:var(--ink);border-bottom-color:var(--red)}
+.pbody{flex:1;overflow-y:auto;padding:20px 22px;scroll-behavior:smooth}
+.pbody::-webkit-scrollbar{width:3px}
+.pbody::-webkit-scrollbar-thumb{background:rgba(0,0,0,.11);border-radius:2px}
+.pane{display:none}
+.pane.on{display:block;animation:pin .2s var(--eout)}
+@keyframes pin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.s{margin-bottom:20px}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink4);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:.5px;background:rgba(0,0,0,.08)}
+.sr{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:.5px solid rgba(0,0,0,.07);gap:12px}
+.sr:last-child{border-bottom:none}
+.sk{font-size:11.5px;color:var(--ink3);flex-shrink:0}
+.sv{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;color:var(--ink);text-align:right}
+.note{background:var(--bg);border-left:2px solid rgba(0,0,0,.10);padding:10px 13px;border-radius:0 6px 6px 0;font-size:12px;line-height:1.72;color:var(--ink2)}
+.bt{font-size:12.5px;line-height:1.78;color:var(--ink2)}
+.bt p{margin-bottom:12px}
+.bt p:last-child{margin-bottom:0}
+.rules{display:flex;flex-wrap:wrap;gap:5px}
+.rule{font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:500;color:var(--ink3);background:var(--bg);border:var(--bm);padding:3px 9px;border-radius:4px}
+.rule strong{color:var(--ink);font-weight:600}
 
-/* Empty state */
-.panel-idle {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 32px;
-  text-align: center;
-  gap: 16px;
-}
-.idle-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--bg);
-  border: .5px solid var(--border-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.idle-icon svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--ink-4);
-  fill: none;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.idle-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink-2);
-}
-.idle-body {
-  font-size: 12px;
-  color: var(--ink-4);
-  line-height: 1.65;
-}
-
-/* Panel content */
-.panel-content {
-  display: none;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Part header */
-.part-hdr {
-  padding: 20px 22px 0;
-  flex-shrink: 0;
-}
-.part-system {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--ink-4);
-  margin-bottom: 6px;
-}
-.part-name {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: -.02em;
-  line-height: 1.15;
-  margin-bottom: 3px;
-}
-.part-ref {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: var(--ink-4);
-  margin-bottom: 16px;
-  letter-spacing: .02em;
-}
-
-/* Tabs */
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: .5px solid var(--border);
-  border-bottom: .5px solid var(--border);
-  margin: 0 -22px;
-  padding: 0 22px;
-}
-.tab {
-  padding: 10px 0;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--ink-4);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  border-bottom: 1.5px solid transparent;
-  transition: color .15s, border-color .15s;
-  position: relative;
-  top: .5px;
-}
-.tab:hover { color: var(--ink-2); }
-.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-
-/* Panel body */
-.panel-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 22px;
-  scroll-behavior: smooth;
-}
-.panel-body::-webkit-scrollbar { width: 3px; }
-.panel-body::-webkit-scrollbar-track { background: transparent; }
-.panel-body::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 2px; }
-
-.tab-pane { display: none; }
-.tab-pane.active { display: block; }
-
-/* Section */
-.s { margin-bottom: 22px; }
-.s-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--ink-4);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.s-label::after {
-  content: '';
-  flex: 1;
-  height: .5px;
-  background: var(--border);
-}
-
-/* Spec table */
-.spec-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 8px 0;
-  border-bottom: .5px solid var(--border);
-  gap: 12px;
-}
-.spec-row:last-child { border-bottom: none; }
-.spec-k {
-  font-size: 11.5px;
-  color: var(--ink-3);
-  flex-shrink: 0;
-}
-.spec-v {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--ink);
-  text-align: right;
-}
-
-/* Note block */
-.note {
-  background: var(--bg);
-  border-left: 2px solid var(--border-md);
-  padding: 11px 13px;
-  border-radius: 0 6px 6px 0;
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--ink-2);
-}
-
-/* Body text */
-.body-text {
-  font-size: 13px;
-  line-height: 1.75;
-  color: var(--ink-2);
-}
-.body-text p { margin-bottom: 12px; }
-.body-text p:last-child { margin-bottom: 0; }
-
-/* Rule badges */
-.rules { display: flex; flex-wrap: wrap; gap: 5px; }
-.rule {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: .04em;
-  color: var(--ink-3);
-  background: var(--bg);
-  border: .5px solid var(--border-md);
-  padding: 3px 9px;
-  border-radius: 4px;
-}
-.rule strong { color: var(--ink); font-weight: 600; }
-
-/* ── Footer strip ── */
-.footer {
-  flex-shrink: 0;
-  height: 60px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: .5px solid var(--border-md);
-  background: var(--surface);
-}
-.fc {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 20px;
-  border-right: .5px solid var(--border);
-}
-.fc:last-child { border-right: none; }
-.fc-bar {
-  width: 2px;
-  height: 22px;
-  border-radius: 1px;
-  flex-shrink: 0;
-}
-.fc-text {}
-.fc-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--ink-4);
-  margin-bottom: 2px;
-}
-.fc-desc {
-  font-size: 11px;
-  color: var(--ink-2);
-}
-
-/* ── Responsive ── */
-@media (max-width: 860px) {
-  html, body { overflow: auto; }
-  .app { flex-direction: column; overflow: visible; }
-  .viewer { height: 55vw; min-height: 260px; flex: none; }
-  .panel { width: 100%; border-left: none; border-top: .5px solid var(--border-md); }
-  .footer { display: none; }
+@media(max-width:900px){
+  html,body{overflow:auto}
+  .app{flex-direction:column;overflow:visible}
+  .viewer{height:60vw;min-height:280px;flex:none}
+  .panel{width:100%;border-left:none;border-top:var(--bm)}
+  .hdr-c{display:none}
 }
 </style>
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
@@ -489,96 +124,114 @@ body {
 <body>
 
 <header class="hdr">
-  <div class="hdr-left">
-    <div class="hdr-mark"><span>NR</span></div>
-    <div class="hdr-title">
-      NKUST Racing
-      <span class="hdr-sep">/</span>
-      <span class="hdr-sub">車體結構解析</span>
-    </div>
+  <div class="hdr-l">
+    <div class="mark"><span>NR</span></div>
+    <span class="wm">NKUST Racing</span>
+    <span class="sep">/</span>
+    <span class="sub">車體結構解析</span>
   </div>
-  <nav class="hdr-nav">
-    <a href="nkust_racing.html">專案總覽</a>
-    <a href="fsae-first-principles.html">設計原則</a>
+  <nav class="hdr-c">
+    <a class="ht" href="nkust_racing.html">專案總覽</a>
+    <a class="ht on" href="car-blueprint.html">車體解析</a>
+    <a class="ht" href="fsae-first-principles.html">設計原則</a>
   </nav>
-  <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-    <a href="nkust_racing.html" class="hdr-nav" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;background:rgba(0,0,0,0.05);text-decoration:none;font-size:12px;font-weight:500;color:var(--ink-2);transition:background .15s,color .15s;" onmouseover="this.style.background='rgba(0,0,0,0.09)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <div class="hdr-r">
+    <button class="hb" id="btn-shot">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      截圖
+    </button>
+    <a class="hb" href="nkust_racing.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       返回總覽
     </a>
   </div>
 </header>
 
 <div class="app">
-
-  <!-- 3D Viewer -->
   <div class="viewer">
-    <div id="three-mount"></div>
+    <div id="mount"></div>
     <div class="loading" id="loading">
-      <div class="loading-ring"></div>
-      <div class="loading-text">Loading chassis model</div>
+      <div class="ring"></div>
+      <div class="ltxt" id="ltxt">Loading chassis model</div>
     </div>
-    <div class="hint">點擊標注點查看結構解析　·　拖曳旋轉　·　滾輪縮放</div>
+    <div class="ebadge" id="ebadge">EXPLODE VIEW</div>
+    <div class="pbadge" id="pbadge">
+      <div class="pb-s" id="pb-s"></div>
+      <div class="pb-n" id="pb-n"></div>
+    </div>
+    <div class="tt" id="tt"></div>
+
+    <div class="vt" id="vt">
+      <div class="vg">
+        <button class="vb on" data-view="iso">ISO</button>
+        <button class="vb" data-view="front">前</button>
+        <button class="vb" data-view="side">側</button>
+        <button class="vb" data-view="top">俯</button>
+      </div>
+      <div class="vs"></div>
+      <div class="vg">
+        <button class="vb on" data-mode="solid">
+          <svg width="10" height="10" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" stroke="none"/></svg>實體
+        </button>
+        <button class="vb" data-mode="wire">
+          <svg width="10" height="10" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>線框
+        </button>
+        <button class="vb" data-mode="xray">
+          <svg width="10" height="10" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>X光
+        </button>
+      </div>
+      <div class="vs"></div>
+      <div class="vg">
+        <button class="vb on" data-light="studio">
+          <svg width="10" height="10" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>工作室
+        </button>
+        <button class="vb" data-light="dramatic">
+          <svg width="10" height="10" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>戲劇
+        </button>
+        <button class="vb" data-light="flat">
+          <svg width="10" height="10" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>平光
+        </button>
+      </div>
+      <div class="vs"></div>
+      <div class="vg" style="gap:7px;padding:0 3px">
+        <span class="vl">爆炸</span>
+        <input type="range" class="esl" id="esl" min="0" max="100" value="0">
+        <span class="vv" id="ev">0%</span>
+      </div>
+      <div class="vs"></div>
+      <button class="vb" id="btn-reset">
+        <svg width="11" height="11" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>重置
+      </button>
+    </div>
   </div>
 
-  <!-- Side Panel -->
   <div class="panel">
-
-    <!-- Idle state -->
-    <div class="panel-idle" id="panel-idle">
-      <div class="idle-icon">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="8"/><line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
+    <div class="pidle" id="pidle">
+      <div class="pidle-i">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
-      <div class="idle-title">選擇部位</div>
-      <div class="idle-body">點擊 3D 模型上的標注點，查看該部位的製造流程、賽車概念與汽車原理。</div>
+      <div class="pidle-t">點擊車體選擇部位</div>
+      <div class="pidle-b">直接點擊 3D 模型任意位置，查看該部位的製造流程、賽車概念與汽車原理。</div>
     </div>
-
-    <!-- Content -->
-    <div class="panel-content" id="panel-content">
-      <div class="part-hdr">
-        <div class="part-system" id="part-system"></div>
-        <div class="part-name" id="part-name"></div>
-        <div class="part-ref" id="part-ref"></div>
+    <div class="pc" id="pc">
+      <div class="ph">
+        <div class="psys" id="psys"></div>
+        <div class="pnm" id="pnm"></div>
+        <div class="prf" id="prf"></div>
+      </div>
+      <div class="pbar" id="pbar" style="display:none"></div>
+      <div style="padding:0 22px">
         <div class="tabs">
-          <button class="tab active" data-tab="mfg">製造流程</button>
+          <button class="tab on" data-tab="mfg">製造流程</button>
           <button class="tab" data-tab="concept">賽車概念</button>
           <button class="tab" data-tab="physics">汽車原理</button>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="tab-pane active" id="pane-mfg"></div>
-        <div class="tab-pane" id="pane-concept"></div>
-        <div class="tab-pane" id="pane-physics"></div>
+      <div class="pbody">
+        <div class="pane on" id="pane-mfg"></div>
+        <div class="pane" id="pane-concept"></div>
+        <div class="pane" id="pane-physics"></div>
       </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Footer -->
-<div class="footer">
-  <div class="fc">
-    <div class="fc-bar" style="background:#ef4444"></div>
-    <div class="fc-text">
-      <div class="fc-label" style="color:#ef4444">製造流程</div>
-      <div class="fc-desc">材料規格 · 加工工法 · 品質規範</div>
-    </div>
-  </div>
-  <div class="fc">
-    <div class="fc-bar" style="background:#3b82f6"></div>
-    <div class="fc-text">
-      <div class="fc-label" style="color:#3b82f6">賽車概念</div>
-      <div class="fc-desc">設計理念 · 性能取捨 · FSAE 策略</div>
-    </div>
-  </div>
-  <div class="fc">
-    <div class="fc-bar" style="background:#d97706"></div>
-    <div class="fc-text">
-      <div class="fc-label" style="color:#d97706">汽車原理</div>
-      <div class="fc-desc">結構力學 · 物理原理 · 受力分析</div>
     </div>
   </div>
 </div>
@@ -586,398 +239,446 @@ body {
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// ─── Part database ───────────────────────────────────────────────────────────
+// ── Part DB ──────────────────────────────────────────────────────────────────
 const PARTS = {
-  'main-hoop': {
-    system: 'Primary Structure',
-    name: '主環',
-    ref: 'Main Hoop · FSAE F.5.6.1',
-    mfg: {
-      specs: [
-        ['材料', '4130 Chromoly 鋼管'],
-        ['管材等級', 'Size A（最高等級）'],
-        ['彎管半徑', '≥ 3 × 管外徑'],
-        ['焊接工法', 'TIG 冷焊 + 後退火'],
-        ['焊後強度 Sy', '180 MPa'],
-        ['非焊強度 Sy', '305 MPa'],
-        ['彈性模數 E', '200 GPa'],
-      ],
-      note: '主環是唯一不允許替代材料的管件（F.3.2.1.g）。設計變更須重新提交 SES 審核。',
-      rules: ['F.3.2.1.g', 'F.5.2.1', 'F.5.6.1', 'F.3.4.2.a', 'F.3.4.2.b'],
-    },
-    concept: {
-      body: `主環位於駕駛軀幹旁，是翻車時保護頭部的核心結構。規則要求主環頂端需高於駕駛頭部 50mm 以上（套用 Driver Template），確保任何翻滾角度下頭部不接觸地面。
-
-設計策略上，主環應盡量靠近車身重心垂直線，減少翻車時的偏心力矩。主環必須以結構管三角化接入主結構（Triangulated），不得單獨懸空。
-
-此外，主環連同前環之間的空間定義了「Rollover Protection Envelope」，是 FSAE 技術檢查時最優先審核的項目之一。`,
-      rules: ['F.5.6.1', 'F.5.6.3', 'F.1.4', 'F.1.13'],
-    },
-    physics: {
-      body: `主環的主要受力場景為翻車時地面的壓縮衝擊，以及側向撞擊產生的彎矩。在空間框架中，主環相當於一個剛性拱門（Arch）。
-
-拱形結構的抗壓能力主要來自幾何形狀而非截面積：壓縮力沿拱線傳遞，轉化為沿管軸方向的壓應力，效率遠高於承受彎矩的直樑。
-
-選用 4130 Chromoly 的關鍵指標：Sy = 305 MPa，比 1018 碳鋼（Sy ≈ 207 MPa）高 47%，因此在等效強度前提下，可將壁厚減薄約 32%，顯著降低車架重量。`,
-      rules: ['F.3.4.2'],
-    },
+  'main-hoop':{
+    system:'Primary Structure', name:'主環', ref:'Main Hoop · FSAE F.5.6.1',
+    mfg:{
+      specs:[['材料','4130 Chromoly 鋼管'],['管材等級','Size A（最高等級）'],['彎管半徑','≥ 3 × 管外徑'],['焊接工法','TIG 冷焊 + 後退火'],['焊後強度 Sy','180 MPa'],['非焊強度 Sy','305 MPa'],['彈性模數 E','200 GPa']],
+      note:'主環是唯一不允許替代材料的管件（F.3.2.1.g）。設計變更須重新提交 SES 審核。',
+      rules:['F.3.2.1.g','F.5.6.1','F.3.4.2.a','F.3.4.2.b']},
+    concept:{body:'主環位於駕駛軀幹旁，是翻車時保護頭部的核心結構。規則要求主環頂端需高於駕駛頭部 50mm 以上（Driver Template），確保任何翻滾角度下頭部不接觸地面。\n\n設計策略上，主環應盡量靠近車身重心垂直線，減少翻車時偏心力矩。主環必須以結構管三角化接入主結構，不得單獨懸空。',rules:['F.5.6.1','F.5.6.3','F.1.13']},
+    physics:{body:'主環主要受力場景為翻車時地面的壓縮衝擊，以及側向撞擊產生的彎矩。在空間框架中，主環相當於一個剛性拱門（Arch）。\n\n拱形結構的抗壓能力主要來自幾何形狀：壓縮力沿拱線傳遞，轉化為管軸方向壓應力，效率遠高於承受彎矩的直樑。\n\n4130 Chromoly Sy = 305 MPa，比 1018 碳鋼高 47%，等效強度下可減薄壁厚約 32%。',rules:['F.3.4.2']},
   },
-  'front-hoop': {
-    system: 'Primary Structure',
-    name: '前環',
-    ref: 'Front Hoop · FSAE F.3.2.1.c',
-    mfg: {
-      specs: [
-        ['材料', '4130 Chromoly 鋼管'],
-        ['管材等級', 'Size C（可使用替代材料）'],
-        ['位置', '駕駛腿部上方，近方向盤'],
-        ['焊接', 'TIG 焊接，節點全熔透'],
-        ['焊後強度 Sy', '180 MPa'],
-      ],
-      note: '前環可使用替代管材，但須在 SES 中提交等效截面模數計算（Section Modulus ≥ Size C 規定值）。',
-      rules: ['F.3.2.1.c', 'F.5.6.1', 'F.5.6.2'],
-    },
-    concept: {
-      body: `前環與主環共同構成滾籠系統，兩環之間的空間形成保護駕駛的生存區（Survival Cell）。翻車時，前後兩個接地點與滾籠形成三點支撐，分散衝擊力。
-
-前環同時是前端結構的垂直支撐點，協助吸收正面撞擊能量。設計時前環不得妨礙駕駛視線，且需確保駕駛在 5 秒內能自行脫困（FSAE 逃生測試要求）。`,
-      rules: ['F.1.5', 'F.5.6.1'],
-    },
-    physics: {
-      body: `前環的受力模式與主環不同：主要承受前後方向彎矩（翻車時前方接地）以及垂直壓縮力。
-
-前環較矮且靠前，幾何剛性不如主環，因此規則強制要求以斜撐（Bracing）三角化接入主結構，形成超靜定（Hyperstatic）系統分散應力，避免任何單一節點承受全部載荷。
-
-前環與 Side Impact Structure 的接合節點是全車應力集中最高的位置之一，焊道品質直接決定此節點的安全性。`,
-      rules: ['F.5.6.2', 'F.3.2.1.d'],
-    },
+  'front-hoop':{
+    system:'Primary Structure', name:'前環', ref:'Front Hoop · FSAE F.3.2.1.c',
+    mfg:{
+      specs:[['材料','4130 Chromoly 鋼管'],['管材等級','Size C（可替代）'],['位置','駕駛腿部上方，近方向盤'],['焊接','TIG 全熔透'],['焊後強度 Sy','180 MPa']],
+      note:'前環可使用替代管材，但須在 SES 中提交等效截面模數計算（≥ Size C）。',
+      rules:['F.3.2.1.c','F.5.6.1','F.5.6.2']},
+    concept:{body:'前環與主環共同構成滾籠系統，兩環之間形成保護駕駛的生存區（Survival Cell）。\n\n前環同時是前端結構的垂直支撐點。設計時不得妨礙駕駛視線，且需確保駕駛在 5 秒內能自行脫困（FSAE 逃生測試）。',rules:['F.1.5','F.5.6.1']},
+    physics:{body:'前環主要承受前後方向彎矩及垂直壓縮力。幾何剛性不如主環，因此規則強制要求斜撐三角化接入，形成超靜定系統分散應力。\n\n前環與 Side Impact Structure 的接合節點是全車應力集中最高的位置之一。',rules:['F.5.6.2']},
   },
-  'side-impact': {
-    system: 'Safety Structure',
-    name: '側衝擊結構',
-    ref: 'Side Impact Structure · FSAE F.3.2.1.e',
-    mfg: {
-      specs: [
-        ['材料', '4130 Chromoly 鋼管'],
-        ['管材等級', 'Size B（可使用替代材料）'],
-        ['配置', '兩側各 1 根主管 + 斜撐'],
-        ['最低高度', '距地面 ≤ 300mm'],
-        ['彎管選項', '可改用 Size D 管（F.3.2.1.f）'],
-      ],
-      note: '若使用彎曲或多段管設計（Bent / Multi Upper），管材需升級至 Size D，且須提交 SES 等效計算。',
-      rules: ['F.3.2.1.e', 'F.3.2.1.f'],
-    },
-    concept: {
-      body: `側衝擊結構是 FSAE 車輛對抗側向碰撞的唯一屏障，因為沒有車門。其有效性直接決定駕駛在側碰事故中的安全性。
-
-設計上，SIS 高度應覆蓋駕駛腰部至肩部範圍，並與主環、前環節點對齊，確保撞擊力能沿結構路徑傳遞至整體框架。
-
-許多隊伍在 SIS 內側加裝 EPS / EPP 泡棉吸能材料，雖然規則未強制要求，但能顯著降低撞擊加速度峰值，提升實際安全性。`,
-      rules: ['F.3.2.1.e', 'F.3.2.1.f'],
-    },
-    physics: {
-      body: `側向撞擊是短時高衝擊（High-Impulse）事件。依衝量-動量定理 F = Δp / Δt，要降低受力峰值，需延長接觸時間——即以吸能材料增大 Δt。
-
-SIS 的主要破壞模式為三點彎曲（Three-Point Bending）：管件兩端固定於主環與前環節點，撞擊力施加於中央，如同受集中載荷的簡支梁。
-
-Size B 管材的截面模數（Z = I/c）是 FSAE 設定的抗彎下限，對應特定能量吸收量。等效替代材料的截面模數不得低於此值。`,
-      rules: ['F.4.2.3'],
-    },
+  'side-impact':{
+    system:'Safety Structure', name:'側衝擊結構', ref:'Side Impact Structure · FSAE F.3.2.1.e',
+    mfg:{
+      specs:[['材料','4130 Chromoly 鋼管'],['管材等級','Size B（可替代）'],['配置','兩側各 1 根主管＋斜撐'],['最低高度','距地面 ≤ 300 mm'],['彎管選項','可改用 Size D 管']],
+      note:'若使用彎曲或多段管設計，管材需升級至 Size D，且須提交 SES 等效計算。',
+      rules:['F.3.2.1.e','F.3.2.1.f']},
+    concept:{body:'側衝擊結構是 FSAE 車輛對抗側向碰撞的唯一屏障（無車門）。SIS 高度應覆蓋駕駛腰部至肩部，並與主環、前環節點對齊，確保撞擊力沿結構路徑傳遞至整體框架。\n\n許多隊伍在 SIS 內側加裝 EPS/EPP 泡棉，能顯著降低撞擊加速度峰值。',rules:['F.3.2.1.e']},
+    physics:{body:'側向撞擊是短時高衝擊事件。依 F = Δp/Δt，降低受力峰值需延長接觸時間。\n\nSIS 的主要破壞模式為三點彎曲：管件兩端固定於主環與前環節點，撞擊力施加於中央，如同受集中載荷的簡支梁。',rules:['F.4.2.3']},
   },
-  'front-bulkhead': {
-    system: 'Frontal Protection',
-    name: '前隔板',
-    ref: 'Front Bulkhead · FSAE F.3.2.1.a',
-    mfg: {
-      specs: [
-        ['材料', '4130 Chromoly 鋼管'],
-        ['主管等級', 'Size B'],
-        ['支撐管等級', 'Size C（Front Bulkhead Support）'],
-        ['功能', '正面撞擊第一道防線'],
-        ['允許變形', '設計允許適度塑性變形'],
-      ],
-      note: '前隔板後方的 Front Bulkhead Support 須以三角形接入主車架，形成衝擊盒（Crumple Zone）區域，規範見 F.3.2.1.a–b。',
-      rules: ['F.3.2.1.a', 'F.3.2.1.b'],
-    },
-    concept: {
-      body: `前隔板定義了車輛的「衝擊盒」概念：正面撞擊時，前隔板及支撐結構允許有控制地塑性變形，吸收動能並保護駕駛艙不被侵入。
-
-FSAE 車重輕（< 300 kg），即便低速撞擊固定障礙，若無吸能設計，傳遞至駕駛的加速度仍可能超過 40g 安全上限。
-
-實務上多數隊伍在前隔板外側安裝 Nose Cone（EPS 泡棉鼻錐），進一步延長撞擊時間、降低力峰值，且 Nose Cone 本身無結構規範，可自由優化形狀。`,
-      rules: ['F.3.2.1.a', 'F.3.2.1.b'],
-    },
-    physics: {
-      body: `正面撞擊動能：Ek = ½mv²。以 70 km/h 撞擊固定障礙，車重 200 kg 時，動能約 37.9 kJ，全部需由車體結構及吸能材料吸收。
-
-理想的吸能力-位移曲線應接近矩形（Plateau Load），即在整個壓縮行程中維持均勻阻力，使吸能密度最大化，同時避免力峰值過高傷及駕駛。
-
-三角化的前隔板支撐結構建立多條載荷傳遞路徑（Load Path），使衝擊力分散到整個主結構而非集中在單點，避免局部應力集中造成提前失效。`,
-      rules: ['F.4.2.2', 'F.4.2.3'],
-    },
+  'front-bulkhead':{
+    system:'Frontal Protection', name:'前隔板', ref:'Front Bulkhead · FSAE F.3.2.1.a',
+    mfg:{
+      specs:[['材料','4130 Chromoly 鋼管'],['主管等級','Size B'],['支撐管等級','Size C（前隔板支撐）'],['功能','正面撞擊第一道防線'],['允許變形','設計允許適度塑性變形']],
+      note:'前隔板後方 Front Bulkhead Support 須以三角形接入主車架形成衝擊盒（Crumple Zone），見 F.3.2.1.a–b。',
+      rules:['F.3.2.1.a','F.3.2.1.b']},
+    concept:{body:'前隔板定義車輛的「衝擊盒」概念：正面撞擊時允許有控制地塑性變形，吸收動能並保護駕駛艙不被侵入。\n\nFSAE 車重輕（< 300 kg），即便低速撞擊固定障礙，若無吸能設計，傳遞至駕駛的加速度仍可能超過 40g。\n\n多數隊伍在外側安裝 Nose Cone（EPS 鼻錐）以進一步延長撞擊時間。',rules:['F.3.2.1.a']},
+    physics:{body:'正面撞擊動能：Ek = ½mv²。以 70 km/h 撞擊固定障礙，車重 200 kg 時動能約 37.9 kJ，全部需由車體結構吸收。\n\n理想吸能力–位移曲線應接近矩形（Plateau Load），在整個壓縮行程維持均勻阻力，使吸能密度最大化。',rules:['F.4.2.2','F.4.2.3']},
   },
-  'suspension': {
-    system: 'Suspension · Kinematics',
-    name: '懸吊接點',
-    ref: 'Suspension Pickup · Double Wishbone',
-    mfg: {
-      specs: [
-        ['型式', '四輪獨立雙 A 臂'],
-        ['接點材料', '6061-T6 鋁合金'],
-        ['連桿材料', '4130 Chromoly 鋼管'],
-        ['球頭型式', 'Rod End（Heim Joint）'],
-        ['調整範圍', 'Camber / Toe / Caster 全可調'],
-        ['安全係數', '≥ 3.0（設計載荷基礎）'],
-      ],
-      note: '所有懸吊接點須能承受設計載荷的 3.0 倍，且接點處的管件壁厚需加工後再提交 SES 等效驗算。',
-      rules: ['T.1', 'T.2'],
-    },
-    concept: {
-      body: `雙 A 臂懸吊是 FSAE 的標準選擇，因為它提供最完整的幾何調整自由度：外傾角（Camber）、束角（Toe）、主銷後傾角（Caster）均可獨立調整，讓車隊能在比賽日快速針對場地特性優化設定。
-
-懸吊幾何設計的核心指標是即時轉向中心（Instant Center）位置。IC 高度決定側傾中心（Roll Center），進而影響過彎時的輪胎載荷分配與外傾角變化曲線。
-
-FSAE 多數車隊採用接近零側傾設計，目的是讓外側輪胎在過彎時保持最大接地面積，最大化摩擦圓利用率。`,
-      rules: [],
-    },
-    physics: {
-      body: `非彈簧質量（Unsprung Mass）是懸吊設計的核心物理概念。車輪、煞車、輪轂等無法被彈簧隔離的質量，每次遇到路面不平時須加速，消耗能量並將衝擊傳入底盤。降低非彈簧質量是懸吊輕量化設計的首要目標。
-
-彈簧勁度（Spring Rate）決定系統固有頻率 f = √(k/m)/(2π)。FSAE 車輛通常設定前後固有頻率在 2–3 Hz，避免與路面激振產生共振，同時提供足夠的行程吸收衝擊。
-
-阻尼比（Damping Ratio ζ）控制震動衰減速度。臨界阻尼（ζ = 1）衰減最快但偏硬，實務上賽車懸吊通常設定 ζ ≈ 0.65–0.75，在舒適度與響應速度間取得平衡。`,
-      rules: [],
-    },
+  'suspension':{
+    system:'Suspension · Kinematics', name:'懸吊接點', ref:'Suspension Pickup · Double Wishbone',
+    mfg:{
+      specs:[['型式','四輪獨立雙 A 臂'],['接點材料','6061-T6 鋁合金'],['連桿材料','4130 Chromoly 鋼管'],['球頭型式','Rod End（Heim Joint）'],['調整範圍','Camber / Toe / Caster 全可調'],['安全係數','≥ 3.0']],
+      note:'所有懸吊接點須能承受設計載荷的 3.0 倍，且接點處管件壁厚需加工後再提交 SES 等效驗算。',
+      rules:['T.1','T.2']},
+    concept:{body:'雙 A 臂懸吊是 FSAE 的標準選擇，提供最完整的幾何調整自由度：Camber、Toe、Caster 均可獨立調整，讓車隊在比賽日快速針對場地特性優化設定。\n\n懸吊幾何設計核心指標是即時轉向中心（Instant Center）位置，決定側傾中心（Roll Center），影響過彎時輪胎載荷分配。',rules:[]},
+    physics:{body:'非彈簧質量（Unsprung Mass）是懸吊設計的核心概念。降低非彈簧質量是懸吊輕量化的首要目標。\n\n彈簧勁度決定系統固有頻率 f = √(k/m)/(2π)，FSAE 通常設定 2–3 Hz。\n\n阻尼比（ζ）控制震動衰減速度，賽車懸吊通常設定 ζ ≈ 0.65–0.75。',rules:[]},
   },
 };
 
-// ─── Three.js ────────────────────────────────────────────────────────────────
-const mount = document.getElementById('three-mount');
-const W = () => mount.clientWidth;
-const H = () => mount.clientHeight;
+// ── Position-based part classifier ───────────────────────────────────────────
+function classify(pt, box) {
+  const sz = box.getSize(new THREE.Vector3());
+  const c  = box.getCenter(new THREE.Vector3());
+  const ny = (pt.y - box.min.y) / (sz.y || 1);
+  const nz = (pt.z - box.min.z) / (sz.z || 1);
+  const rx = Math.abs(pt.x - c.x) / ((sz.x / 2) || 1);
+  if (ny > 0.72)                           return 'main-hoop';
+  if (ny > 0.52 && nz > 0.55)             return 'front-hoop';
+  if (rx > 0.42 && ny > 0.22 && ny < 0.68) return 'side-impact';
+  if (nz > 0.72 && ny < 0.60)             return 'front-bulkhead';
+  if (ny < 0.22 && rx > 0.22)             return 'suspension';
+  return 'main-hoop';
+}
 
+// ── Scene ─────────────────────────────────────────────────────────────────────
+const mount = document.getElementById('mount');
+const W = () => mount.clientWidth, H = () => mount.clientHeight;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf0f0f4);
-
-const camera = new THREE.PerspectiveCamera(46, W() / H(), 0.05, 500);
-camera.position.set(4, 3, 5);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+scene.background = new THREE.Color(0xe6e6ea);
+const camera = new THREE.PerspectiveCamera(44, W() / H(), 0.05, 500);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
 renderer.setSize(W(), H());
 Object.assign(renderer.domElement.style, { position: 'absolute', inset: '0' });
 mount.appendChild(renderer.domElement);
 
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(W(), H());
-Object.assign(labelRenderer.domElement.style, { position: 'absolute', inset: '0', pointerEvents: 'none' });
-mount.appendChild(labelRenderer.domElement);
+// ── Lights ────────────────────────────────────────────────────────────────────
+const LR = {};
+function clrL() { Object.values(LR).forEach(l => scene.remove(l)); Object.keys(LR).forEach(k => delete LR[k]); }
 
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-const sun = new THREE.DirectionalLight(0xffffff, 0.75);
-sun.position.set(6, 10, 6);
-sun.castShadow = true;
-sun.shadow.mapSize.setScalar(2048);
-scene.add(sun);
-const fill = new THREE.DirectionalLight(0xcce0ff, 0.35);
-fill.position.set(-6, 4, -4);
-scene.add(fill);
-scene.add(new THREE.HemisphereLight(0xffffff, 0xdedee8, 0.45));
+function studio() {
+  clrL(); scene.background = new THREE.Color(0xe6e6ea);
+  const a = new THREE.AmbientLight(0xffffff, 1.10); scene.add(a); LR.a = a;
+  const k = new THREE.DirectionalLight(0xfff5e8, 1.50);
+  k.position.set(5, 9, 5); k.castShadow = true; k.shadow.mapSize.setScalar(2048); k.shadow.bias = -.0003;
+  scene.add(k); LR.k = k;
+  const f = new THREE.DirectionalLight(0xc5dcff, 0.55); f.position.set(-5, 3, -4); scene.add(f); LR.f = f;
+  const h = new THREE.HemisphereLight(0xffffff, 0xd6dce8, 0.50); scene.add(h); LR.h = h;
+  renderer.toneMappingExposure = 1.05;
+}
+function dramatic() {
+  clrL(); scene.background = new THREE.Color(0x18181e);
+  const a = new THREE.AmbientLight(0x111122, 0.18); scene.add(a); LR.a = a;
+  const k = new THREE.DirectionalLight(0xfff0cc, 2.80);
+  k.position.set(7, 13, 3); k.castShadow = true; k.shadow.mapSize.setScalar(2048); k.shadow.bias = -.0003;
+  scene.add(k); LR.k = k;
+  const r = new THREE.DirectionalLight(0x3366ff, 0.85); r.position.set(-7, 1, -5); scene.add(r); LR.r = r;
+  renderer.toneMappingExposure = 1.20;
+}
+function flatLight() {
+  clrL(); scene.background = new THREE.Color(0xf5f5f7);
+  const a = new THREE.AmbientLight(0xffffff, 2.20); scene.add(a); LR.a = a;
+  renderer.toneMappingExposure = 0.88;
+}
+studio();
 
-// Ground
 const ground = new THREE.Mesh(
-  new THREE.CircleGeometry(12, 64),
-  new THREE.MeshStandardMaterial({ color: 0xe8e8ed, roughness: 0.95, metalness: 0 })
+  new THREE.CircleGeometry(16, 64),
+  new THREE.MeshStandardMaterial({ color: 0xd8d8de, roughness: 0.96, metalness: 0 })
 );
-ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
-scene.add(ground);
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 
-// Controls
+// ── Materials ─────────────────────────────────────────────────────────────────
+const M = {
+  normal: new THREE.MeshStandardMaterial({ color: 0xbec8d2, metalness: 0.28, roughness: 0.50 }),
+  hover:  new THREE.MeshStandardMaterial({ color: 0xccd8e4, metalness: 0.28, roughness: 0.45, emissive: new THREE.Color(0x7799bb), emissiveIntensity: 0.10 }),
+  sel:    new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.28, roughness: 0.38, emissive: new THREE.Color(0xef4444), emissiveIntensity: 0.18 }),
+  dim:    new THREE.MeshStandardMaterial({ color: 0xb8c2ca, metalness: 0.25, roughness: 0.55, transparent: true, opacity: 0.26, depthWrite: false }),
+  wire:   new THREE.MeshStandardMaterial({ color: 0x334455, wireframe: true }),
+  wireS:  new THREE.MeshStandardMaterial({ color: 0xef4444, wireframe: true }),
+  xray:   new THREE.MeshStandardMaterial({ color: 0x4488cc, transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide }),
+  xrayS:  new THREE.MeshStandardMaterial({ color: 0xef4444, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide, emissive: new THREE.Color(0xef4444), emissiveIntensity: 0.28 }),
+};
+let mode = 'solid', subMeshes = [], selMesh = null, hovMesh = null;
+const carBox = new THREE.Box3();
+
+function matFor(m) {
+  const s = m === selMesh, h = m === hovMesh;
+  if (mode === 'wire') return s ? M.wireS : M.wire;
+  if (mode === 'xray') return s ? M.xrayS : M.xray;
+  if (s) return M.sel;
+  if (h) return M.hover;
+  if (selMesh) return M.dim;
+  return M.normal;
+}
+function refresh() { subMeshes.forEach(({ mesh }) => mesh.material = matFor(mesh)); }
+
+// ── Controls ──────────────────────────────────────────────────────────────────
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.06;
-controls.minPolarAngle = 0.1;
-controls.maxPolarAngle = Math.PI * 0.85;
+controls.enableDamping = true; controls.dampingFactor = 0.055;
+controls.minPolarAngle = 0.08; controls.maxPolarAngle = Math.PI * 0.87;
 
-// ─── Load model ──────────────────────────────────────────────────────────────
-new GLTFLoader().load('chassis.glb', gltf => {
-  const model = gltf.scene;
+// ── Camera animation ──────────────────────────────────────────────────────────
+let ca = null; const VIEW = {};
+function animCam(p, l, dur = 900) {
+  ca = { sp: camera.position.clone(), sl: controls.target.clone(), tp: p.clone(), tl: l.clone(), t0: performance.now(), dur };
+}
+function goView(n) {
+  if (!VIEW[n]) return;
+  animCam(VIEW[n].p, VIEW[n].l);
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === n));
+}
 
-  // Normalise
-  const box = new THREE.Box3().setFromObject(model);
-  const cen = box.getCenter(new THREE.Vector3());
-  const siz = box.getSize(new THREE.Vector3());
-  const sc  = 3.4 / Math.max(siz.x, siz.y, siz.z);
-  model.position.copy(cen.negate().multiplyScalar(sc));
-  model.scale.setScalar(sc);
+// ── Geometry grid-split ───────────────────────────────────────────────────────
+// Splits a single-mesh geometry into spatial cells for per-cell explode
+function splitGrid(geo, DX, DY, DZ) {
+  const pos = geo.attributes.position;
+  const norm = geo.attributes.normal;
+  const idx = geo.index;
+  if (!idx) return [];
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox;
+  const sx = (bb.max.x - bb.min.x) || 1;
+  const sy = (bb.max.y - bb.min.y) || 1;
+  const sz = (bb.max.z - bb.min.z) || 1;
+  const n = idx.count / 3;
+  const cells = new Map();
+  for (let f = 0; f < n; f++) {
+    const i0 = idx.getX(f * 3), i1 = idx.getX(f * 3 + 1), i2 = idx.getX(f * 3 + 2);
+    const cx = (pos.getX(i0) + pos.getX(i1) + pos.getX(i2)) / 3;
+    const cy = (pos.getY(i0) + pos.getY(i1) + pos.getY(i2)) / 3;
+    const cz = (pos.getZ(i0) + pos.getZ(i1) + pos.getZ(i2)) / 3;
+    const gx = Math.min(DX - 1, Math.floor((cx - bb.min.x) / sx * DX));
+    const gy = Math.min(DY - 1, Math.floor((cy - bb.min.y) / sy * DY));
+    const gz = Math.min(DZ - 1, Math.floor((cz - bb.min.z) / sz * DZ));
+    const key = gx * DY * DZ + gy * DZ + gz;
+    if (!cells.has(key)) cells.set(key, { ix: [], cx: 0, cy: 0, cz: 0, fc: 0 });
+    const c = cells.get(key);
+    c.ix.push(i0, i1, i2); c.cx += cx; c.cy += cy; c.cz += cz; c.fc++;
+  }
+  const res = [];
+  for (const [, c] of cells) {
+    if (c.fc < 2) continue;
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', pos);          // shared VBO
+    if (norm) sg.setAttribute('normal', norm); // shared
+    sg.setIndex(c.ix);
+    res.push({ geo: sg, center: new THREE.Vector3(c.cx / c.fc, c.cy / c.fc, c.cz / c.fc) });
+  }
+  return res;
+}
 
-  // Sit on ground
-  const b2 = new THREE.Box3().setFromObject(model);
-  model.position.y -= b2.min.y;
+// ── Explode ───────────────────────────────────────────────────────────────────
+let eTgt = 0, eCur = 0;
+const EMAX = 1.0; // max world-unit offset at 100%
+function applyExplode(f) {
+  subMeshes.forEach(({ mesh, origPos, dir }) => mesh.position.copy(origPos).addScaledVector(dir, f * EMAX));
+}
 
-  // Material — dark metallic steel
-  const mat = new THREE.MeshStandardMaterial({ color: 0x22375a, metalness: 0.58, roughness: 0.42 });
-  model.traverse(c => {
-    if (!c.isMesh) return;
-    c.castShadow = true;
-    c.receiveShadow = true;
-    c.material = mat;
-  });
-  scene.add(model);
+// ── Raycaster ─────────────────────────────────────────────────────────────────
+const rc = new THREE.Raycaster(), mv = new THREE.Vector2();
+let mdn = { x: 0, y: 0 };
 
-  // Camera fit
-  const b3 = new THREE.Box3().setFromObject(model);
-  const s3 = b3.getSize(new THREE.Vector3());
-  const c3 = b3.getCenter(new THREE.Vector3());
-  const d  = Math.max(s3.x, s3.y, s3.z) * 1.65;
-  camera.position.set(c3.x + d * 0.52, c3.y + d * 0.42, c3.z + d * 0.78);
-  controls.target.copy(c3);
-  controls.minDistance = d * 0.2;
-  controls.maxDistance = d * 5;
-  controls.update();
+renderer.domElement.addEventListener('mousedown', e => { mdn = { x: e.clientX, y: e.clientY }; });
 
-  // Scale-in
-  model.scale.setScalar(0.001);
-  const t0 = performance.now();
-  (function reveal() {
-    const p = Math.min((performance.now() - t0) / 700, 1);
-    model.scale.setScalar((1 - Math.pow(1 - p, 3)) * sc);
-    if (p < 1) requestAnimationFrame(reveal);
-  })();
-
-  // Hotspots (built after scale-in)
-  setTimeout(() => buildHotspots(b3, c3, s3), 650);
-
-  // Dismiss loader
-  const el = document.getElementById('loading');
-  el.style.transition = 'opacity .5s';
-  el.style.opacity = '0';
-  setTimeout(() => el.remove(), 500);
-
-}, undefined, err => {
-  document.getElementById('loading').innerHTML =
-    `<div class="loading-text" style="color:#ef4444">載入失敗：${err.message}</div>`;
+renderer.domElement.addEventListener('click', e => {
+  if ((e.clientX - mdn.x) ** 2 + (e.clientY - mdn.y) ** 2 > 25) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  mv.x = ((e.clientX - r.left) / r.width)  * 2 - 1;
+  mv.y = -((e.clientY - r.top)  / r.height) * 2 + 1;
+  rc.setFromCamera(mv, camera);
+  const hits = rc.intersectObjects(subMeshes.map(s => s.mesh), false);
+  if (!hits.length) {
+    selMesh = null; refresh();
+    document.getElementById('pidle').style.display = '';
+    document.getElementById('pc').style.display = 'none';
+    document.getElementById('pbadge').classList.remove('on');
+    return;
+  }
+  selMesh = hits[0].object; refresh();
+  showPart(classify(hits[0].point, carBox));
 });
 
-// ─── Hotspots ─────────────────────────────────────────────────────────────────
-let hotspots = [];
+renderer.domElement.addEventListener('mousemove', e => {
+  const r = renderer.domElement.getBoundingClientRect();
+  mv.x = ((e.clientX - r.left) / r.width)  * 2 - 1;
+  mv.y = -((e.clientY - r.top)  / r.height) * 2 + 1;
+  rc.setFromCamera(mv, camera);
+  const hits = rc.intersectObjects(subMeshes.map(s => s.mesh), false);
+  const prev = hovMesh;
+  const tt = document.getElementById('tt');
+  if (hits.length) {
+    hovMesh = hits[0].object;
+    renderer.domElement.style.cursor = 'pointer';
+    tt.textContent = PARTS[classify(hits[0].point, carBox)]?.name ?? '';
+    tt.style.left = (e.clientX - r.left + 14) + 'px';
+    tt.style.top  = (e.clientY - r.top  - 22) + 'px';
+    tt.classList.add('on');
+  } else {
+    hovMesh = null;
+    renderer.domElement.style.cursor = '';
+    tt.classList.remove('on');
+  }
+  if (prev !== hovMesh) refresh();
+});
 
-function buildHotspots(box, cen, siz) {
-  const { min, max } = box;
-  const midY = (min.y + max.y) / 2;
+renderer.domElement.addEventListener('mouseleave', () => {
+  hovMesh = null; refresh();
+  document.getElementById('tt').classList.remove('on');
+});
 
-  const defs = [
-    { id: 'main-hoop',      pos: new THREE.Vector3(cen.x,        max.y,              cen.z) },
-    { id: 'front-hoop',     pos: new THREE.Vector3(cen.x,        max.y * 0.76,       max.z * 0.52) },
-    { id: 'side-impact',    pos: new THREE.Vector3(min.x * 0.82, midY,               cen.z) },
-    { id: 'front-bulkhead', pos: new THREE.Vector3(cen.x,        midY,               max.z * 0.88) },
-    { id: 'suspension',     pos: new THREE.Vector3(min.x * 0.82, min.y + siz.y*0.12, max.z * 0.48) },
-  ];
+// ── Load model ────────────────────────────────────────────────────────────────
+new GLTFLoader().load('chassis.glb', gltf => {
+  const model = gltf.scene;
+  let src = null;
+  model.traverse(c => { if (c.isMesh) src = c; });
+  if (!src) { document.getElementById('ltxt').textContent = '未找到 mesh'; return; }
 
-  defs.forEach(({ id, pos }) => {
-    const d = PARTS[id];
-    const div = document.createElement('div');
-    div.className = 'hotspot';
-    div.innerHTML = `<div class="hs-pip"></div><div class="hs-tag">${d.name}</div>`;
-    div.addEventListener('click', e => { e.stopPropagation(); select(id, div); });
-    const obj = new CSS2DObject(div);
-    obj.position.copy(pos);
-    scene.add(obj);
-    hotspots.push({ id, el: div });
-  });
+  document.getElementById('ltxt').textContent = '正規化幾何體…';
+
+  // Normalise: translate to origin, scale to 3.4 units
+  const b0 = new THREE.Box3().setFromObject(model);
+  const c0 = b0.getCenter(new THREE.Vector3()), s0 = b0.getSize(new THREE.Vector3());
+  const sc = 3.4 / Math.max(s0.x, s0.y, s0.z);
+  src.geometry.applyMatrix4(
+    new THREE.Matrix4()
+      .makeTranslation(-c0.x, -c0.y, -c0.z)
+      .premultiply(new THREE.Matrix4().makeScale(sc, sc, sc))
+  );
+  src.position.set(0, 0, 0); src.rotation.set(0, 0, 0); src.scale.set(1, 1, 1);
+  if (!src.geometry.attributes.normal) src.geometry.computeVertexNormals();
+
+  // Sit on ground
+  const b1 = new THREE.Box3().setFromObject(src);
+  src.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -b1.min.y, 0));
+  carBox.setFromObject(src);
+
+  document.getElementById('ltxt').textContent = '切割幾何體…';
+
+  setTimeout(() => {
+    const cells = splitGrid(src.geometry, 8, 5, 8);
+    const grp = new THREE.Group();
+    const carC = carBox.getCenter(new THREE.Vector3());
+
+    cells.forEach(({ geo, center }) => {
+      const mesh = new THREE.Mesh(geo, M.normal);
+      mesh.castShadow = true; mesh.receiveShadow = true;
+      const dir = center.clone().sub(carC);
+      if (dir.length() < 0.001) dir.set(0, 1, 0); else dir.normalize();
+      // Amplify horizontal spread for better explode visuals
+      dir.x *= 1.5; dir.z *= 1.5; dir.normalize();
+      subMeshes.push({ mesh, origPos: new THREE.Vector3(0, 0, 0), dir });
+      grp.add(mesh);
+    });
+    scene.add(grp);
+
+    // Camera fit
+    const s = carBox.getSize(new THREE.Vector3()), cc = carBox.getCenter(new THREE.Vector3()), d = Math.max(s.x, s.y, s.z);
+    VIEW.iso   = { p: new THREE.Vector3(cc.x + d * 0.55, cc.y + d * 0.50, cc.z + d * 0.85), l: cc.clone() };
+    VIEW.front = { p: new THREE.Vector3(cc.x,            cc.y + d * 0.10, cc.z + d * 1.70), l: cc.clone() };
+    VIEW.side  = { p: new THREE.Vector3(cc.x + d * 1.70, cc.y + d * 0.10, cc.z           ), l: cc.clone() };
+    VIEW.top   = { p: new THREE.Vector3(cc.x,            cc.y + d * 2.10, cc.z + 0.01    ), l: cc.clone() };
+    camera.position.copy(VIEW.iso.p);
+    controls.target.copy(cc);
+    controls.minDistance = d * 0.15; controls.maxDistance = d * 7;
+    controls.update();
+
+    // Scale-in reveal
+    grp.scale.setScalar(0.001);
+    const t0 = performance.now();
+    (function rev() {
+      const p = Math.min((performance.now() - t0) / 700, 1);
+      grp.scale.setScalar(1 - Math.pow(1 - p, 3));
+      if (p < 1) requestAnimationFrame(rev);
+    })();
+
+    document.getElementById('vt').style.display = 'flex';
+    const lo = document.getElementById('loading');
+    lo.style.opacity = '0';
+    setTimeout(() => lo.remove(), 500);
+  }, 60);
+
+}, xhr => {
+  if (xhr.total) document.getElementById('ltxt').textContent = `載入中 ${Math.round(xhr.loaded / xhr.total * 100)}%`;
+}, err => {
+  const lo = document.getElementById('loading');
+  if (lo) lo.innerHTML = `<div class="ltxt" style="color:#ef4444">載入失敗：${err.message}</div>`;
+});
+
+// ── Panel ─────────────────────────────────────────────────────────────────────
+function showPart(id) {
+  const d = PARTS[id]; if (!d) return;
+  document.getElementById('psys').textContent = d.system.toUpperCase();
+  document.getElementById('pnm').textContent  = d.name;
+  document.getElementById('prf').textContent  = d.ref;
+  document.getElementById('pb-s').textContent = d.system;
+  document.getElementById('pb-n').textContent = d.name;
+  document.getElementById('pbadge').classList.add('on');
+  const bar = document.getElementById('pbar');
+  bar.style.display = 'block'; bar.style.animation = 'none';
+  requestAnimationFrame(() => bar.style.animation = '');
+  fMfg(d.mfg); fText('pane-concept', d.concept); fText('pane-physics', d.physics);
+  document.getElementById('pidle').style.display = 'none';
+  document.getElementById('pc').style.display = 'flex';
+  document.querySelectorAll('.tab').forEach(t  => t.classList.toggle('on', t.dataset.tab === 'mfg'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-mfg'));
 }
 
-// ─── Selection ───────────────────────────────────────────────────────────────
-let active = null;
-
-function select(id, el) {
-  active = id;
-  hotspots.forEach(h => h.el.classList.toggle('active', h.el === el));
-
-  const d = PARTS[id];
-  document.getElementById('part-system').textContent = d.system.toUpperCase();
-  document.getElementById('part-name').textContent = d.name;
-  document.getElementById('part-ref').textContent = d.ref;
-
-  fillMfg(d.mfg);
-  fillText('pane-concept', d.concept);
-  fillText('pane-physics', d.physics);
-
-  document.getElementById('panel-idle').style.display = 'none';
-  const pc = document.getElementById('panel-content');
-  pc.style.display = 'flex';
-
-  // Reset tab to mfg
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'mfg'));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === 'pane-mfg'));
-}
-
-function fillMfg(data) {
+function fMfg(d) {
   let h = '';
-  if (data.specs?.length) {
-    h += `<div class="s"><div class="s-label">規格</div>`;
-    h += data.specs.map(([k, v]) =>
-      `<div class="spec-row"><span class="spec-k">${k}</span><span class="spec-v">${v}</span></div>`
-    ).join('');
+  if (d.specs?.length) {
+    h += `<div class="s"><div class="sl">規格</div>`;
+    h += d.specs.map(([k, v]) => `<div class="sr"><span class="sk">${k}</span><span class="sv">${v}</span></div>`).join('');
     h += `</div>`;
   }
-  if (data.note) {
-    h += `<div class="s"><div class="s-label">備注</div><div class="note">${data.note}</div></div>`;
-  }
-  if (data.rules?.length) {
-    h += `<div class="s"><div class="s-label">FSAE 條文</div><div class="rules">`;
-    h += data.rules.map(r => `<span class="rule">FSAE <strong>${r}</strong></span>`).join('');
+  if (d.note) h += `<div class="s"><div class="sl">備注</div><div class="note">${d.note}</div></div>`;
+  if (d.rules?.length) {
+    h += `<div class="s"><div class="sl">FSAE 條文</div><div class="rules">`;
+    h += d.rules.map(r => `<span class="rule">FSAE <strong>${r}</strong></span>`).join('');
     h += `</div></div>`;
   }
   document.getElementById('pane-mfg').innerHTML = h;
 }
-
-function fillText(paneId, data) {
+function fText(pid, d) {
   let h = '';
-  if (data.body) {
-    const paras = data.body.trim().split('\n\n')
-      .map(p => `<p>${p.trim().replace(/\n/g, '<br>')}</p>`).join('');
-    h += `<div class="s"><div class="body-text">${paras}</div></div>`;
+  if (d.body) {
+    const ps = d.body.trim().split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+    h += `<div class="s"><div class="bt">${ps}</div></div>`;
   }
-  if (data.rules?.length) {
-    h += `<div class="s"><div class="s-label">FSAE 條文</div><div class="rules">`;
-    h += data.rules.map(r => `<span class="rule">FSAE <strong>${r}</strong></span>`).join('');
+  if (d.rules?.length) {
+    h += `<div class="s"><div class="sl">FSAE 條文</div><div class="rules">`;
+    h += d.rules.map(r => `<span class="rule">FSAE <strong>${r}</strong></span>`).join('');
     h += `</div></div>`;
   }
-  if (!h) h = `<div class="s"><div class="body-text"><p style="color:var(--ink-4)">—</p></div></div>`;
-  document.getElementById(paneId).innerHTML = h;
+  if (!h) h = `<div class="s"><div class="bt"><p style="color:var(--ink4)">—</p></div></div>`;
+  document.getElementById(pid).innerHTML = h;
 }
 
-// ─── Tabs ────────────────────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const t = btn.dataset.tab;
-    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b === btn));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === `pane-${t}`));
-  });
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  const t = b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x  => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === `pane-${t}`));
+}));
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => goView(b.dataset.view)));
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x === b));
+  mode = b.dataset.mode; refresh();
+}));
+document.querySelectorAll('[data-light]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-light]').forEach(x => x.classList.toggle('on', x === b));
+  const p = b.dataset.light;
+  if (p === 'studio') studio(); else if (p === 'dramatic') dramatic(); else flatLight();
+}));
+
+const eslEl = document.getElementById('esl'), evEl = document.getElementById('ev');
+eslEl.addEventListener('input', () => {
+  const v = +eslEl.value;
+  eTgt = v / 100; evEl.textContent = v + '%';
+  document.getElementById('ebadge').classList.toggle('on', v > 0);
+});
+document.getElementById('btn-reset').addEventListener('click', () => {
+  goView('iso');
+  eslEl.value = 0; eTgt = 0; evEl.textContent = '0%';
+  document.getElementById('ebadge').classList.remove('on');
+});
+document.getElementById('btn-shot').addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const a = document.createElement('a');
+  a.href = renderer.domElement.toDataURL('image/png');
+  a.download = 'NKUST-Racing.png'; a.click();
 });
 
-// ─── Render loop ─────────────────────────────────────────────────────────────
+// ── Render loop ───────────────────────────────────────────────────────────────
 (function loop() {
   requestAnimationFrame(loop);
+  if (ca) {
+    const t = Math.min((performance.now() - ca.t0) / ca.dur, 1);
+    const e = 1 - Math.pow(1 - t, 4);
+    camera.position.lerpVectors(ca.sp, ca.tp, e);
+    controls.target.lerpVectors(ca.sl, ca.tl, e);
+    if (t >= 1) ca = null;
+  }
+  const pe = eCur; eCur += (eTgt - eCur) * 0.09;
+  if (Math.abs(eCur - pe) > 0.0001) applyExplode(eCur);
   controls.update();
   renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
 })();
 
-// ─── Resize ──────────────────────────────────────────────────────────────────
 new ResizeObserver(() => {
   camera.aspect = W() / H();
   camera.updateProjectionMatrix();
   renderer.setSize(W(), H());
-  labelRenderer.setSize(W(), H());
 }).observe(mount);
 </script>
 </body>
