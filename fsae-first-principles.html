@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>機械第一性原則 × 學生方程式</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+TC:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+TC:wght@300;400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -830,9 +830,122 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
   .sheet       { padding: 24px 16px 60px; }
   .gate-heading { font-size: 25px; }
 }
+
+/* ======================== APPLE STICKY HEADER ======================== */
+.apple-hdr {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid rgba(0,0,0,0.09);
+  z-index: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.apple-hdr-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.apple-hdr-mark {
+  width: 26px;
+  height: 26px;
+  background: #1d1d1f;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+.apple-hdr-wordmark {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.2px;
+}
+.apple-hdr-sep {
+  color: #aeaeb2;
+  font-weight: 300;
+  margin: 0 2px;
+}
+.apple-hdr-sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: #6e6e73;
+}
+.apple-hdr-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.apple-hdr-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #424245;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.apple-hdr-btn:hover {
+  background: rgba(0,0,0,0.06);
+  color: #1d1d1f;
+}
+.apple-hdr-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+body { padding-top: 52px; }
 </style>
 </head>
 <body>
+
+<header class="apple-hdr">
+  <div class="apple-hdr-left">
+    <div class="apple-hdr-mark">NR</div>
+    <div class="apple-hdr-wordmark">
+      NKUST Racing
+      <span class="apple-hdr-sep">/</span>
+      <span class="apple-hdr-sub">第一性原則</span>
+    </div>
+  </div>
+  <div class="apple-hdr-actions">
+    <a href="car-blueprint.html" class="apple-hdr-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="8" width="20" height="8" rx="2"/>
+        <circle cx="6" cy="16" r="2"/><circle cx="18" cy="16" r="2"/>
+        <path d="M6 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/>
+      </svg>
+      車體圖解
+    </a>
+    <a href="nkust_racing.html" class="apple-hdr-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      返回總覽
+    </a>
+  </div>
+</header>
 
 <!-- PAGE FLIP HINT OVERLAYS -->
 <div id="nav-left"  class="nav-hint nav-hint-l"></div>
