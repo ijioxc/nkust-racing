@@ -351,40 +351,50 @@ const GROUPS = {
 
 // Part database (for structural click info)
 const PARTS = {
-  'main-hoop':{system:'Primary Structure',name:'主環',ref:'Main Hoop · FSAE F.5.6.1',
-    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['管材等級','Size A（最高等級）'],['彎管半徑','≥ 3 × 管外徑'],['焊接工法','TIG 冷焊 + 後退火'],['焊後強度 Sy','180 MPa'],['非焊強度 Sy','305 MPa'],['彈性模數 E','200 GPa']],note:'主環是唯一不允許替代材料的管件（F.3.2.1.g）。設計變更須重新提交 SES 審核。',rules:['F.3.2.1.g','F.5.6.1','F.3.4.2.a','F.3.4.2.b']},
-    concept:{body:'主環位於駕駛軀幹旁，是翻車時保護頭部的核心結構。規則要求主環頂端需高於駕駛頭部 50mm 以上，確保任何翻滾角度下頭部不接觸地面。\n\n設計策略上，主環應盡量靠近車身重心垂直線，減少翻車時偏心力矩，且必須以結構管三角化接入主結構。',rules:['F.5.6.1','F.5.6.3','F.1.13']},
-    physics:{body:'主環主要受力場景為翻車時地面的壓縮衝擊，以及側向撞擊產生的彎矩。在空間框架中相當於一個剛性拱門（Arch）。\n\n4130 Chromoly Sy = 305 MPa，比 1018 碳鋼高 47%，等效強度下可減薄壁厚約 32%。',rules:['F.3.4.2']}},
-  'front-hoop':{system:'Primary Structure',name:'前環',ref:'Front Hoop · FSAE F.3.2.1.c',
-    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['管材等級','Size C（可替代）'],['位置','駕駛腿部上方，近方向盤'],['焊接','TIG 全熔透'],['焊後強度 Sy','180 MPa']],note:'前環可使用替代管材，但須在 SES 中提交等效截面模數計算（≥ Size C）。',rules:['F.3.2.1.c','F.5.6.2']},
-    concept:{body:'前環與主環共同構成滾籠系統，形成保護駕駛的生存區（Survival Cell）。\n\n設計時不得妨礙駕駛視線，且需確保駕駛在 5 秒內能自行脫困（FSAE 逃生測試）。',rules:['F.1.5','F.5.6.1']},
-    physics:{body:'前環主要承受前後方向彎矩及垂直壓縮力。幾何剛性不如主環，因此規則強制要求斜撐三角化接入，形成超靜定系統分散應力。',rules:['F.5.6.2']}},
-  'side-impact':{system:'Safety Structure',name:'側衝擊結構',ref:'Side Impact Structure · FSAE F.3.2.1.e',
-    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['管材等級','Size B（可替代）'],['配置','兩側各 1 根主管＋斜撐'],['最低高度','距地面 ≤ 300 mm']],note:'若使用彎曲或多段管設計，管材需升級至 Size D，且須提交 SES 等效計算。',rules:['F.3.2.1.e','F.3.2.1.f']},
-    concept:{body:'側衝擊結構是 FSAE 車輛對抗側向碰撞的唯一屏障（無車門）。SIS 高度應覆蓋駕駛腰部至肩部，並與主環、前環節點對齊。',rules:['F.3.2.1.e']},
-    physics:{body:'側向撞擊是短時高衝擊事件。SIS 的主要破壞模式為三點彎曲：管件兩端固定，撞擊力施加於中央，如同受集中載荷的簡支梁。',rules:['F.4.2.3']}},
-  'front-bulkhead':{system:'Frontal Protection',name:'前隔板',ref:'Front Bulkhead · FSAE F.3.2.1.a',
-    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['主管等級','Size B'],['支撐管等級','Size C'],['功能','正面撞擊第一道防線']],note:'前隔板後方 Front Bulkhead Support 須以三角形接入主車架形成衝擊盒（Crumple Zone）。',rules:['F.3.2.1.a','F.3.2.1.b']},
-    concept:{body:'前隔板定義車輛的「衝擊盒」概念：正面撞擊時允許有控制地塑性變形，吸收動能並保護駕駛艙。\n\n多數隊伍在外側安裝 Nose Cone（EPS 鼻錐）以進一步延長撞擊時間。',rules:['F.3.2.1.a']},
-    physics:{body:'正面撞擊動能：Ek = ½mv²。以 70 km/h 撞擊固定障礙，車重 200 kg 時動能約 37.9 kJ，全部需由車體結構吸收。',rules:['F.4.2.2','F.4.2.3']}},
-  'suspension':{system:'Suspension · Kinematics',name:'懸吊接點',ref:'Suspension Pickup · Double Wishbone',
-    mfg:{specs:[['型式','四輪獨立雙 A 臂'],['接點材料','6061-T6 鋁合金'],['連桿材料','4130 Chromoly 鋼管'],['球頭型式','Rod End（Heim Joint）'],['調整範圍','Camber / Toe / Caster 全可調'],['安全係數','≥ 3.0']],note:'所有懸吊接點須能承受設計載荷的 3.0 倍。',rules:['T.1','T.2']},
-    concept:{body:'雙 A 臂懸吊提供最完整的幾何調整自由度，讓車隊在比賽日快速針對場地特性優化設定。\n\n懸吊幾何設計核心指標是即時轉向中心（Instant Center），決定側傾中心（Roll Center）。',rules:[]},
-    physics:{body:'非彈簧質量（Unsprung Mass）是懸吊設計的核心概念。降低非彈簧質量是輕量化的首要目標。\n\n彈簧勁度決定系統固有頻率 f = √(k/m)/(2π)，FSAE 通常設定 2–3 Hz。',rules:[]}},
+  // ── 車架結構 ──────────────────────────────────────────────────────────────
+  'chassis':{system:'Primary Structure',name:'車架結構',ref:'Space Frame · FSAE F.3 / F.5',
+    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['主環等級','Size A（最高等級）'],['前環等級','Size C（可替代）'],['側衝擊管','Size B'],['焊接工法','TIG 冷焊 + 後退火'],['焊後強度 Sy','180 MPa'],['非焊強度 Sy','305 MPa']],note:'主環是唯一不允許替代材料的管件（F.3.2.1.g），其他管件替代時須提交 SES 等效截面模數計算。',rules:['F.3.2.1.g','F.5.6.1','F.3.4.2.a','F.3.4.2.b','F.3.2.1.e']},
+    concept:{body:'空間框架（Space Frame）是 FSAE 最普遍的車架形式。由多根鋼管焊接成三角化節點，每根管件主要承受軸向力（拉伸/壓縮），而非彎矩，材料利用率高。\n\n主環、前環與側衝擊結構共同構成「生存區」（Survival Cell），翻車或碰撞時保護駕駛不受擠壓。',rules:['F.5.6.1','F.5.6.3','F.1.13']},
+    physics:{body:'空間框架的剛性來自三角化：三角形是唯一在節點鉸接時仍保持形狀的多邊形。每新增一個不共面的節點，需加入 3 根新管才能維持靜定。\n\n整車扭轉剛度（Torsional Stiffness）目標通常 ≥ 1500 N·m/deg，確保懸吊設定能被車架忠實傳達。',rules:['F.3.4.2']}},
+  // ── 懸吊系統 ──────────────────────────────────────────────────────────────
+  'suspension':{system:'Suspension · Kinematics',name:'懸吊系統',ref:'Double Wishbone · FSAE T.1 / T.2',
+    mfg:{specs:[['型式','四輪獨立雙 A 臂'],['上/下臂材料','4130 Chromoly 鋼管'],['接點材料','6061-T6 鋁合金'],['球頭型式','Rod End（Heim Joint）'],['調整範圍','Camber / Toe / Caster 全可調'],['安全係數','≥ 3.0']],note:'所有懸吊接點（Pickup Points）需能承受設計載荷的 3.0 倍。連桿截面需通過 FEA 或手算驗證。',rules:['T.1','T.2']},
+    concept:{body:'雙 A 臂提供最完整的幾何調整自由度。懸吊設計的核心是即時轉向中心（Instant Center），決定側傾中心（Roll Center）高度——Roll Center 越低，側傾時輪胎 camber 變化越小，抓地力越穩定。\n\n車隊通常設計可調式 A 臂端點（Adjustable Pickup），讓比賽日能快速改變 camber、toe、anti-squat 等參數。',rules:[]},
+    physics:{body:'非彈簧質量（Unsprung Mass）是懸吊設計最重要的動力學參數：輪胎、輪圈、煞車盤、輪轂、A 臂全部計入。非彈簧質量↓，輪胎與路面的接觸力起伏↓，抓地力穩定性↑。\n\n彈簧-阻尼系統固有頻率 f = √(k/m)/(2π)，FSAE 車通常設定前 2.5–3.5 Hz、後 3.0–4.0 Hz（後高於前以避免激車頭俯仰）。',rules:[]}},
+  // ── 輪組 ──────────────────────────────────────────────────────────────────
+  'wheel':{system:'Wheel & Tire',name:'輪組',ref:'Wheel Assembly · FSAE T.4 / T.5',
+    mfg:{specs:[['輪圈尺寸','10"（FSAE 常用）'],['輪圈材料','6061-T6 鋁合金'],['輪胎型號','Hoosier 18×6.0-10 R25B'],['輪胎寬度','152 mm'],['氣壓範圍','8–14 psi'],['螺栓型式','中央鎖緊（單螺帽）']],note:'輪胎是車輛與地面唯一的接觸介面，所有動力、制動、轉向力均需透過輪胎接觸面（Contact Patch）傳遞。',rules:['T.4.1','T.5.2']},
+    concept:{body:'FSAE 賽車輪胎寬而矮（低扁平比），最大化接觸面積以提升抓地力。輪圈採 10 吋設計方便容納大口徑煞車盤，且市場上有豐富的 FSAE 專用輪胎選擇。\n\nCamber 設定對輪胎接觸面均勻性影響極大：通常靜態設定 −1° 至 −3°，讓側傾時外側輪維持接近 0° 以獲得最大接觸面積。',rules:[]},
+    physics:{body:'輪胎的 Magic Formula（Pacejka 模型）描述側向力 Fy 與側滑角 α 的非線性關係：Fy = D·sin(C·arctan(B·α − E·(B·α − arctan(B·α))))。\n\nLoad Sensitivity（負載敏感性）是輪胎重要特性：正向力加倍時，摩擦力不會等比例加倍，因此輕量化比提高下壓力更有效率。',rules:[]}},
+  // ── 前翼 ────────────────────────────────────────────────────────────────
+  'front_wing':{system:'Aerodynamics',name:'前翼 / 鼻錐',ref:'Front Wing · FSAE T.7',
+    mfg:{specs:[['材料','碳纖維 / 玻璃纖維複合板'],['翼型','NACA 6409 / 自訂'],['層數','3–6 層 CF 預浸布'],['前端防撞','EPS 鼻錐（FSAE 規定）'],['最大前懸','250 mm（前輪軸前）']],note:'前翼翼端板（Endplate）需於前輪前方 250 mm 以內，超出部分須額外加強防撞。鼻錐需通過 T.4 前端撞擊測試。',rules:['T.7.1','T.4.3']},
+    concept:{body:'前翼產生下壓力（Negative Lift），將前輪壓向地面，增加前輪抓地力與轉向回應速度。\n\n前後下壓力分配（Aero Balance）直接影響車輛轉向特性：前翼下壓力過大 → 轉向過靈敏（Oversteer）；過小 → 轉向不足（Understeer）。',rules:[]},
+    physics:{body:'升力係數 CL 與下壓力的關係：F = ½·ρ·v²·A·CL。以 80 km/h 行駛，典型 FSAE 前翼產生 80–150 N 下壓力。\n\n地面效應（Ground Effect）：翼面距地面越近，有效 CL 越高（Venturi 效應）。多數 FSAE 隊伍設計可調攻角（AoA），在動態測試與高速直線間切換設定。',rules:[]}},
+  // ── 後翼 ────────────────────────────────────────────────────────────────
+  'rear_wing':{system:'Aerodynamics',name:'後翼',ref:'Rear Wing · FSAE T.7',
+    mfg:{specs:[['材料','碳纖維複合板'],['翼型','高攻角 NACA / Selig'],['層數','4–8 層 CF 預浸布'],['攻角範圍','15°–35°（可調）'],['端板材料','3mm CF 平板'],['最大後懸','FSAE 不限制（需通過靜態審查）']],note:'後翼是全車最大的下壓力來源。翼端板需封閉翼展兩端以防止翼尖渦流洩壓。',rules:['T.7.1','T.7.2']},
+    concept:{body:'後翼的攻角（Angle of Attack）直接決定下壓力大小，同時增加阻力（Drag）。車隊需在高下壓力（耐久賽彎道抓地力）與低阻力（直線加速）間取得平衡。\n\nDRS（Drag Reduction System）在 FSAE 中少見，但部分頂尖隊伍會設計可調後翼，讓車手在測試期間調整設定。',rules:[]},
+    physics:{body:'後翼產生的下壓力通過翼支架傳到後車架，再由車架傳至後懸吊接點，最終壓在後輪上。這個力的傳遞路徑決定車架後段的設計需求。\n\n典型 FSAE 後翼在 80 km/h 時產生 150–300 N 下壓力，是前翼的 1.5–2 倍，維持 Aero Balance 偏後以避免轉向過靈。',rules:[]}},
+  // ── 動力系統 ──────────────────────────────────────────────────────────────
+  'drivetrain':{system:'Powertrain',name:'動力系統',ref:'Engine · Drivetrain · FSAE IC / EV',
+    mfg:{specs:[['引擎型式','單缸 / 雙缸四衝程（IC 組）'],['排量限制','610 cc（IC 組）'],['進氣限制','20 mm 節流孔'],['變速箱','序列式 4–6 速'],['傳動方式','鏈條 / 皮帶'],['差速器','扭力感應 LSD（選配）']],note:'IC 組進氣需通過直徑 20 mm 節流孔（Restrictor），有效限制馬力至約 80–100 hp。EV 組則受最大功率 80 kW 限制。',rules:['IC.2.3','IC.5','T.6']},
+    concept:{body:'動力系統的核心指標是功率重量比（P/W Ratio）。FSAE 賽車典型目標是 200–300 W/kg，遠高於一般量產車（約 100 W/kg）。\n\n進氣節流孔讓賽車趨向扭力型設定：增大進排氣凸輪、優化進氣道截面積，在節流孔限制下最大化低轉扭力輸出。',rules:[]},
+    physics:{body:'發動機熱效率（Thermal Efficiency）是燃料能量轉化為機械功的比例，FSAE 引擎約 25–35%。其餘能量以廢熱排出，這也是為何冷卻系統設計至關重要。\n\n鏈條傳動效率約 98–99%，是所有傳動方式中最高效的選項之一，且重量輕、維修簡單，是 FSAE 的主流選擇。',rules:[]}},
 };
 
-// ── Classify hit point → PART id ─────────────────────────────────────────────
-function classifyPt(pt, box) {
-  const sz = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-  const ny = (pt.y - box.min.y) / (sz.y || 1);
-  const nz = (pt.z - box.min.z) / (sz.z || 1);
-  const rx = Math.abs(pt.x - c.x) / ((sz.x / 2) || 1);
-  if (ny > 0.72)                              return 'main-hoop';
-  if (ny > 0.52 && nz > 0.55)               return 'front-hoop';
-  if (rx > 0.42 && ny > 0.22 && ny < 0.68)  return 'side-impact';
-  if (nz > 0.72 && ny < 0.60)               return 'front-bulkhead';
-  if (ny < 0.22 && rx > 0.22)               return 'suspension';
-  return 'main-hoop';
+// ── Group key → Part ID 直接對應（不用點位猜測）────────────────────────────
+const GROUP_TO_PART = {
+  chassis:    'chassis',
+  suspension: 'suspension',
+  wheel:      'wheel',
+  front_wing: 'front_wing',
+  rear_wing:  'rear_wing',
+  drivetrain: 'drivetrain',
+  bodywork:   'chassis',  // fallback to chassis info
+};
+function classifyPt(gkey) {
+  return GROUP_TO_PART[gkey] ?? 'chassis';
 }
 
 // ── Classify mesh/node name → GROUP key ──────────────────────────────────────
@@ -717,7 +727,7 @@ renderer.domElement.addEventListener('click', e => {
   selMesh = hit.object; refresh();
   const sm = subMeshes.find(s => s.mesh === selMesh);
   const gkey = sm?.gkey ?? 'chassis';
-  const partId = classifyPt(hit.point, carBox);
+  const partId = classifyPt(gkey);
 
   // Viewport badge with group colour
   const g = GROUPS[gkey];
@@ -742,7 +752,7 @@ renderer.domElement.addEventListener('mousemove', e => {
     renderer.domElement.style.cursor = 'pointer';
     const sm = subMeshes.find(s => s.mesh === hovMesh);
     const gkey = sm?.gkey ?? 'chassis';
-    const partId = classifyPt(hits[0].point, carBox);
+    const partId = classifyPt(gkey);
     const label = PARTS[partId]?.name ?? GROUPS[gkey]?.label ?? '';
     tt.textContent = label;
     tt.style.left = (e.clientX-r.left+14)+'px';
