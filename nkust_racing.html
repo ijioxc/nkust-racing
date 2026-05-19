@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NKUST Racing</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Firebase Realtime Database -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NKUST Racing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <!-- Firebase Realtime Database -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
         import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
@@ -34,2021 +33,750 @@
         // 通知主 script Firebase 已就緒
         window.dispatchEvent(new Event('firebase-ready'));
     </script>
-     <style>
-
-        /* SYSTEMIC ARCHITECTURE FIX: Prevent CSS Grid / Flexbox Blow-outs */
-        .plan-card, .worklog-col-card, .person-full-card, .worklog-card, .person-card, .resource-card {
-            min-width: 0;
-        }
-
-        :root {
-            /* ── Legacy JS aliases ── */
-            --primary-orange: #ef4444;
-            --secondary-yellow: #f59e0b;
-            --accent-blue: #3b82f6;
-
-            /* ── Subsystem colours ── */
-            --color-chassis: #ef4444;
-            --color-engine: #f59e0b;
-            --color-suspension: #3b82f6;
-            --color-brake: #f97316;
-            --color-electrical: #10b981;
-            --color-aero: #06b6d4;
-            --color-other: #8b5cf6;
-
-            /* ── Apple Light Mode ── */
-            --bg:            #f5f5f7;
-            --bg-secondary:  #ffffff;
-            --bg-tertiary:   #e5e5ea;
-            --ink:           #1d1d1f;
-            --faint:         #86868b;
-            --rule:          rgba(0,0,0,0.1);
-            --red:           #0066cc; /* Apple uses blue for primary actions, but keeping red if needed, let's change to Apple blue for links/accents, or keep red. I'll keep your red for consistency with NKUST Racing */
-            --red:           #ef4444;
-            --red-bg:        rgba(239,68,68,0.08);
-            --red-mid:       rgba(239,68,68,0.15);
-            --card-shadow:   0 2px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
-            --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.08);
-
-            /* ── Semantic aliases ── */
-            --text-primary:   var(--ink);
-            --text-secondary: var(--faint);
-            --border:         var(--rule);
-            --shadow:         rgba(0, 0, 0, 0.08);
-            --orange-light:   var(--red-bg);
-            --yellow-light:   rgba(245, 158, 11, 0.08);
-            --blue-light:     rgba(59, 130, 246, 0.08);
-        }
-
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--ink);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 99px; }
-        * { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 24px 28px;
-        }
-
-        .site-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 0.5px solid rgba(0,0,0,0.09);
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 52px;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 0 28px;
-        }
-
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .header-mark {
-            width: 26px;
-            height: 26px;
-            background: var(--ink);
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--bg);
-            letter-spacing: -0.5px;
-            flex-shrink: 0;
-        }
-
-        .header-wordmark {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: var(--ink);
-        }
-
-        .header-left h1 {
-            display: none;
-        }
-
-        /* ── Header center nav ── */
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .nav-btn {
-            padding: 5px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 7px;
-            font-size: 13px;
-            font-weight: 500;
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-            color: var(--faint);
-            cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease;
-            white-space: nowrap;
-        }
-
-        .nav-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--ink);
-        }
-
-        .nav-btn.active {
-            background: var(--red);
-            color: #fff;
-            font-weight: 600;
-        }
-
-        /* ── Header right actions ── */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-
-        .hdr-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 6px 10px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            color: var(--faint);
-            font-size: 12px;
-            font-weight: 500;
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.15s ease, color 0.15s ease;
-            white-space: nowrap;
-        }
-
-        .hdr-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--ink);
-        }
-
-        .hdr-btn svg {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
-
-        .hdr-divider {
-            width: 0.5px;
-            height: 20px;
-            background: var(--rule);
-            margin: 0 2px;
-        }
-
-        /* legacy pill — hidden */
-        .header-pill, .header-pill-value, .search-input-pill { display: none; }
-
-        .top-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 300px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 8px 14px 8px 34px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-orange);
-        }
-
-        .search-box::before {
-            content: '🔍';
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 13px;
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 6px;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            margin-bottom: 20px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding-bottom: 4px;
-        }
-        .filter-buttons::-webkit-scrollbar { display: none; }
-
-        .filter-btn {
-            padding: 6px 16px;
-            background: var(--bg-secondary);
-            border: none;
-            border-radius: 99px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--faint);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .filter-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--ink);
-        }
-
-        .filter-btn.active {
-            background: var(--red);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        /* Show-more button in category sections */
-        .show-more-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            padding: 10px;
-            margin-top: 12px;
-            background: var(--bg-secondary);
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .show-more-btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
-        }
-
-        .category-section {
-            margin-bottom: 40px;
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .category-title {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--ink);
-        }
-
-        .add-category-btn {
-            background: transparent;
-            border: none;
-            color: var(--primary-orange);
-            font-size: 24px;
-            font-weight: 300;
-            cursor: pointer;
-            padding: 0 4px;
-            transition: all 0.2s ease;
-            line-height: 1;
-        }
-
-        .add-category-btn:hover {
-            transform: scale(1.15);
-            color: var(--secondary-yellow);
-        }
-
-        .category-count {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-left: auto;
-            font-weight: 600;
-        }
-
-        .resources-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 16px;
-        }
-
-        .overview-person-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 16px;
-        }
-
-        @media (max-width: 1400px) {
-            .resources-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 900px) {
-            .resources-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            header {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .header-right {
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-            .header-stat {
-                font-size: 12px;
-            }
-            .header-left h1 {
-                font-size: 20px;
-            }
-            .container {
-                padding: 12px;
-            }
-            .category-title {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .resources-grid {
-                grid-template-columns: 1fr;
-            }
-            .header-right {
-                gap: 6px;
-            }
-            .search-input-header.active {
-                width: 140px;
-            }
-            /* Header pill: icon-only on mobile */
-            .pill-label {
-                display: none;
-            }
-            .header-pill {
-                padding: 6px 10px;
-                gap: 3px;
-            }
-            /* Gantt chart inner content: min-width so container scrolls */
-            .timeline-scale,
-            .timeline-tracks {
-                min-width: 560px;
-            }
-            /* 7-col worklog cards: horizontal scroll */
-            .worklog-columns {
-                grid-template-columns: repeat(7, minmax(150px, 150px));
-            }
-        }
-
-        /* Person Card */
-        .person-card {
-            background: var(--bg-secondary);
-            border: none;
-            border-radius: 18px;
-            padding: 16px;
-            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-            cursor: pointer;
-            box-shadow: var(--card-shadow);
-        }
-
-        .person-card:hover {
-            box-shadow: var(--card-shadow-hover);
-            transform: translateY(-3px);
-        }
-
-        .person-card-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 12px;
-        }
-
-        .person-avatar-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-
-        .person-avatar-large {
-            width: 56px;
-            height: 56px;
-            background: var(--bg-tertiary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            overflow: hidden;
-        }
-
-        .person-avatar-large img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .person-position-badge {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--faint);
-            text-align: center;
-            max-width: 48px;
-            line-height: 1.2;
-        }
-
-        .person-info {
-            width: 100%;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding-top: 2px;
-        }
-
-        .person-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--ink);
-            line-height: 1.3;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .person-card:hover .person-name {
-            color: var(--red);
-        }
-
-        .person-work-types {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 3px;
-        }
-
-        .work-type-tag {
-            padding: 2px 6px;
-            border: none;
-            border-radius: 4px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: #ffffff;
-            background: transparent;
-        }
-
-        .person-card-hint {
-            font-size: 10px;
-            color: var(--text-secondary);
-        }
-
-        .person-card-actions {
-            position: absolute;
-            top: 7px;
-            right: 7px;
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .person-card:hover .person-card-actions {
-            opacity: 1;
-        }
-
-        .plan-card {
-            background: var(--bg-secondary);
-            border: none;
-            border-radius: 18px;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-            cursor: move;
-            position: relative;
-            box-shadow: var(--card-shadow);
-            min-width: 0;
-        }
-
-        .plan-card:hover {
-            box-shadow: var(--card-shadow-hover);
-            transform: translateY(-4px);
-        }
-
-        .plan-card.dragging {
-            opacity: 0.5;
-            transform: rotate(2deg);
-        }
-
-        .plan-card-image {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--faint);
-            font-size: 48px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .plan-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top;
-        }
-
-        /* og:image overlay text mask */
-        .plan-card-image::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(transparent, rgba(15,15,15,0.55));
-            pointer-events: none;
-        }
-
-        .plan-og-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: var(--bg-secondary);
-        }
-
-        .plan-card-content { padding: 14px 16px; }
-
-        .plan-card-tag {
-            padding: 3px 10px;
-            border: none;
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--faint);
-            background: var(--bg-tertiary);
-        }
-
-        .plan-card-meta {
-            display: flex;
-            gap: 12px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .plan-card-desc {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .plan-card-actions {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            gap: 6px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 10;
-        }
-
-        .plan-card:hover .plan-card-actions {
-            opacity: 1;
-        }
-
-        .plan-card-actions .icon-btn {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            color: white;
-        }
-
-        .plan-card-actions .icon-btn:hover {
-            background: var(--primary-orange);
-        }
-
-        /* Plan Detail Modal */
-        .plan-detail-modal {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 0;
-            max-width: 960px;
-        }
-
-        .plan-detail-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: contain;
-            background: var(--bg-secondary);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .plan-detail-content {
-            padding: 30px;
-        }
-
-        .plan-detail-header {
-            margin-bottom: 20px;
-        }
-
-        .plan-detail-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
-
-        .plan-detail-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .plan-detail-body {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text-primary);
-            white-space: pre-wrap;
-            margin-bottom: 20px;
-        }
-
-        .plan-detail-actions {
-            display: flex;
-            gap: 12px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-            justify-content: flex-end;
-        }
-
-        /* Person Detail Modal - Horizontal Layout */
-        .person-detail-modal {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 30px;
-        }
-
-        .person-detail-content {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-        }
-
-        .person-detail-avatar-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .person-detail-position {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--primary-orange);
-            background: rgba(255,107,0,0.12);
-            padding: 3px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-
-        /* 工作日誌 7欄卡片 */
-        .worklog-columns {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(110px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-        .worklog-col { min-width: 0; }
-        .worklog-col-header {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--faint);
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--rule);
-            margin-bottom: 8px;
-            text-align: center;
-        }
-        .worklog-col-card {
-            background: var(--bg-secondary);
-            border: none;
-            border-left: 3px solid var(--red);
-            border-radius: 10px;
-            padding: 8px 10px;
-            margin-bottom: 7px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .worklog-col-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--card-shadow);
-        }
-        .wc-pct {
-            font-family: 'Space Mono', monospace;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--red);
-            min-width: 34px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .wc-mid {
-            flex: 1;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.35;
-            overflow: hidden;
-            max-height: 4.1em;
-            overflow-wrap: break-word;
-            word-break: break-word;
-            min-width: 0;
-        }
-        .wc-dates {
-            font-size: 10px;
-            color: var(--text-secondary);
-            text-align: right;
-            line-height: 1.9;
-            flex-shrink: 0;
-        }
-        .worklog-col-empty {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-align: center;
-            padding: 12px 0;
-        }
-        /* Part column card: vertical layout */
-        .part-col-card {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-        .part-col-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-primary);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .part-col-price {
-            font-size: 10px;
-            color: var(--text-secondary);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-top: 2px;
-        }
-
-        /* 人員分頁展開式圖卡 */
-        .person-full-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 12px;
-        }
-        .person-full-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
-            position: relative;
-        }
-        .person-full-card-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .person-full-card:hover .person-full-card-actions { opacity: 1; }
-        .person-full-card-content {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-        .person-full-avatar-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .person-full-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-            overflow: hidden;
-        }
-        .person-full-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .person-full-info { flex: 1; min-width: 0; }
-        .person-full-name {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-        }
-        .person-full-contact {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 3px;
-        }
-        .person-full-meta {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-        }
-
-        .person-detail-avatar {
-            width: 120px;
-            height: 120px;
-            background: #2a2a2a;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
-            overflow: hidden;
-        }
-
-        .person-detail-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .person-detail-info {
-            flex: 1;
-        }
-
-        .person-detail-name {
-            font-size: 36px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            line-height: 1.2;
-        }
-
-        .person-detail-contact {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 6px 0;
-        }
-
-        .person-detail-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .person-detail-tag {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .person-detail-extra {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        .person-detail-field {
-            margin-bottom: 12px;
-        }
-
-        .person-detail-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .person-detail-value {
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
-        .person-detail-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-
-        .person-modal-top-actions {
-            display: none;
-        }
-        .person-modal-bottom-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        .person-modal-bottom-actions .icon-btn {
-            width: auto;
-            padding: 4px 12px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .resource-card {
-            background: var(--bg-secondary);
-            border: none;
-            border-radius: 16px;
-            padding: 12px;
-            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-shadow: var(--card-shadow);
-            min-width: 0;
-        }
-
-        .resource-card:hover {
-            box-shadow: var(--card-shadow-hover);
-            transform: translateY(-3px);
-        }
-
-        .resource-card.pinned {
-            border-left: 3px solid var(--secondary-yellow);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 6px;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .resource-name {
-            font-size: 13px;
-            font-weight: 600;
-            flex: 1;
-            line-height: 1.3;
-            color: var(--ink);
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 4px;
-            flex-shrink: 0;
-            opacity: 0;
-            transition: opacity 0.18s;
-        }
-
-        .resource-card:hover .card-actions { opacity: 1; }
-
-        .icon-btn {
-            width: 26px; height: 26px;
-            background: var(--bg-tertiary);
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s ease;
-            color: var(--faint);
-        }
-
-        .icon-btn:hover {
-            background: var(--red-bg);
-            color: var(--red);
-        }
-
-        .priority-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .priority-high {
-            background: rgba(239,68,68,0.1);
-            color: var(--red);
-        }
-
-        .priority-medium {
-            background: rgba(245,158,11,0.1);
-            color: #d97706;
-        }
-
-        .priority-low {
-            background: rgba(59,130,246,0.1);
-            color: var(--accent-blue);
-        }
-
-        .resource-description {
-            color: var(--faint);
-            font-size: 12px;
-            line-height: 1.4;
-            margin-bottom: 8px;
-            flex: 1;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .resource-url {
-            color: var(--red);
-            font-size: 11px;
-            text-decoration: none;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: block;
-            margin-top: auto;
-        }
-
-        .resource-url:hover { text-decoration: underline; }
-
-        .resource-preview-wrap {
-            width: 100%;
-            margin: 0 0 10px 0;
-            overflow: hidden;
-            border-radius: 8px;
-            background: var(--bg-tertiary);
-            flex-shrink: 0;
-            /* 預設隱藏，有圖才顯示 */
-            display: none;
-        }
-
-        .resource-preview-wrap.loaded {
-            display: block;
-        }
-
-        .resource-preview-img {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .resource-card:hover .resource-preview-img {
-            transform: scale(1.03);
-        }
-
-        /* Work Type Pills - multi-select, responsive */
-        .work-type-pills {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
-            gap: 6px;
-        }
-
-        .work-type-pill {
-            padding: 7px 8px;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            background: var(--bg);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.18s ease;
-            user-select: none;
-        }
-
-        .work-type-pill:hover {
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
-            background: var(--orange-light);
-        }
-
-        .work-type-pill.active {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            color: white;
-        }
-
-        /* Pill Selector - single select */
-        .pill-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
-            gap: 6px;
-        }
-
-        .pill-option {
-            padding: 7px 8px;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            background: var(--bg);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.18s ease;
-            user-select: none;
-        }
-
-        .pill-option:hover {
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
-            background: var(--orange-light);
-        }
-
-        .pill-option.active {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            color: white;
-        }
-
-        /* Overview split layout */
-        .overview-split-row {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-            gap: 24px;
-            margin-bottom: 32px;
-            align-items: start;
-        }
-
-        .overview-split-row .category-section {
-            margin-bottom: 0;
-        }
-
-        @media (max-width: 1000px) {
-            .overview-split-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Form two-column grid */
-        .form-two-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0 16px;
-        }
-
-        @media (max-width: 600px) {
-            .form-two-col {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Timeline */
-        .timeline-container {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            overflow-x: auto;
-        }
-
-        .timeline-controls {
-            display: flex;
-            gap: 0;
-            margin-bottom: 12px;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .timeline-range-btn {
-            padding: 4px 10px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: color 0.15s, border-color 0.15s;
-        }
-
-        .timeline-range-btn:hover {
-            color: var(--text-primary);
-            background: transparent;
-            border-color: transparent;
-        }
-
-        .timeline-range-btn.active {
-            color: var(--primary-orange);
-            border-bottom-color: var(--primary-orange);
-            font-weight: 600;
-            background: transparent;
-        }
-
-        .timeline-scale {
-            position: relative;
-            height: 40px;
-            margin-bottom: 12px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .timeline-tick {
-            position: absolute;
-            bottom: 0;
-            transform: translateX(-50%);
-            text-align: center;
-        }
-
-        .timeline-tick-line {
-            width: 1px;
-            height: 8px;
-            background: var(--border);
-            margin: 0 auto 4px;
-        }
-
-        .timeline-tick-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-
-        .timeline-today {
-            position: absolute;
-            top: 0;
-            bottom: -250px;
-            width: 0;
-            border-left: 2px dashed var(--red);
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .timeline-today-label {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--red);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 2px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .timeline-tracks {
-            position: relative;
-            min-height: 200px;
-        }
-
-        .timeline-track {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            min-height: 60px;
-            position: relative;
-        }
-
-        .track-label {
-            width: 80px;
-            flex-shrink: 0;
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--text-primary);
-            padding-top: 8px;
-        }
-
-        .track-timeline {
-            flex: 1;
-            position: relative;
-            min-height: 60px;
-        }
-
-        .timeline-item {
-            position: absolute;
-            height: 48px;
-            top: 6px;
-            border-radius: 12px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: visible;
-        }
-
-        .timeline-item:hover {
-            z-index: 20;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-
-        .timeline-item-title {
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: visible;
-            color: white;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .timeline-item-progress {
-            font-size: 10px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            margin-top: 2px;
-        }
-
-        .worklog-card {
-            background: var(--bg-secondary);
-            border: none;
-            border-left: 4px solid var(--red);
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 12px;
-            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
-            cursor: pointer;
-            box-shadow: var(--card-shadow);
-        }
-
-        .worklog-card:hover {
-            box-shadow: var(--card-shadow-hover);
-            transform: translateY(-2px);
-        }
-
-        .worklog-card.completed {
-            border-left-color: var(--accent-blue);
-        }
-
-        .worklog-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 10px;
-        }
-
-        .worklog-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .worklog-progress {
-            font-family: 'Space Mono', monospace;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--red);
-        }
-
-        .worklog-card.completed .worklog-progress {
-            color: var(--accent-blue);
-        }
-
-        .worklog-subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .worklog-description {
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-        }
-
-        .worklog-meta {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .view-toggle {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .view-toggle-btn {
-            padding: 6px 14px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .view-toggle-btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-        }
-
-        .view-toggle-btn.active {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            color: white;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(16px) scale(0.98); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 40px 20px;
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            border: none;
-            box-shadow: 0 32px 96px rgba(0,0,0,0.3);
-            padding: 32px;
-            max-width: 960px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: modalFadeIn 0.35s cubic-bezier(0.16,1,0.3,1);
-        }
-
-        #worklogDetailModal.person-modal .modal-content {
-            max-width: 460px;
-            padding: 20px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 14px;
-            border-bottom: 0.5px solid var(--rule);
-        }
-
-        .modal-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--ink);
-        }
-
-        .close-btn {
-            width: 28px; height: 28px;
-            background: var(--bg-secondary);
-            border: none;
-            border-radius: 99px;
-            cursor: pointer;
-            font-size: 16px;
-            color: var(--faint);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--ink);
-        }
-
-        /* Worklog Detail Card */
-        .worklog-detail-card {
-            background: var(--bg);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .worklog-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 20px;
-        }
-
-        .worklog-detail-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .worklog-detail-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            margin-top: 16px;
-        }
-
-        .worklog-detail-meta {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .worklog-detail-field {
-            background: var(--bg-secondary);
-            padding: 12px;
-            border-radius: 6px;
-        }
-
-        .worklog-detail-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .worklog-detail-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .worklog-detail-notes {
-            background: var(--bg-secondary);
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-        }
-
-        .worklog-detail-notes-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .worklog-detail-notes-content {
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--faint);
-            margin-bottom: 6px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px 0;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--rule);
-            font-size: 14px;
-            color: var(--ink);
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s cubic-bezier(0.16,1,0.3,1);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-bottom-color: var(--red);
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .form-help {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        .upload-buttons {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .upload-option-btn {
-            flex: 1;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .upload-option-btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-            color: var(--primary-orange);
-        }
-
-        .date-input-wrapper {
-            position: relative;
-        }
-
-        .date-weekday {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 11px;
-            color: var(--text-secondary);
-            pointer-events: none;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            background: var(--text-primary);
-            color: var(--bg);
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 2000;
-            display: none;
-        }
-
-        .notification.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .avatar-upload {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .avatar-preview {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 12px;
-            background: var(--orange-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            font-size: 40px;
-        }
-
-        .avatar-preview svg {
-            width: 60px;
-            height: 60px;
-            fill: var(--primary-orange);
-        }
-
-        .avatar-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .upload-btn {
-            padding: 8px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .upload-btn:hover {
-            background: var(--orange-light);
-            border-color: var(--primary-orange);
-        }
-
-        .emoji-picker {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 8px;
-            margin: 12px 0;
-        }
-
-        .emoji-option {
-            font-size: 24px;
-            padding: 8px;
-            cursor: pointer;
-            text-align: center;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-
-        .emoji-option:hover {
-            background: var(--bg-secondary);
-        }
-
-        /* ── Phase 9: Stagger fade-in ── */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .category-section {
-            animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
-        }
-
-        /* pill-option active: left border style (Phase 7-2) */
-        .pill-option.active {
-            background: var(--red-bg) !important;
-            border-left: 3px solid var(--red) !important;
-            border-color: var(--rule) !important;
-            border-left-color: var(--red) !important;
-            color: var(--ink) !important;
-        }
-        .pill-option:hover {
-            border-color: var(--red) !important;
-            color: var(--red) !important;
-            background: var(--red-bg) !important;
-        }
-        .work-type-pill.active {
-            background: var(--red) !important;
-            border-color: var(--red) !important;
-            color: white !important;
-        }
-        .work-type-pill:hover {
-            border-color: var(--red) !important;
-            color: var(--red) !important;
-            background: var(--red-bg) !important;
-        }
-
-        /* view-toggle active */
-        .view-toggle-btn.active {
-            background: var(--red) !important;
-            border-color: var(--red) !important;
-            color: white !important;
-        }
-        .view-toggle-btn:hover {
-            background: var(--red-bg) !important;
-            border-color: var(--red) !important;
-        }
-
-        /* category header */
-        .category-header {
-            border-bottom: 1px solid var(--rule);
-        }
-        .category-title {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--ink);
-        }
-        .add-category-btn { color: var(--red); }
-        .add-category-btn:hover { color: var(--ink); }
-
-        /* timeline range btn active */
-        .timeline-range-btn.active {
-            color: var(--red) !important;
-            border-bottom-color: var(--red) !important;
-        }
-
-        /* search input */
-        .search-box input:focus {
-            border-color: var(--red) !important;
-        }
-
-        /* person-detail position badge */
-        .person-detail-position {
-            background: var(--red-bg) !important;
-            color: var(--red) !important;
-        }
-
-        /* worklog-col-card tag badge */
-        .wc-mid span, .wc-tag {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        /* btn global */
-        .btn:hover {
-            background: var(--red-bg) !important;
-            border-color: var(--red) !important;
-        }
-
-        /* show-more btn */
-        .show-more-btn:hover {
-            background: var(--red-bg) !important;
-            border-color: var(--red) !important;
-            color: var(--red) !important;
-        }
-
-        /* icon-btn */
-        .icon-btn:hover {
-            background: var(--red-bg) !important;
-            color: var(--red) !important;
-        }
-
-        /* priority badges */
-        .priority-high {
-            background: var(--red-bg) !important;
-            color: var(--red) !important;
-        }
-    </style>
-
+  <style>
+    :root {
+      --bg:          #ffffff;
+      --surface:     #ffffff;
+      --surface-2:   #f5f5f7;
+      --ink:         #1d1d1f;
+      --faint:       #6e6e73;
+      --muted:       #86868b;
+      --rule:        #d2d2d7;
+      --accent:      #0071e3;
+      --accent-bg:   #f0f7ff;
+      --accent-mid:  #d6e7fb;
+      --primary-orange:   var(--accent);
+      --secondary-yellow: #b88a2b;
+      --accent-blue:      var(--accent);
+      --bg-secondary:     var(--surface);
+      --bg-tertiary:      var(--surface-2);
+      --text-primary:     var(--ink);
+      --text-secondary:   var(--faint);
+      --border:           var(--rule);
+      --red:              var(--accent);
+      --red-bg:           var(--accent-bg);
+      --red-mid:          var(--accent-mid);
+      --orange-light:     var(--accent-bg);
+      --yellow-light:     #fafafa;
+      --blue-light:       var(--accent-bg);
+      --card-shadow:      0 1px 0 rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.04);
+      --card-shadow-hover:0 4px 16px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.04);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','SF Pro',Helvetica,Arial,sans-serif;font-feature-settings:'ss01','cv11';font-variant-numeric:tabular-nums;background:var(--bg);color:var(--ink);line-height:1.47059;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-.003em}
+    ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--rule);border-radius:99px}*{scrollbar-width:thin;scrollbar-color:var(--rule) transparent}
+
+    /* ── Header ── */
+    .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(0,0,0,0.10)}
+    header{display:flex;align-items:center;height:48px;max-width:1440px;margin:0 auto;padding:0 40px;gap:0}
+    .header-left{display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .header-mark{display:none}
+    .header-wordmark{font-size:14px;font-weight:600;letter-spacing:-.014em;color:var(--ink);text-transform:none}
+    .header-left h1{display:none}
+    .header-nav{display:flex;align-items:center;flex:1;justify-content:center}
+    .nav-btn{padding:0 14px;height:48px;background:transparent;border:none;font-size:13px;font-weight:400;letter-spacing:-.005em;color:var(--ink);opacity:.82;cursor:pointer;transition:opacity .15s;white-space:nowrap;border-bottom:none}
+    .nav-btn:hover{opacity:1}
+    .nav-btn.active{color:var(--accent);opacity:1;font-weight:500}
+    .header-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .hdr-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;background:transparent;border:none;border-radius:980px;color:var(--ink);font-size:12px;font-weight:400;cursor:pointer;text-decoration:none;transition:background .15s;white-space:nowrap}
+    .hdr-btn:hover{background:rgba(0,0,0,0.06)}
+    .hdr-btn svg{width:13px;height:13px;flex-shrink:0}
+    .hdr-divider,.header-pill,.header-pill-value,.search-input-pill{display:none}
+
+    /* ── Container ── */
+    .container{max-width:1440px;margin:0 auto;padding:24px 40px}
+
+    /* ── Category Sections ── */
+    #resourcesContainer{counter-reset:cat-counter}
+    .category-section{margin-bottom:40px;counter-increment:cat-counter}
+    .category-header{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;padding-bottom:8px;border-bottom:none}
+    .category-section>.category-header::before{display:none}
+    .category-title{font-size:28px;font-weight:600;letter-spacing:-.025em;color:var(--ink);line-height:1}
+    .add-category-btn{background:transparent;border:1px solid var(--rule);border-radius:6px;color:var(--faint);font-size:15px;cursor:pointer;width:26px;height:26px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;line-height:1}
+    .add-category-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+    .category-count{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--muted);margin-left:auto;letter-spacing:.06em}
+
+    /* ── Grids ── */
+    .resources-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+    .resources-grid.cards-large{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    /* ── Bento Grid Worklog (overview) ── */
+    .bento-worklog{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      grid-auto-rows:108px;
+      gap:10px;
+    }
+    .bento-task{
+      background:rgba(255,255,255,0.62);
+      backdrop-filter:blur(22px) saturate(180%);
+      -webkit-backdrop-filter:blur(22px) saturate(180%);
+      border:1px solid rgba(255,255,255,0.55);
+      border-radius:16px;
+      padding:14px 16px;
+      position:relative;
+      cursor:pointer;
+      transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .4s cubic-bezier(.16,1,.3,1),scale .5s cubic-bezier(.16,1,.3,1);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      box-shadow:0 1px 2px rgba(60,30,10,0.04), 0 4px 12px rgba(60,30,10,0.03);
+    }
+    .bento-task:hover{
+      transform:translateY(-2px);
+      scale:1.015;
+      box-shadow:0 8px 28px rgba(60,30,10,0.10), 0 20px 60px rgba(60,30,10,0.06);
+      z-index:2;
+    }
+    .bento-task::before{
+      content:'';
+      position:absolute;
+      inset:0 0 auto 0;
+      height:2px;
+      background:currentColor;
+      opacity:.5;
+    }
+    .bento-task.size-2x1{grid-column:span 2}
+    .bento-task.size-2x2{grid-column:span 2;grid-row:span 2}
+    .bento-task.size-1x2{grid-row:span 2}
+    .bento-task.urgent{background:rgba(192,49,42,0.06)}
+    .bento-task.urgent .bt-pct{color:var(--accent)}
+    .bento-task.done{background:rgba(255,255,255,0.40);opacity:.7}
+    .bento-task.done .bt-pct{color:var(--accent-blue)}
+    .bt-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .bt-type{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .bt-pct{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;line-height:1}
+    .bento-task.size-2x2 .bt-pct{font-size:46px;letter-spacing:-.02em}
+    .bento-task.size-2x1 .bt-pct{font-size:28px}
+    .bt-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .bento-task.size-2x2 .bt-name{font-size:20px;-webkit-line-clamp:3}
+    .bento-task.size-2x1 .bt-name{font-size:16px}
+    .bt-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-top:auto}
+    .bt-dates{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em}
+    .bt-progress-bar{position:absolute;bottom:0;left:0;height:2px;background:currentColor;opacity:.7;transition:width .4s cubic-bezier(.16,1,.3,1)}
+    @media(max-width:900px){.bento-worklog{grid-template-columns:repeat(2,1fr)}.bento-task.size-2x2,.bento-task.size-2x1{grid-column:span 2}}
+
+    /* ── Person roster: tighter alignment ── */
+    .overview-person-grid{display:flex;flex-direction:column;gap:0}
+    .person-row-item{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .12s;border-radius:0}
+    .person-row-item:last-child{border-bottom:none}
+    .person-row-item:hover .pri-name{color:var(--accent)}
+    .pri-avatar{width:28px;height:28px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--bg);flex-shrink:0;overflow:hidden}
+    .pri-avatar img{width:100%;height:100%;object-fit:cover}
+    .pri-body{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px}
+    .pri-name{font-size:14px;font-weight:700;color:var(--ink);transition:color .12s;white-space:nowrap}
+    .pri-pos{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+    .pri-tags{display:flex;gap:3px;flex-shrink:0}
+    .pri-tags .work-type-tag{font-size:8px;padding:2px 5px}
+    .person-full-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+    @media(max-width:1400px){.resources-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:900px){.resources-grid{grid-template-columns:repeat(2,1fr)};header{padding:0 20px};.container{padding:32px 20px}}
+    @media(max-width:480px){.resources-grid{grid-template-columns:1fr}}
+
+    /* ── Overview split ── */
+    .overview-split-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:32px;margin-bottom:60px;align-items:start}
+    .overview-split-row .category-section{margin-bottom:0}
+    @media(max-width:1000px){.overview-split-row{grid-template-columns:1fr}}
+
+    /* ── Person Card (compact) ── */
+    .person-card{background:var(--surface);border-radius:16px;padding:20px 14px;box-shadow:var(--card-shadow);cursor:pointer;transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s;position:relative;min-width:0}
+    .person-card:hover{transform:translateY(-3px);box-shadow:var(--card-shadow-hover)}
+    .person-card-content{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+    .person-avatar-col{display:flex;flex-direction:column;align-items:center;gap:5px}
+    .person-avatar-large{width:50px;height:50px;background:var(--surface-2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0}
+    .person-avatar-large img{width:100%;height:100%;object-fit:cover}
+    .person-position-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.2}
+    .person-info{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px}
+    .person-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .15s}
+    .person-card:hover .person-name{color:var(--accent)}
+    .person-work-types{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+    .work-type-tag{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:500;color:#fff;white-space:nowrap;letter-spacing:0;display:inline-flex;align-items:center}
+    .person-card-actions{position:absolute;top:7px;right:7px;display:flex;gap:3px;opacity:0;transition:opacity .15s}
+    .person-card:hover .person-card-actions{opacity:1}
+
+    /* ── Person Full Card ── */
+    .person-full-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+    .person-full-card{background:rgba(255,255,255,0.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:0.5px solid rgba(0,0,0,0.08);border-radius:22px;padding:22px;position:relative;min-width:0;cursor:pointer;transition:transform .42s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 1px 3px rgba(0,0,0,0.03),0 8px 20px rgba(0,0,0,0.03)}
+    .person-full-card:hover{transform:translateY(-3px) scale(1.008);box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 6px 18px rgba(0,0,0,0.06),0 24px 48px rgba(0,0,0,0.06)}
+    .person-full-card-actions{position:absolute;top:14px;right:14px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
+    .person-full-card:hover .person-full-card-actions{opacity:1}
+    .person-full-card-content{display:flex;gap:14px;align-items:flex-start}
+    .person-full-avatar-col{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}
+    .person-full-avatar{width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;letter-spacing:-.01em;overflow:hidden}
+    .person-full-avatar img{width:100%;height:100%;object-fit:cover}
+    .person-full-info{flex:1;min-width:0}
+    .person-full-name{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:3px;letter-spacing:-.02em;line-height:1.1}
+    .person-full-contact{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-bottom:1px}
+    .person-full-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.04em;text-transform:uppercase;padding-top:8px;border-top:0.5px solid rgba(0,0,0,0.06)}
+    .person-detail-position{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;color:var(--ink);background:rgba(0,0,0,0.05);padding:3px 9px;border-radius:980px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .person-full-card .person-work-types{margin-top:8px}
+    .person-full-card .work-type-tag{background:rgba(0,0,0,0.06)!important;color:var(--ink)!important;padding:3px 10px;font-size:11px;border-radius:6px;white-space:nowrap;font-weight:500}
+
+    /* ── Person Detail Modal ── */
+    .person-detail-modal{padding:0}
+    .person-detail-content{display:flex;gap:28px;align-items:flex-start}
+    .person-detail-avatar-col{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+    .person-detail-avatar{width:96px;height:96px;background:var(--surface-2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:46px;overflow:hidden}
+    .person-detail-avatar img{width:100%;height:100%;object-fit:cover}
+    .person-detail-info{flex:1}
+    .person-detail-name{font-size:28px;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin-bottom:8px;line-height:1}
+    .person-detail-contact{font-size:13px;color:var(--faint);margin:4px 0}
+    .person-detail-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+    .person-detail-tag{padding:5px 14px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:white;letter-spacing:.04em;text-transform:uppercase}
+    .person-detail-extra{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+    .person-detail-field{margin-bottom:10px}
+    .person-detail-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+    .person-detail-value{font-size:14px;color:var(--ink)}
+    .person-detail-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+    .person-modal-bottom-actions{display:flex;gap:8px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+    .person-modal-bottom-actions .icon-btn{width:auto;padding:6px 16px;font-size:12px;font-weight:700}
+    .person-modal-top-actions{display:none}
+
+    /* ── Worklog Card ── */
+    .worklog-card{background:rgba(255,255,255,0.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:0.5px solid rgba(0,0,0,0.08);border-radius:18px;padding:18px 20px;margin-bottom:10px;box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;min-width:0}
+    .worklog-card:hover{transform:translateY(-2px) scale(1.005);box-shadow:0 6px 18px rgba(0,0,0,0.06),0 24px 48px rgba(0,0,0,0.04)}
+    .worklog-card.completed{border-left-color:var(--accent-blue)}
+    .worklog-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;gap:12px}
+    .worklog-title{font-size:14px;font-weight:700;color:var(--ink)}
+    .worklog-progress{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);flex-shrink:0;line-height:1}
+    .worklog-card.completed .worklog-progress{color:var(--accent-blue)}
+    .worklog-subtitle{font-size:12px;color:var(--faint);margin-bottom:6px}
+    .worklog-meta{display:flex;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--faint)}
+    .worklog-description{font-size:12px;line-height:1.6;color:var(--faint);margin-top:7px}
+
+    /* ── Worklog Columns ── */
+    .worklog-columns{display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));gap:10px;margin-top:20px;overflow-x:auto}
+    @media(max-width:480px){.worklog-columns{grid-template-columns:repeat(7,minmax(140px,140px))}}
+    .worklog-col{min-width:0}
+    .worklog-col-header{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:7px;border-bottom:1.5px solid var(--rule);margin-bottom:8px;text-align:center}
+    .worklog-col-card{background:var(--surface);border-left:2px solid var(--accent);border-radius:8px;padding:8px 9px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:transform .15s,box-shadow .15s;min-width:0;box-shadow:var(--card-shadow)}
+    .worklog-col-card:hover{transform:translateY(-1px);box-shadow:var(--card-shadow-hover)}
+    .worklog-col-empty{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:12px 0}
+    .wc-pct{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);min-width:30px;text-align:center;flex-shrink:0}
+    .wc-mid{flex:1;font-size:11px;font-weight:600;color:var(--ink);line-height:1.35;overflow:hidden;max-height:4.1em;overflow-wrap:break-word;word-break:break-word;min-width:0}
+    .wc-dates{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-align:right;line-height:2;flex-shrink:0}
+    .part-col-card{display:flex;flex-direction:column;width:100%}
+    .part-col-name{font-size:11px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .part-col-price{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--faint);margin-top:2px}
+
+    /* ── Plan Card ── */
+    .plan-card{background:rgba(255,255,255,0.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:0.5px solid rgba(0,0,0,0.08);border-radius:22px;overflow:hidden;transition:transform .42s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;cursor:move;position:relative;min-width:0;box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 1px 3px rgba(0,0,0,0.03),0 8px 20px rgba(0,0,0,0.03)}
+    .plan-card:hover{transform:translateY(-3px) scale(1.008);box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 6px 18px rgba(0,0,0,0.06),0 24px 48px rgba(0,0,0,0.06)}
+    .plan-card.dragging{opacity:.5;transform:rotate(2deg)}
+    .plan-card-image{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1d1d1f 0%,#3a3a3c 100%);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);overflow:hidden;position:relative}
+    .plan-card-image.has-image::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,.35));pointer-events:none}
+    .plan-card-image img{width:100%;height:100%;object-fit:cover;object-position:top}
+    .plan-cover-icon{width:36px;height:36px;color:rgba(255,255,255,0.4)}
+    .plan-card-image .plan-img-placeholder{display:none}
+    .plan-card-content{padding:18px 20px 20px}
+    .plan-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+    .plan-card-title{font-size:16px;font-weight:600;color:var(--ink);line-height:1.3;letter-spacing:-.015em;flex:1}
+    .plan-card-tag{padding:3px 10px;border-radius:980px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;color:var(--faint);background:rgba(0,0,0,0.05);flex-shrink:0;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+    .plan-card-meta{display:flex;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px}
+    .plan-card-desc{font-size:13px;color:var(--faint);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .plan-card-actions{position:absolute;top:10px;right:10px;display:flex;gap:5px;opacity:0;transition:opacity .15s;z-index:10}
+    .plan-card:hover .plan-card-actions{opacity:1}
+    .plan-card-actions .icon-btn{background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:white}
+    .plan-card-actions .icon-btn:hover{background:var(--accent)}
+
+    /* ── Plan Detail ── */
+    .plan-detail-modal{background:var(--bg);border-radius:12px;padding:0}
+    .plan-detail-image{width:100%;height:auto;display:block;object-fit:contain;background:var(--surface);border-radius:12px 12px 0 0}
+    .plan-detail-content{padding:24px}
+    .plan-detail-header{margin-bottom:16px}
+    .plan-detail-title{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:10px;letter-spacing:-.02em}
+    .plan-detail-meta{display:flex;gap:12px;font-size:13px;color:var(--faint);flex-wrap:wrap}
+    .plan-detail-body{font-size:14px;line-height:1.8;color:var(--ink);white-space:pre-wrap;margin-bottom:14px}
+    .plan-detail-actions{display:flex;gap:10px;padding-top:14px;border-top:1px solid var(--rule);justify-content:flex-end}
+
+    /* ── Resource Card ── */
+    .resource-card{background:rgba(255,255,255,0.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:0.5px solid rgba(0,0,0,0.08);border-radius:18px;padding:16px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;display:flex;flex-direction:column;height:100%;min-width:0;cursor:pointer;box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 1px 3px rgba(0,0,0,0.03)}
+    .resource-card:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 6px 18px rgba(0,0,0,0.06),0 24px 48px rgba(0,0,0,0.04)}
+    .resource-card.pinned{border-top:2px solid var(--secondary-yellow)}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:6px;min-width:0}
+    .resource-name{font-size:13px;font-weight:700;flex:1;line-height:1.35;color:var(--ink)}
+    .card-actions{display:flex;gap:3px;flex-shrink:0;opacity:0;transition:opacity .15s}
+    .resource-card:hover .card-actions{opacity:1}
+    .priority-badge{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;margin-bottom:6px;letter-spacing:.06em}
+    .priority-high{background:var(--accent-bg);color:var(--accent)}
+    .priority-medium{background:#fef6e8;color:#9a6120}
+    .priority-low{background:#edf2fa;color:#2f5fa0}
+    .resource-description{color:var(--faint);font-size:12px;line-height:1.5;margin-bottom:8px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .resource-url{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:9px;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;margin-top:auto;letter-spacing:.02em}
+    .resource-url:hover{text-decoration:underline}
+    .resource-preview-wrap{width:100%;margin:0 0 10px;overflow:hidden;border-radius:8px;background:var(--surface-2);flex-shrink:0;display:none}
+    .resource-preview-wrap.loaded{display:block}
+    .resource-preview-img{width:100%;height:80px;object-fit:cover;display:block;transition:transform .3s}
+    .resource-card:hover .resource-preview-img{transform:scale(1.03)}
+
+    /* ── Icon Button ── */
+    .icon-btn{width:26px;height:26px;background:var(--surface-2);border:none;border-radius:6px;cursor:pointer;font-size:11px;transition:all .15s;color:var(--faint);display:flex;align-items:center;justify-content:center}
+    .icon-btn:hover{background:var(--accent-bg);color:var(--accent)}
+
+    /* ── Show More ── */
+    .show-more-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;margin-top:10px;background:transparent;border:1px dashed var(--rule);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .15s}
+    .show-more-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+
+    /* ── Timeline ── */
+    .timeline-container{background:var(--surface);border-radius:16px;padding:20px;overflow-x:auto;box-shadow:var(--card-shadow)}
+    .timeline-controls{display:flex;gap:0;margin-bottom:14px;align-items:center;border-bottom:1px solid var(--rule)}
+    .timeline-range-btn{padding:6px 12px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .15s}
+    .timeline-range-btn:hover{color:var(--ink)}
+    .timeline-range-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .timeline-scale{position:relative;height:40px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+    .timeline-tick{position:absolute;bottom:0;transform:translateX(-50%);text-align:center}
+    .timeline-tick-line{width:1px;height:6px;background:var(--rule);margin:0 auto 4px}
+    .timeline-tick-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;color:var(--faint);white-space:nowrap}
+    .timeline-today{position:absolute;top:0;bottom:-250px;width:0;border-left:1.5px dashed var(--accent);z-index:10;pointer-events:none}
+    .timeline-today-label{position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;padding:2px 8px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;white-space:nowrap;letter-spacing:.08em}
+    .timeline-tracks{position:relative;min-height:200px}
+    .timeline-track{display:flex;align-items:flex-start;margin-bottom:8px;min-height:60px;position:relative}
+    .track-label{width:60px;flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-top:8px}
+    .track-timeline{flex:1;position:relative;min-height:60px}
+    .timeline-item{position:absolute;height:44px;top:6px;border-radius:10px;padding:7px 11px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;justify-content:center;overflow:visible}
+    .timeline-item:hover{z-index:20;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+    .timeline-item-title{font-size:11px;font-weight:700;white-space:nowrap;color:white;position:relative;z-index:1;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+    .timeline-item-progress{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:rgba(255,255,255,.85);margin-top:2px}
+
+    /* ── Worklog Detail ── */
+    .worklog-detail-card{background:var(--bg);border-radius:12px;padding:20px}
+    .worklog-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+    .worklog-detail-title{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+    .worklog-detail-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+    .worklog-detail-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+    .worklog-detail-field{background:var(--surface);padding:12px;border-radius:10px}
+    .worklog-detail-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .worklog-detail-value{font-size:14px;font-weight:700;color:var(--ink)}
+    .worklog-detail-notes{background:var(--surface);padding:14px;border-radius:10px;margin-top:12px}
+    .worklog-detail-notes-title{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .worklog-detail-notes-content{font-size:13px;line-height:1.7;color:var(--faint);white-space:pre-wrap}
+
+    /* ── Modal ── */
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(13,10,8,.52);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:1000;overflow-y:auto;padding:40px 20px}
+    .modal.show{display:flex;align-items:center;justify-content:center}
+    .modal-content{background:var(--surface);border-radius:20px;box-shadow:0 32px 80px rgba(13,10,8,.22);padding:28px;max-width:960px;width:100%;max-height:90vh;overflow-y:auto;animation:modalIn .3s cubic-bezier(.16,1,.3,1)}
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+    #worklogDetailModal.person-modal .modal-content{max-width:480px;padding:24px}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+    .modal-title{font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+    .close-btn{width:28px;height:28px;background:var(--surface-2);border:none;border-radius:50%;cursor:pointer;font-size:16px;color:var(--faint);display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .close-btn:hover{background:var(--accent-bg);color:var(--accent)}
+
+    /* ── Forms ── */
+    .form-group{margin-bottom:20px}
+    .form-group label{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 0;background:transparent;border:none;border-bottom:1px solid var(--rule);font-size:14px;color:var(--ink);transition:border-color .2s}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-bottom-color:var(--accent)}
+    .form-group textarea{min-height:80px;resize:vertical}
+    .form-help{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px}
+    .form-two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+    @media(max-width:600px){.form-two-col{grid-template-columns:1fr}}
+
+    /* ── Pill Selectors ── */
+    .work-type-pills,.pill-selector{display:flex;flex-wrap:wrap;gap:6px}
+    .work-type-pill,.pill-option{padding:6px 12px;border:1px solid var(--rule);border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--faint);background:var(--bg);cursor:pointer;transition:all .15s;user-select:none}
+    .work-type-pill:hover,.pill-option:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+    .work-type-pill.active,.pill-option.active{background:var(--accent);border-color:var(--accent);color:white}
+
+    /* ── Avatar Upload ── */
+    .avatar-upload{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+    .avatar-preview{width:56px;height:56px;background:var(--surface-2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;flex-shrink:0}
+    .avatar-preview img{width:100%;height:100%;object-fit:cover}
+    .emoji-picker{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-top:10px;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--rule)}
+    .emoji-option{font-size:18px;cursor:pointer;text-align:center;padding:4px;border-radius:6px;transition:background .1s}
+    .emoji-option:hover{background:var(--accent-bg)}
+    .upload-btn{padding:7px 14px;background:var(--surface-2);border:1px solid var(--rule);border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--faint);cursor:pointer;transition:all .15s}
+    .upload-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+
+    /* ── Upload / Misc Buttons ── */
+    .upload-buttons{display:flex;gap:10px;margin-bottom:10px}
+    .upload-option-btn{flex:1;padding:12px;background:var(--bg);border:1px solid var(--rule);border-radius:10px;font-size:13px;font-weight:600;color:var(--faint);cursor:pointer;transition:all .15s}
+    .upload-option-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+    .date-input-wrapper{position:relative}
+    .date-weekday{position:absolute;right:0;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);pointer-events:none}
+    .btn{padding:9px 20px;background:var(--bg);border:1px solid var(--rule);border-radius:8px;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .15s}
+    .btn:hover{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+
+    /* ── View toggle ── */
+    .view-toggle-btn{padding:6px 14px;background:var(--bg);border:1px solid var(--rule);border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--faint);cursor:pointer;transition:all .15s}
+    .view-toggle-btn:hover{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+    .view-toggle-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+
+    /* ── Notification ── */
+    .notification{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 24px;background:var(--ink);color:var(--bg);border-radius:24px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;z-index:2000;display:none;white-space:nowrap}
+    .notification.show{display:block;animation:notifIn .25s ease}
+    @keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+    /* ── Utilities ── */
+    .hidden{display:none!important}
+    .top-controls,.filter-buttons,.view-toggle,.search-box,.search-container-header{display:none}
+    #searchInput{display:none}
+    .plan-card,.worklog-col-card,.person-full-card,.worklog-card,.person-card,.resource-card{min-width:0}
+
+    /* ── Overview Gantt: compact & clean ── */
+    .overview-split-row .timeline-container{padding:14px 16px;box-shadow:none}
+    .overview-split-row .timeline-controls{display:none}
+    .overview-split-row .timeline-tracks{min-height:unset}
+    .overview-split-row .timeline-track{min-height:36px;margin-bottom:2px}
+    .overview-split-row .track-timeline{min-height:36px}
+    .overview-split-row .track-label{width:48px;font-size:9px;padding-top:5px;color:var(--muted)}
+    .overview-split-row .timeline-item{height:22px;top:7px;border-radius:4px;padding:3px 7px;opacity:0.82}
+    .overview-split-row .timeline-item:hover{opacity:1}
+    .overview-split-row .timeline-item-title{font-size:9px}
+    .overview-split-row .timeline-item-progress{display:none}
+    .overview-split-row .timeline-scale{height:22px;margin-bottom:6px}
+    .overview-split-row .timeline-tick-label{font-size:8px;color:var(--muted)}
+    .overview-split-row .timeline-today-label{font-size:8px;padding:1px 5px}
+
+    /* ── Dashboard Master Grid ── */
+    .dash-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:24px}
+    @media(max-width:1100px){.dash-grid{grid-template-columns:repeat(6,1fr)}}
+    @media(max-width:600px){.dash-grid{grid-template-columns:repeat(2,1fr)}}
+
+    /* KPI tiles */
+    .kpi-tile{grid-column:span 3;background:rgba(255,255,255,0.6);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid rgba(255,255,255,0.7);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset,0 1px 3px rgba(60,30,10,0.04),0 6px 18px rgba(60,30,10,0.04)}
+    @media(max-width:1100px){.kpi-tile{grid-column:span 3}}
+    @media(max-width:600px){.kpi-tile{grid-column:span 1}}
+    .kpi-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px}
+    .kpi-label svg{width:11px;height:11px}
+    .kpi-num{font-size:48px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.03em;margin-top:14px;display:flex;align-items:baseline;gap:4px;font-feature-settings:'tnum'}
+    .kpi-num small{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--muted)}
+    .kpi-foot{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.06em;margin-top:6px}
+    .kpi-tile.accent{background:var(--accent);border-color:transparent;color:#fff}
+    .kpi-tile.accent .kpi-label,.kpi-tile.accent .kpi-foot{color:rgba(255,255,255,.7)}
+    .kpi-tile.accent .kpi-num{color:#fff}
+    .kpi-tile.accent .kpi-num small{color:rgba(255,255,255,.7)}
+
+    /* Sprint Zone (8 cols) */
+    .sprint-zone{grid-column:span 8;background:rgba(255,255,255,0.55);backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,0.7);border-radius:18px;padding:20px 22px;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset,0 8px 24px rgba(60,30,10,0.05)}
+    @media(max-width:1100px){.sprint-zone{grid-column:span 6}}
+    @media(max-width:600px){.sprint-zone{grid-column:span 2}}
+
+    /* Upcoming Side Panel (4 cols) */
+    .upcoming-zone{grid-column:span 4;background:rgba(255,255,255,0.55);backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,0.7);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset,0 8px 24px rgba(60,30,10,0.05)}
+    @media(max-width:1100px){.upcoming-zone{grid-column:span 6}}
+    @media(max-width:600px){.upcoming-zone{grid-column:span 2}}
+    .upcoming-list{display:flex;flex-direction:column;gap:10px;flex:1}
+    .upcoming-item{display:flex;align-items:center;gap:14px;padding:12px;background:rgba(255,255,255,0.5);border-radius:10px;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .15s}
+    .upcoming-item:hover{transform:translateY(-2px) scale(1.01);background:rgba(255,255,255,0.85)}
+    .ui-date{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding:6px 10px;background:var(--ink);color:#fff;border-radius:8px;min-width:50px}
+    .ui-date.urgent{background:var(--accent)}
+    .uid-day{font-size:19px;font-weight:600;line-height:1;letter-spacing:-.015em;font-feature-settings:'tnum'}
+    .uid-month{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-top:2px}
+    .ui-body{flex:1;min-width:0}
+    .ui-name{font-size:13px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ui-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em;margin-top:2px;text-transform:uppercase}
+    .ui-arrow{color:var(--muted);font-size:14px;flex-shrink:0}
+
+    /* ── Supplier Kanban Board (visionOS style) ── */
+    .kanban-board{display:grid;grid-template-columns:repeat(6,minmax(280px,1fr));gap:14px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+    .kanban-board::-webkit-scrollbar{height:6px}
+    @media(max-width:1200px){.kanban-board{grid-template-columns:repeat(6,280px)}}
+    .kanban-col{background:rgba(0,0,0,0.035);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:200px}
+    .kanban-col-head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+    .kanban-col-title{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+    .kanban-col-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);background:rgba(0,0,0,0.05);padding:2px 8px;border-radius:980px;font-weight:500}
+    .kanban-col-body{display:flex;flex-direction:column;gap:8px}
+    .kanban-card{background:#fff;border:0.5px solid rgba(0,0,0,0.06);border-radius:12px;padding:12px 13px;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .kanban-card:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 6px 16px rgba(0,0,0,0.08)}
+    .kc-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+    .kc-price{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:6px;letter-spacing:.02em}
+    .kc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(0,0,0,0.05);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+    .kc-link{color:var(--accent);text-decoration:none}
+    .kc-link:hover{text-decoration:underline}
+    .kc-priority{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--muted)}
+    .kc-priority.high{background:var(--accent)}
+    .kanban-empty{padding:14px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.04em}
+
+    /* ── Library Cards (App Store style) ── */
+    .library-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+    @media(max-width:1200px){.library-grid{grid-template-columns:repeat(3,1fr);gap:20px}}
+    @media(max-width:900px){.library-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+    @media(max-width:600px){.library-grid{grid-template-columns:1fr;gap:14px}}
+    .lib-card{background:#fff;border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,0.04);cursor:pointer;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s;overflow:hidden;display:flex;flex-direction:column;position:relative}
+    .lib-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.10)}
+    .lib-card-cover{position:relative;width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#f5f5f7 0%,#e5e5ea 100%);overflow:hidden}
+    .lib-card-cover img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+    .lib-card:hover .lib-card-cover img{transform:scale(1.03)}
+    .lib-card-cover-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.18)}
+    .lib-card-cover-icon svg{width:42px;height:42px}
+    .lib-card-tag{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;color:var(--ink);padding:4px 10px;border-radius:980px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;max-width:calc(100% - 20px)}
+    .lib-card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .lib-card-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.35;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .lib-card-desc{font-size:12px;color:var(--faint);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+    .lib-card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em;white-space:nowrap;gap:8px}
+    .lib-card-foot>span:first-child{overflow:hidden;text-overflow:ellipsis;min-width:0}
+    .lib-card-link{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.02em;text-decoration:none;font-weight:500}
+    .lib-card-link:hover{text-decoration:underline}
+    .lower-bento{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:120px;gap:14px;margin-top:24px}
+    @media(max-width:1100px){.lower-bento{grid-template-columns:repeat(6,1fr)}}
+    @media(max-width:600px){.lower-bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:110px}}
+    .lb-card{background:rgba(255,255,255,0.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:0.5px solid rgba(0,0,0,0.08);border-radius:22px;padding:22px;display:flex;flex-direction:column;cursor:pointer;overflow:hidden;position:relative;transition:transform .42s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 1px 3px rgba(0,0,0,0.03),0 8px 20px rgba(0,0,0,0.03)}
+    .lb-card:hover{transform:translateY(-3px) scale(1.008);box-shadow:0 1px 0 rgba(255,255,255,0.7) inset,0 6px 18px rgba(0,0,0,0.06),0 24px 48px rgba(0,0,0,0.06)}
+    .lb-3x2{grid-column:span 3;grid-row:span 2}
+    .lb-4x2{grid-column:span 4;grid-row:span 2}
+    .lb-4x3{grid-column:span 4;grid-row:span 3}
+    .lb-6x2{grid-column:span 6;grid-row:span 2}
+    .lb-2x2{grid-column:span 2;grid-row:span 2}
+    @media(max-width:1100px){.lb-4x2,.lb-4x3,.lb-6x2{grid-column:span 6}.lb-3x2{grid-column:span 3}}
+    @media(max-width:600px){.lb-4x2,.lb-4x3,.lb-6x2,.lb-3x2,.lb-2x2{grid-column:span 2}}
+    .lb-eyebrow{display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+    .lb-eyebrow svg{width:11px;height:11px}
+    .lb-title{font-size:22px;font-weight:600;letter-spacing:-.022em;color:var(--ink);line-height:1.15}
+    .lb-3x2 .lb-title,.lb-2x2 .lb-title{font-size:16px}
+    .lb-sub{font-size:13px;color:var(--faint);line-height:1.45;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .lb-plan-hero{background:linear-gradient(135deg,#1d1d1f 0%,#3a3a3c 100%);color:#fff;border-color:transparent}
+    .lb-plan-hero .lb-eyebrow{color:rgba(255,255,255,.55)}
+    .lb-plan-hero .lb-title{color:#fff}
+    .lb-plan-hero .lb-sub{color:rgba(255,255,255,.7)}
+    .lb-plan-hero .lb-cta{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:rgba(255,255,255,0.18);backdrop-filter:blur(12px);border-radius:980px;font-size:12px;font-weight:500;color:#fff;margin-top:14px;width:fit-content}
+    .lb-num{font-size:48px;font-weight:600;letter-spacing:-.04em;color:var(--ink);line-height:1;font-feature-settings:'tnum';margin-top:auto}
+    .lb-list{display:flex;flex-direction:column;flex:1;overflow:hidden;margin-top:4px}
+    .lb-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-radius:8px;cursor:pointer;transition:background .12s;border-top:0.5px solid rgba(0,0,0,0.06)}
+    .lb-row:first-child{border-top:none}
+    .lb-row:hover{background:rgba(0,0,0,0.03)}
+    .lb-row-num{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);width:14px;flex-shrink:0}
+    .lb-row-name{flex:1;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400}
+    .lb-row-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+    .lb-roster-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;flex:1;margin-top:4px;overflow:hidden}
+    .lb-rmember{display:flex;align-items:center;gap:8px;padding:7px;border-radius:10px;background:rgba(0,0,0,0.025);cursor:pointer;transition:background .12s;min-width:0}
+    .lb-rmember:hover{background:rgba(0,0,0,0.05)}
+    .lb-rmem-avatar{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+    .lb-rmem-avatar img{width:100%;height:100%;object-fit:cover}
+    .lb-rmem-name{font-size:12px;color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+    .roster-panel{grid-column:span 12;background:transparent;padding:0}
+    @media(max-width:1100px){.roster-panel{grid-column:span 6}}
+    @media(max-width:600px){.roster-panel{grid-column:span 2}}
+    .roster-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+    .roster-strip::-webkit-scrollbar{height:5px}
+    .roster-chip{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.7);border-radius:12px;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;flex-shrink:0;box-shadow:0 1px 3px rgba(60,30,10,0.03)}
+    .roster-chip:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 6px 18px rgba(60,30,10,0.08)}
+    .rc-avatar{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;flex-shrink:0}
+    .rc-avatar img{width:100%;height:100%;object-fit:cover}
+    .rc-body{display:flex;flex-direction:column;min-width:0}
+    .rc-name{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+    .rc-pos{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;margin-top:1px}
+
+    /* Dashboard section header */
+    .dash-section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-bottom:8px}
+    .dsh-title{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
+    .dsh-hint{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+    .dsh-hint:hover{color:var(--accent)}
+    .dash-roster-head{margin-bottom:10px}
+
+    /* Compact resource panel */
+    .resource-panel{grid-column:span 6;background:rgba(255,255,255,0.55);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid rgba(255,255,255,0.7);border-radius:16px;padding:18px 20px;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset,0 6px 18px rgba(60,30,10,0.04)}
+    @media(max-width:1100px){.resource-panel{grid-column:span 6}}
+    @media(max-width:600px){.resource-panel{grid-column:span 2}}
+    .resource-panel.wide{grid-column:span 12}
+    @media(max-width:1100px){.resource-panel.wide{grid-column:span 6}}
+    @media(max-width:600px){.resource-panel.wide{grid-column:span 2}}
+
+    .rl-list{display:flex;flex-direction:column;gap:2px}
+    .rl-item{display:flex;align-items:center;gap:12px;padding:9px 8px;border-radius:8px;cursor:pointer;transition:background .15s}
+    .rl-item:hover{background:rgba(255,255,255,0.55)}
+    .rl-num{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);width:18px;letter-spacing:.06em;flex-shrink:0}
+    .rl-name{flex:1;font-size:13px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .rl-tag{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;background:rgba(0,0,0,0.04);border-radius:99px;flex-shrink:0}
+
+    /* Plan featured cards */
+    .plan-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+    .plan-feat{flex:0 0 280px;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.7);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
+    .plan-feat:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 8px 24px rgba(60,30,10,0.10)}
+    .pf-img{width:100%;height:120px;background:var(--surface-2);position:relative;overflow:hidden}
+    .pf-img img{width:100%;height:100%;object-fit:cover}
+    .pf-body{padding:12px 14px}
+    .pf-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);background:rgba(0,0,0,0.04);padding:2px 7px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+    .pf-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+    .bento-grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:88px;gap:8px;grid-auto-flow:dense}
+    @media(max-width:1100px){.bento-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:600px){.bento-grid{grid-template-columns:repeat(2,1fr)}}
+
+    .bento-card{
+      position:relative;
+      background:rgba(255,255,255,0.6);
+      backdrop-filter:blur(20px) saturate(140%);
+      -webkit-backdrop-filter:blur(20px) saturate(140%);
+      border:1px solid rgba(255,255,255,0.7);
+      border-radius:14px;
+      padding:14px 16px;
+      cursor:pointer;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      transition:transform .42s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,background .2s;
+      box-shadow:0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 3px rgba(60,30,10,0.04), 0 6px 18px rgba(60,30,10,0.04);
+    }
+    .bento-card:hover{
+      transform:translateY(-3px) scale(1.015);
+      box-shadow:0 1px 0 rgba(255,255,255,0.7) inset, 0 4px 12px rgba(60,30,10,0.08), 0 18px 40px rgba(60,30,10,0.10);
+      background:rgba(255,255,255,0.82);
+    }
+    .bento-card.focus{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+    }
+    .bento-card.focus .bc-meta,
+    .bento-card.focus .bc-label{color:rgba(255,255,255,0.7)}
+    .bento-card.focus .bc-title{color:#fff}
+    .bento-card.focus .bc-pct{color:#fff}
+    .bento-card.done{opacity:0.66}
+    .bento-card.done .bc-pct{color:var(--muted)}
+
+    /* Sizing variants */
+    .bento-card.size-1x1{grid-column:span 1;grid-row:span 1}
+    .bento-card.size-2x1{grid-column:span 2;grid-row:span 1}
+    .bento-card.size-2x2{grid-column:span 2;grid-row:span 2}
+    .bento-card.size-3x2{grid-column:span 3;grid-row:span 2}
+    @media(max-width:600px){
+      .bento-card.size-3x2,.bento-card.size-2x2,.bento-card.size-2x1{grid-column:span 2;grid-row:span 1}
+    }
+
+    /* Bento content */
+    .bc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .bc-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px}
+    .bc-label svg{width:11px;height:11px;flex-shrink:0}
+    .bc-pct{font-size:15px;font-weight:600;color:var(--ink);line-height:1;letter-spacing:-.02em;font-feature-settings:'tnum'}
+    .size-2x2 .bc-pct,.size-3x2 .bc-pct{font-size:48px;font-weight:700;letter-spacing:-.03em}
+    .size-2x1 .bc-pct{font-size:22px}
+    .bc-title{font-size:13px;font-weight:700;color:var(--ink);line-height:1.3;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .size-2x2 .bc-title,.size-3x2 .bc-title{font-size:17px;-webkit-line-clamp:3}
+    .size-2x1 .bc-title{font-size:14px}
+    .bc-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em;display:flex;align-items:center;gap:6px;margin-top:6px}
+    .bc-bar{height:2px;background:rgba(0,0,0,0.08);border-radius:99px;overflow:hidden;margin-top:8px}
+    .bento-card.focus .bc-bar{background:rgba(255,255,255,0.22)}
+    .bc-bar-fill{height:100%;background:var(--ink);border-radius:99px;transition:width .8s cubic-bezier(.16,1,.3,1)}
+    .bento-card.focus .bc-bar-fill{background:#fff}
+    .bento-card.done .bc-bar-fill{background:var(--muted)}
+
+    .bc-icon-glyph{position:absolute;right:-12px;bottom:-12px;width:80px;height:80px;color:rgba(0,0,0,0.04);pointer-events:none}
+    .bento-card.focus .bc-icon-glyph{color:rgba(255,255,255,0.10)}
+
+    /* "今日" badge */
+    .bc-today{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;background:var(--accent);color:#fff;border-radius:99px;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .bento-card.focus .bc-today{background:#fff;color:var(--accent)}
+
+    /* Header stats card (always 2x1) */
+    .bento-stats-card{grid-column:span 2;grid-row:span 1;background:transparent;border:none;box-shadow:none;display:flex;flex-direction:column;justify-content:center;padding:8px 4px;cursor:default}
+    .bento-stats-card:hover{transform:none;box-shadow:none;background:transparent}
+    .bsc-num{font-size:42px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-.03em}
+    .bsc-num small{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--muted);margin-left:4px}
+    .bsc-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+
+    /* Bento legend / footer */
+    .bento-legend{display:flex;align-items:center;gap:18px;padding:8px 4px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+    .bl-item{display:flex;align-items:center;gap:6px}
+    .bl-dot{width:7px;height:7px;border-radius:99px}
+    .bl-dot.focus{background:var(--accent)}
+    .bl-dot.active{background:var(--ink)}
+    .bl-dot.done{background:var(--muted);opacity:.6}
+
+    /* Bento Worklog Header */
+    .bento-section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-bottom:8px}
+    .bsh-title{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
+    .bsh-hint{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
+    .wl-dashboard{display:flex;flex-direction:column;gap:16px}
+    .wld-stats{display:flex;background:var(--surface);border-radius:12px;overflow:hidden;box-shadow:var(--card-shadow)}
+    .wld-stat{flex:1;padding:16px 18px;border-right:1px solid var(--rule)}
+    .wld-stat:last-child{border-right:none}
+    .wlds-num{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--ink);display:block;line-height:1;margin-bottom:5px}
+    .wlds-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+    .wld-subsystems{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+    .wld-sub{background:var(--surface);border-radius:10px;padding:12px;box-shadow:var(--card-shadow)}
+    .wld-sub-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+    .wld-sub-pct{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;line-height:1;margin-bottom:8px}
+    .wlds-bar{height:2px;background:var(--rule);border-radius:99px;overflow:hidden}
+    .wlds-fill{height:100%;border-radius:99px}
+    .wld-tasks{background:var(--surface);border-radius:12px;overflow:hidden;box-shadow:var(--card-shadow)}
+    .wld-tasks-header{padding:10px 16px;border-bottom:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+    .wld-task{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .12s}
+    .wld-task:last-child{border-bottom:none}
+    .wld-task:hover{background:var(--surface-2)}
+    .wldt-dot{width:4px;height:24px;border-radius:99px;flex-shrink:0}
+    .wldt-body{flex:1;min-width:0}
+    .wldt-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .wldt-sub{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+    .wldt-pct{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;flex-shrink:0}
+    .wldt-date{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);flex-shrink:0}
+
+    
+    .icon-btn:hover{background:var(--accent-bg)!important;color:var(--accent)!important}
+    .priority-high{background:var(--accent-bg)!important;color:var(--accent)!important}
+
+    /* ── Worklog redesign ── */
+    .worklog-summary-row{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:24px 0}
+    @media(max-width:1000px){.worklog-summary-row{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:600px){.worklog-summary-row{grid-template-columns:repeat(2,1fr)}}
+    .worklog-summary-item{background:var(--surface);border-radius:12px;padding:14px 16px;box-shadow:var(--card-shadow)}
+    .ws-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+    .ws-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .ws-pct{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;line-height:1}
+    .ws-bar{height:3px;background:var(--rule);border-radius:99px;overflow:hidden;margin-bottom:8px}
+    .ws-fill{height:100%;border-radius:99px}
+    .ws-count{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em}
+    .worklog-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:8px}
+    .worklog-log-card{background:var(--surface);border-radius:14px;border-top:3px solid transparent;padding:20px;box-shadow:var(--card-shadow);cursor:pointer;transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s;position:relative;min-width:0}
+    .worklog-log-card:hover{transform:translateY(-2px);box-shadow:var(--card-shadow-hover)}
+    .worklog-log-card:hover .wlc-actions{opacity:1}
+    .wlc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+    .wlc-type{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .wlc-pct{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;line-height:1}
+    .wlc-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px;line-height:1.3}
+    .wlc-bar{height:3px;background:var(--rule);border-radius:99px;overflow:hidden;margin-bottom:10px}
+    .wlc-bar-fill{height:100%;border-radius:99px}
+    .wlc-dates{display:flex;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap}
+    .wlc-notes{font-size:12px;color:var(--faint);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .wlc-actions{position:absolute;top:12px;right:12px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
+    /* ── Delay/Schedule state ── */
+    .worklog-log-card.delayed{border-top-color:var(--accent)}
+    .wlc-status-row{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+    .wlc-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:980px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+    .wlc-badge.delayed{background:rgba(0,113,227,0.10);color:var(--accent)}
+    .wlc-badge.delayed::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent)}
+    .wlc-badge.on-track{background:rgba(0,0,0,0.05);color:var(--faint)}
+    .wlc-badge.complete{background:rgba(0,113,227,0.10);color:var(--accent)}
+    .wlc-delay-btn{background:rgba(0,0,0,0.05);border:none;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;font-size:11px;font-weight:500;padding:5px 11px;border-radius:980px;cursor:pointer;transition:background .15s;letter-spacing:-.005em;white-space:nowrap;margin-top:8px;align-self:flex-start}
+    .wlc-delay-btn:hover{background:var(--accent);color:#fff}
+    .wlc-expected{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.04em}
+    .wlc-expected.behind{color:var(--accent)}
+    /* Bento card delay marker */
+    .bento-card.delayed::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent)}
+  </style>
 </head>
 <body>
-    <div class="notification" id="notification"></div>
+  <div class="notification" id="notification"></div>
 
-    <div class="site-header">
-        <header>
-            <div class="header-left">
-                <div class="header-mark">NR</div>
-                <span class="header-wordmark">NKUST Racing</span>
-            </div>
-            <nav class="header-nav" id="headerNav">
-                <button class="nav-btn active" onclick="filterByCategory('all', this)">總覽</button>
-                <button class="nav-btn" onclick="filterByCategory('人員管理', this)">人員</button>
-                <button class="nav-btn" onclick="filterByCategory('工作日誌', this)">日誌</button>
-                <button class="nav-btn" onclick="filterByCategory('計畫', this)">計畫</button>
-                <button class="nav-btn" onclick="filterByCategory('賽事資訊', this)">賽事</button>
-                <button class="nav-btn" onclick="filterByCategory('工程工具', this)">工具</button>
-                <button class="nav-btn" onclick="filterByCategory('零件供應商', this)">零件商</button>
-                <button class="nav-btn" onclick="filterByCategory('學習資源', this)">資源</button>
-            </nav>
-            <div class="header-actions">
-                <a class="hdr-btn" href="car-blueprint.html" title="車體結構解析">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="8" width="20" height="8" rx="2"/>
-                        <circle cx="6" cy="16" r="2"/><circle cx="18" cy="16" r="2"/>
-                        <path d="M6 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/>
-                    </svg>
-                    車體圖解
-                </a>
-            </div>
-            <!-- hidden spans for JS references -->
-            <span id="peopleCount" style="display:none">0</span>
-            <span id="lastLogDate" style="display:none">-</span>
-        </header>
-    </div>
+  <div class="site-header">
+    <header>
+      <div class="header-left">
+        <span class="header-wordmark">NKUST Racing</span>
+      </div>
+      <nav class="header-nav" id="headerNav">
+        <button class="nav-btn active" onclick="filterByCategory('all', this)">總覽</button>
+        <button class="nav-btn" onclick="filterByCategory('人員管理', this)">人員</button>
+        <button class="nav-btn" onclick="filterByCategory('工作日誌', this)">日誌</button>
+        <button class="nav-btn" onclick="filterByCategory('計畫', this)">計畫</button>
+        <button class="nav-btn" onclick="filterByCategory('賽事資訊', this)">賽事</button>
+        <button class="nav-btn" onclick="filterByCategory('工程工具', this)">工具</button>
+        <button class="nav-btn" onclick="filterByCategory('零件供應商', this)">零件商</button>
+        <button class="nav-btn" onclick="filterByCategory('學習資源', this)">資源</button>
+      </nav>
+      <div class="header-actions">
+        <a class="hdr-btn" href="car-blueprint.html" title="車體結構解析">車體圖解</a>
+      </div>
+      <span id="peopleCount" style="display:none">0</span>
+      <span id="lastLogDate" style="display:none">-</span>
+    </header>
+  </div>
 
-    <div class="container">
-        <div id="resourcesContainer"></div>
-    </div>
+  <div class="container">
+    <div id="resourcesContainer"></div>
+  </div>
+
 
     <!-- Worklog Detail Modal -->
     <div class="modal" id="worklogDetailModal" onclick="if(event.target===this)closeWorklogDetail()">
@@ -2506,6 +1234,7 @@
 
 
 
+
     <script>
         let resources = [];
         const ogImageCache = {}; // url -> og:image URL cache
@@ -2534,14 +1263,14 @@
         );
 
         const workTypeColors = {
-            '車體': '#b83025',
-            '引擎': '#8a6a2a',
-            '懸吊': '#3a6ea8',
-            '煞車': '#c06030',
-            '電裝': '#2a7a6a',
-            '空力': '#4a7a5a',
-            '其他': '#6a6a6a',
-            '教授': '#555555'
+            '車體': '#86868b',
+            '引擎': '#86868b',
+            '懸吊': '#86868b',
+            '煞車': '#86868b',
+            '電裝': '#86868b',
+            '空力': '#86868b',
+            '其他': '#86868b',
+            '教授': '#86868b'
         };
 
         const emojis = ['👤', '😀', '😎', '🤓', '🧑‍🔧', '🏎️', '⚙️', '🔧', '🏁', '🎯', '💪', '🚀', '⭐', '🔥', '💡', '🎨'];
@@ -3315,6 +2044,407 @@
             }
         }
 
+        function createBentoWorklog(worklogs) {
+            const wrap = document.createElement('div');
+            wrap.className = 'bento-worklog';
+            const today = new Date();
+
+            // Sort: urgent first (active + soon-due), then by progress
+            const enhanced = worklogs.map(w => {
+                const pct = w.progress || 0;
+                const end = w.endDate ? new Date(w.endDate) : null;
+                const daysToEnd = end ? Math.round((end - today) / (1000*60*60*24)) : 9999;
+                const isDone = pct === 100;
+                const isUrgent = !isDone && daysToEnd <= 21 && daysToEnd > -7 && pct < 80;
+                const isActive = !isDone && pct >= 40 && pct < 100;
+                let size = '1x1';
+                if (isUrgent) size = '2x2';
+                else if (isActive) size = '2x1';
+                return { w, pct, end, daysToEnd, isDone, isUrgent, isActive, size };
+            }).sort((a,b) => {
+                if (a.isUrgent && !b.isUrgent) return -1;
+                if (!a.isUrgent && b.isUrgent) return 1;
+                if (a.isDone && !b.isDone) return 1;
+                if (!a.isDone && b.isDone) return -1;
+                return b.pct - a.pct;
+            });
+
+            enhanced.forEach(({w, pct, end, isDone, isUrgent, size}) => {
+                const color = workTypeColors[w.workType] || '#999';
+                const card = document.createElement('div');
+                card.className = `bento-task size-${size}${isUrgent?' urgent':''}${isDone?' done':''}`;
+                card.style.color = color;
+                const fmtDate = (d) => d ? d.slice(5) : '';
+                card.innerHTML = `
+                    <div class="bt-top">
+                        <span class="bt-type" style="color:${color}">${w.workType||'其他'}</span>
+                        <span class="bt-pct">${pct}%</span>
+                    </div>
+                    <div class="bt-name">${w.name}</div>
+                    <div class="bt-foot">
+                        <span class="bt-dates">${fmtDate(w.startDate)}${w.endDate?' → '+fmtDate(w.endDate):''}</span>
+                    </div>
+                    <div class="bt-progress-bar" style="width:${pct}%;background:${color}"></div>
+                `;
+                card.onclick = () => showWorklogDetail(w.id);
+                wrap.appendChild(card);
+            });
+            return wrap;
+        }
+
+        function createWorklogDashboard(worklogs) {
+            const cats = ['車體','引擎','懸吊','煞車','電裝','空力','其他'];
+            const today = new Date();
+
+            // Stats
+            const total = worklogs.length;
+            const inProgress = worklogs.filter(w => w.progress > 0 && w.progress < 100).length;
+            const avgPct = total > 0 ? Math.round(worklogs.reduce((s,w)=>s+(w.progress||0),0)/total) : 0;
+            const thisWeek = worklogs.filter(w => {
+                if (!w.endDate) return false;
+                const d = new Date(w.endDate);
+                return (d - today) / (1000*60*60*24) <= 14 && d >= today;
+            }).length;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'wl-dashboard';
+
+            // Stats row
+            wrap.innerHTML = `
+                <div class="wld-stats">
+                    <div class="wld-stat">
+                        <span class="wlds-num">${total}</span>
+                        <span class="wlds-label">總任務</span>
+                    </div>
+                    <div class="wld-stat">
+                        <span class="wlds-num">${avgPct}%</span>
+                        <span class="wlds-label">整體進度</span>
+                    </div>
+                    <div class="wld-stat">
+                        <span class="wlds-num">${inProgress}</span>
+                        <span class="wlds-label">進行中</span>
+                    </div>
+                    <div class="wld-stat">
+                        <span class="wlds-num">${thisWeek}</span>
+                        <span class="wlds-label">14天內截止</span>
+                    </div>
+                </div>
+            `;
+
+            // Subsystem tiles
+            const subsEl = document.createElement('div');
+            subsEl.className = 'wld-subsystems';
+            cats.forEach(cat => {
+                const items = worklogs.filter(w => (w.workType||'').split(',').map(s=>s.trim()).includes(cat));
+                const avg = items.length > 0 ? Math.round(items.reduce((s,w)=>s+(w.progress||0),0)/items.length) : null;
+                const color = workTypeColors[cat]||'#999';
+                const el = document.createElement('div');
+                el.className = 'wld-sub';
+                el.innerHTML = `
+                    <div class="wld-sub-label" style="color:${color}">${cat}</div>
+                    <div class="wld-sub-pct" style="color:${avg!=null?color:'var(--muted)'}">${avg!=null?avg+'%':'—'}</div>
+                    <div class="wlds-bar"><div class="wlds-fill" style="width:${avg||0}%;background:${color}"></div></div>
+                `;
+                subsEl.appendChild(el);
+            });
+            wrap.appendChild(subsEl);
+
+            // Task list (sorted by end date)
+            const sorted = [...worklogs]
+                .filter(w => w.progress < 100)
+                .sort((a,b) => {
+                    if(!a.endDate && !b.endDate) return 0;
+                    if(!a.endDate) return 1; if(!b.endDate) return -1;
+                    return new Date(a.endDate)-new Date(b.endDate);
+                })
+                .slice(0, 8);
+
+            const taskEl = document.createElement('div');
+            taskEl.className = 'wld-tasks';
+            taskEl.innerHTML = `<div class="wld-tasks-header">進行中任務</div>`;
+            sorted.forEach(w => {
+                const color = workTypeColors[w.workType]||'#999';
+                const pct = w.progress||0;
+                const row = document.createElement('div');
+                row.className = 'wld-task';
+                row.innerHTML = `
+                    <div class="wldt-dot" style="background:${color}"></div>
+                    <div class="wldt-body">
+                        <div class="wldt-name">${w.name}</div>
+                        <div class="wldt-sub">${w.workType||'其他'}</div>
+                    </div>
+                    <span class="wldt-pct" style="color:${color}">${pct}%</span>
+                    ${w.endDate ? `<span class="wldt-date">${w.endDate.slice(5)}</span>` : ''}
+                `;
+                row.onclick = () => showWorklogDetail(w.id);
+                taskEl.appendChild(row);
+            });
+            wrap.appendChild(taskEl);
+            return wrap;
+        }
+
+        // SF Symbols-style geometric icons for subsystems
+        const subsystemIcons = {
+            '車體':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-6h14l2 6"/><path d="M3 13v5h18v-5"/><circle cx="7" cy="18" r="2" fill="currentColor"/><circle cx="17" cy="18" r="2" fill="currentColor"/></svg>',
+            '引擎':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="12" height="10" rx="1.5"/><path d="M9 8V5h6v3"/><path d="M6 12h-3M21 12h-3M6 16h-2M20 16h-2"/></svg>',
+            '懸吊':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="20" r="2.5"/><path d="M12 17.5V14M9 14h6M9 14l-2-9M15 14l2-9M7 5h10"/></svg>',
+            '煞車':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg>',
+            '電裝':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>',
+            '空力':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h13a3 3 0 1 0-3-3"/><path d="M3 12h17a3 3 0 1 1-3 3"/><path d="M3 16h11"/></svg>',
+            '其他':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="18" cy="12" r="1.5" fill="currentColor"/></svg>'
+        };
+
+        function createBentoWorklog(worklogs) {
+            const wrap = document.createElement('div');
+            const today = new Date();
+
+            // Grid
+            const grid = document.createElement('div');
+            grid.className = 'bento-grid';
+
+            // Sort: active+focus first, then in-progress, then done
+            const scored = worklogs.map(w => {
+                const pct = w.progress || 0;
+                const done = pct >= 100;
+                const active = pct > 0 && !done;
+                let daysToEnd = Infinity;
+                if (w.endDate) {
+                    daysToEnd = Math.ceil((new Date(w.endDate) - today) / (1000*60*60*24));
+                }
+                // focus = active + due within 30 days
+                const isFocus = active && daysToEnd <= 30 && daysToEnd >= -7;
+                // priority score for sorting
+                let score;
+                if (isFocus) score = 0;
+                else if (active) score = 1;
+                else if (done) score = 3;
+                else score = 2; // not started
+                return { w, pct, done, active, isFocus, daysToEnd, score };
+            }).sort((a,b) => {
+                if (a.score !== b.score) return a.score - b.score;
+                return a.daysToEnd - b.daysToEnd;
+            });
+
+            // Pick the most urgent focus item for hero (2x2)
+            let heroAssigned = false;
+            let secondAssigned = false;
+
+            scored.forEach((it, idx) => {
+                const { w, pct, done, active, isFocus } = it;
+                let size = 'size-1x1';
+                let cls = '';
+
+                if (isFocus && !heroAssigned) {
+                    size = 'size-2x2';
+                    cls = 'focus';
+                    heroAssigned = true;
+                } else if (active && !secondAssigned && it.daysToEnd <= 60) {
+                    size = 'size-2x1';
+                    secondAssigned = true;
+                } else if (active && pct >= 60) {
+                    size = 'size-2x1';
+                } else if (done) {
+                    cls = 'done';
+                }
+
+                const card = document.createElement('div');
+                card.className = `bento-card ${size} ${cls}`.trim();
+
+                const icon = subsystemIcons[w.workType] || subsystemIcons['其他'];
+                const daysLabel = (() => {
+                    if (!w.endDate) return '';
+                    const d = it.daysToEnd;
+                    if (d < 0) return `逾期 ${-d}D`;
+                    if (d === 0) return 'TODAY';
+                    if (d <= 30) return `T-${d}D`;
+                    return w.endDate.slice(5).replace('-','/');
+                })();
+                const showToday = it.daysToEnd === 0;
+
+                if (size === 'size-2x2' || size === 'size-3x2') {
+                    card.innerHTML = `
+                        <div>
+                            <div class="bc-top">
+                                <span class="bc-label">${icon}<span>${w.workType||'其他'}</span></span>
+                                ${showToday ? '<span class="bc-today">Today</span>' : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bc-pct">${pct}%</div>
+                            <div class="bc-title" style="margin-top:6px">${w.name}</div>
+                            <div class="bc-bar"><div class="bc-bar-fill" style="width:${pct}%"></div></div>
+                            <div class="bc-meta">${daysLabel}</div>
+                        </div>
+                        <span class="bc-icon-glyph">${icon.replace('width="1.5"', 'width="1"')}</span>
+                    `;
+                } else if (size === 'size-2x1') {
+                    card.innerHTML = `
+                        <div class="bc-top">
+                            <span class="bc-label">${icon}<span>${w.workType||'其他'}</span></span>
+                            <span class="bc-pct">${pct}%</span>
+                        </div>
+                        <div>
+                            <div class="bc-title">${w.name}</div>
+                            <div class="bc-meta">${daysLabel}</div>
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="bc-top">
+                            <span class="bc-label">${icon}</span>
+                            <span class="bc-pct">${pct}%</span>
+                        </div>
+                        <div class="bc-title">${w.name}</div>
+                    `;
+                }
+
+                card.onclick = () => showWorklogDetail(w.id);
+                grid.appendChild(card);
+            });
+
+            wrap.appendChild(grid);
+
+            // Legend
+            const legend = document.createElement('div');
+            legend.className = 'bento-legend';
+            legend.innerHTML = `
+                <span class="bl-item"><span class="bl-dot focus"></span>Focus</span>
+                <span class="bl-item"><span class="bl-dot active"></span>Active</span>
+                <span class="bl-item"><span class="bl-dot done"></span>Done</span>
+            `;
+            wrap.appendChild(legend);
+
+            return wrap;
+        }
+
+        function createWorklogSummary(worklogs) {
+            const cats = ['車體','引擎','懸吊','煞車','電裝','空力','其他'];
+            const wrap = document.createElement('div');
+            wrap.className = 'worklog-summary-row';
+            cats.forEach(cat => {
+                const items = worklogs.filter(w => (w.workType||'').split(',').map(s=>s.trim()).includes(cat));
+                if (items.length === 0) return;
+                const avg = Math.round(items.reduce((s,w)=>s+(w.progress||0),0)/items.length);
+                const color = workTypeColors[cat]||'#999';
+                const el = document.createElement('div');
+                el.className = 'worklog-summary-item';
+                el.innerHTML = `
+                    <div class="ws-top">
+                        <span class="ws-label" style="color:${color}">${cat}</span>
+                        <span class="ws-pct" style="color:${color}">${avg}%</span>
+                    </div>
+                    <div class="ws-bar"><div class="ws-fill" style="width:${avg}%;background:${color}"></div></div>
+                    <div class="ws-count">${items.length} 項任務</div>
+                `;
+                wrap.appendChild(el);
+            });
+            return wrap;
+        }
+
+        // ── Schedule helpers ─────────────────────────────────────────
+        function getExpectedProgress(w) {
+            if (!w.startDate || !w.endDate) return null;
+            const s = new Date(w.startDate).getTime();
+            const e = new Date(w.endDate).getTime();
+            const t = Date.now();
+            if (e <= s) return null;
+            const r = (t - s) / (e - s) * 100;
+            return Math.max(0, Math.min(100, Math.round(r)));
+        }
+        function getScheduleStatus(w) {
+            const pct = w.progress || 0;
+            if (pct >= 100) return 'complete';
+            const expected = getExpectedProgress(w);
+            if (expected == null) return 'pending';
+            const t = Date.now();
+            const e = new Date(w.endDate).getTime();
+            // Overdue: past end date and not done
+            if (t > e) return 'delayed';
+            // Behind: actual lags expected by >15%
+            if (expected - pct > 15) return 'delayed';
+            return 'on-track';
+        }
+        function delayWorklog(id, days) {
+            const w = resources.find(r => r.id === id);
+            if (!w || !w.endDate) return;
+            const newEnd = new Date(w.endDate);
+            newEnd.setDate(newEnd.getDate() + (days || 7));
+            const pad = (n) => String(n).padStart(2, '0');
+            w.endDate = `${newEnd.getFullYear()}-${pad(newEnd.getMonth()+1)}-${pad(newEnd.getDate())}`;
+            saveData();
+            renderResources();
+            showNotification(`已延後 ${days || 7} 天至 ${w.endDate}`);
+        }
+
+        function createWorklogCards(worklogs) {
+            const wrap = document.createElement('div');
+            wrap.className = 'worklog-cards-grid';
+            const sorted = [...worklogs].sort((a,b)=>{
+                if(!a.endDate&&!b.endDate) return 0;
+                if(!a.endDate) return 1; if(!b.endDate) return -1;
+                return new Date(a.endDate)-new Date(b.endDate);
+            });
+            sorted.forEach(w => {
+                const color = workTypeColors[w.workType]||'#999';
+                const pct = w.progress!=null?w.progress:0;
+                const done = pct>=100;
+                const status = getScheduleStatus(w);
+                const expected = getExpectedProgress(w);
+                const isDelayed = status === 'delayed';
+
+                const card = document.createElement('div');
+                card.className = 'worklog-log-card' + (isDelayed ? ' delayed' : '');
+                if (!isDelayed) card.style.borderTopColor = color;
+
+                let badgeHTML = '';
+                if (done) {
+                    badgeHTML = '<span class="wlc-badge complete">✓ 已完成</span>';
+                } else if (isDelayed) {
+                    badgeHTML = '<span class="wlc-badge delayed">進度落後</span>';
+                } else if (status === 'on-track') {
+                    badgeHTML = '<span class="wlc-badge on-track">準時進行中</span>';
+                }
+
+                let expectedHTML = '';
+                if (!done && expected != null) {
+                    const behind = expected - pct;
+                    if (behind > 15) {
+                        expectedHTML = `<div class="wlc-expected behind">應達 ${expected}% · 落後 ${behind}%</div>`;
+                    } else if (Math.abs(behind) <= 15) {
+                        expectedHTML = `<div class="wlc-expected">應達 ${expected}%</div>`;
+                    }
+                }
+
+                const delayBtnHTML = (!done && w.endDate)
+                    ? `<button class="wlc-delay-btn" onclick="delayWorklog('${w.id}', 7); event.stopPropagation()">延後 7 天 →</button>`
+                    : '';
+
+                card.innerHTML = `
+                    <div class="wlc-actions">
+                        <button class="icon-btn" onclick="editResource('${w.id}');event.stopPropagation()">✏️</button>
+                        <button class="icon-btn" onclick="deleteResource('${w.id}');event.stopPropagation()">🗑️</button>
+                    </div>
+                    <div class="wlc-header">
+                        <span class="wlc-type" style="color:${isDelayed?'var(--accent)':color}">${w.workType||'其他'}</span>
+                        <span class="wlc-pct" style="color:${done?'var(--accent)':(isDelayed?'var(--accent)':color)}">${pct}%</span>
+                    </div>
+                    <div class="wlc-name">${w.name}</div>
+                    <div class="wlc-bar"><div class="wlc-bar-fill" style="width:${pct}%;background:${isDelayed?'var(--accent)':color};opacity:.85"></div></div>
+                    <div class="wlc-status-row">${badgeHTML}</div>
+                    ${expectedHTML}
+                    <div class="wlc-dates" style="margin-top:8px">
+                        ${w.startDate?`<span>${w.startDate.slice(5)} 開始</span>`:''}
+                        ${w.endDate?`<span>→ ${w.endDate.slice(5)} 截止</span>`:''}
+                    </div>
+                    ${w.notes?`<div class="wlc-notes">${w.notes.split('\n')[0].slice(0,70)}${w.notes.length>70?'…':''}</div>`:''}
+                    ${delayBtnHTML}
+                `;
+                card.onclick = () => showWorklogDetail(w.id);
+                wrap.appendChild(card);
+            });
+            return wrap;
+        }
+
         function createWorklogColumns(worklogs) {
             const categories = ['車體','引擎','懸吊','煞車','電裝','空力','其他'];
             const wrap = document.createElement('div');
@@ -3370,49 +2500,120 @@
             return wrap;
         }
 
+        function createLibraryGrid(items) {
+            const wrap = document.createElement('div');
+            wrap.className = 'library-grid';
+            const fallbackIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 4h7v16H4zM13 4h7v16h-7z"/></svg>';
+
+            items.forEach(it => {
+                const card = document.createElement('div');
+                card.className = 'lib-card';
+                const tag = (it.tag||'').split(',')[0];
+                // Category-aware foot text
+                let footText = '';
+                if (it.eventDate) {
+                    const d = new Date(it.eventDate);
+                    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+                    footText = `${months[d.getMonth()]} ${d.getDate()}` + (it.location ? ` · ${it.location}` : '');
+                } else if (it.learnFields) {
+                    footText = (it.learnFields||'').split(',')[0];
+                } else if (it.priority && it.priority !== 'medium') {
+                    footText = it.priority === 'high' || it.priority === '高' ? 'HIGH PRIORITY' : '';
+                }
+                card.innerHTML = `
+                    <div class="lib-card-cover">
+                        <img class="lib-cover-img" alt="" style="display:none">
+                        <div class="lib-card-cover-icon">${fallbackIcon}</div>
+                        ${tag ? `<span class="lib-card-tag">${tag}</span>` : ''}
+                    </div>
+                    <div class="lib-card-body">
+                        <div class="lib-card-title">${it.name}</div>
+                        ${it.description ? `<div class="lib-card-desc">${it.description}</div>` : (it.content ? `<div class="lib-card-desc">${it.content}</div>` : '')}
+                        <div class="lib-card-foot">
+                            <span>${footText}</span>
+                            ${it.url ? '<span class="lib-card-link">Open ↗</span>' : ''}
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => {
+                    if (it.isPlan) showPlanDetail(it.id);
+                    else showResourceDetail(it.id);
+                };
+                wrap.appendChild(card);
+
+                // OG image fetch
+                if (it.url) {
+                    const img = card.querySelector('.lib-cover-img');
+                    const iconWrap = card.querySelector('.lib-card-cover-icon');
+                    const apply = (url) => {
+                        img.onload = () => { img.style.display = 'block'; if(iconWrap) iconWrap.style.display = 'none'; };
+                        img.src = url;
+                    };
+                    if (ogImageCache[it.url]) {
+                        apply(ogImageCache[it.url]);
+                    } else {
+                        fetch(`https://api.microlink.io/?url=${encodeURIComponent(it.url)}`)
+                            .then(r => r.json())
+                            .then(data => {
+                                const u = data?.data?.image?.url;
+                                if (u) { ogImageCache[it.url] = u; apply(u); }
+                            })
+                            .catch(() => {});
+                    }
+                }
+            });
+            return wrap;
+        }
+
         function createPartColumns(parts) {
-            const categories = ['車體','引擎','懸吊','煞車','電裝','空力','其他'];
+            const categories = ['車體','引擎','懸吊','煞車','電裝','空力'];
             const priorityOrder = {high:0, medium:1, low:2, '高':0, '中':1, '低':2};
             const wrap = document.createElement('div');
-            wrap.className = 'worklog-columns';
+            wrap.className = 'kanban-board';
 
             categories.forEach(cat => {
-                const col = document.createElement('div');
-                col.className = 'worklog-col';
-                const color = workTypeColors[cat] || '#999';
-
-                const header = document.createElement('div');
-                header.className = 'worklog-col-header';
-                header.style.borderBottomColor = color;
-                header.style.color = color;
-                header.textContent = cat;
-                col.appendChild(header);
-
                 const items = parts
                     .filter(p => (p.partCategories || p.tag || '').split(',').map(s=>s.trim()).includes(cat))
                     .sort((a, b) => (priorityOrder[a.priority]??1) - (priorityOrder[b.priority]??1));
 
+                const col = document.createElement('div');
+                col.className = 'kanban-col';
+
+                const head = document.createElement('div');
+                head.className = 'kanban-col-head';
+                head.innerHTML = `
+                    <span class="kanban-col-title">${cat}</span>
+                    <span class="kanban-col-count">${items.length}</span>
+                `;
+                col.appendChild(head);
+
+                const body = document.createElement('div');
+                body.className = 'kanban-col-body';
+
                 if (items.length === 0) {
                     const empty = document.createElement('div');
-                    empty.className = 'worklog-col-empty';
+                    empty.className = 'kanban-empty';
                     empty.textContent = '—';
-                    col.appendChild(empty);
+                    body.appendChild(empty);
                 } else {
                     items.forEach(p => {
                         const card = document.createElement('div');
-                        card.className = 'worklog-col-card';
-                        card.style.borderLeftColor = color;
-                        const priceText = p.price ? p.price : '';
+                        card.className = 'kanban-card';
+                        const priorityCls = p.priority === 'high' || p.priority === '高' ? 'high' : '';
+                        const hasLink = p.url && p.url.startsWith('http');
                         card.innerHTML = `
-                            <div class="part-col-card">
-                                <div class="part-col-name">${p.name || ''}</div>
-                                ${priceText ? `<div class="part-col-price">${priceText}</div>` : ''}
+                            <div class="kc-name">${p.name || ''}</div>
+                            ${p.price ? `<div class="kc-price">${p.price}</div>` : ''}
+                            <div class="kc-meta">
+                                <span class="kc-priority ${priorityCls}"></span>
+                                ${hasLink ? `<a class="kc-link" href="${p.url}" target="_blank" onclick="event.stopPropagation()">Link ↗</a>` : (p.url ? `<span>${p.url.slice(0,18)}</span>` : '')}
                             </div>
                         `;
                         card.onclick = () => showResourceDetail(p.id);
-                        col.appendChild(card);
+                        body.appendChild(card);
                     });
                 }
+                col.appendChild(body);
                 wrap.appendChild(col);
             });
             return wrap;
@@ -3442,15 +2643,33 @@
             const contentArea = section.querySelector('.content-area');
 
             if (category === '工作日誌') {
-                contentArea.appendChild(createWorklogTimeline(categoryResources));
-                if (!isOverview) {
-                    contentArea.appendChild(createWorklogColumns(categoryResources));
+                if (isOverview) {
+                    contentArea.appendChild(createBentoWorklog(categoryResources));
+                } else {
+                    contentArea.appendChild(createWorklogTimeline(categoryResources));
+                    contentArea.appendChild(createWorklogSummary(categoryResources));
+                    contentArea.appendChild(createWorklogCards(categoryResources));
                 }
                 return section;
             }
 
             if (category === '零件供應商' && !isOverview) {
                 contentArea.appendChild(createPartColumns(categoryResources));
+                return section;
+            }
+
+            if (category === '學習資源' && !isOverview) {
+                contentArea.appendChild(createLibraryGrid(categoryResources));
+                return section;
+            }
+
+            if (category === '工程工具' && !isOverview) {
+                contentArea.appendChild(createLibraryGrid(categoryResources));
+                return section;
+            }
+
+            if (category === '賽事資訊' && !isOverview) {
+                contentArea.appendChild(createLibraryGrid(categoryResources));
                 return section;
             }
 
@@ -3462,13 +2681,16 @@
                     grid.className = 'overview-person-grid';
                 } else {
                     grid.className = 'resources-grid';
+                    if (category === '計畫' || category === '賽事資訊') {
+                        grid.classList.add('cards-large');
+                    }
                 }
 
                 const sortedResources = category === '計畫'
                     ? [...categoryResources].sort((a, b) => (a.order || 0) - (b.order || 0))
                     : categoryResources;
 
-                const OVERVIEW_LIMIT = 6;
+                const OVERVIEW_LIMIT = 20;
                 const displayResources = (isOverview && sortedResources.length > OVERVIEW_LIMIT)
                     ? sortedResources.slice(0, OVERVIEW_LIMIT)
                     : sortedResources;
@@ -3476,7 +2698,7 @@
 
                 displayResources.forEach(resource => {
                     if (resource.isPerson) {
-                        grid.appendChild(isOverview ? createPersonCard(resource) : createPersonFullCard(resource));
+                        grid.appendChild(isOverview ? createPersonRowItem(resource) : createPersonFullCard(resource));
                     } else if (resource.isWorklog) {
                         grid.appendChild(createWorklogCard(resource));
                     } else if (resource.isPlan) {
@@ -3507,27 +2729,220 @@
             const isOverview = currentFilter === 'all';
 
             if (isOverview) {
-                // Top: 人員管理 + 工作日誌 side by side
-                const splitRow = document.createElement('div');
-                splitRow.className = 'overview-split-row';
-                splitRow.appendChild(buildCategorySection('人員管理'));
-                splitRow.appendChild(buildCategorySection('工作日誌'));
-                container.appendChild(splitRow);
-
-                // Remaining categories below
-                categories
-                    .filter(c => c !== '人員管理' && c !== '工作日誌')
-                    .forEach(category => {
-                        const count = resources.filter(r => r.category === category).length;
-                        if (count === 0) return;
-                        container.appendChild(buildCategorySection(category));
-                    });
+                container.appendChild(buildOverviewDashboard());
             } else {
                 const categoryResources = resources.filter(r => r.category === currentFilter);
                 if (categoryResources.length >= 0) {
                     container.appendChild(buildCategorySection(currentFilter, true));
                 }
             }
+        }
+
+        function buildOverviewDashboard() {
+            const wrap = document.createElement('div');
+
+            const people = resources.filter(r => r.category === '人員管理');
+            const worklogs = resources.filter(r => r.category === '工作日誌');
+            const events = resources.filter(r => r.category === '賽事資訊');
+            const plans = resources.filter(r => r.category === '計畫');
+            const today = new Date();
+
+            // === Sprint Zone + Upcoming Side Panel ===
+            const mainRow = document.createElement('div');
+            mainRow.className = 'dash-grid';
+
+            // Sprint Zone (8 cols) — Bento
+            const sprintZone = document.createElement('div');
+            sprintZone.className = 'sprint-zone';
+            const sprintHead = document.createElement('div');
+            sprintHead.className = 'dash-section-head';
+            sprintHead.innerHTML = `
+                <span class="dsh-title">Sprint Status</span>
+                <span class="dsh-hint" onclick="filterByCategory('工作日誌', null)">View All ↗</span>
+            `;
+            sprintZone.appendChild(sprintHead);
+            sprintZone.appendChild(createBentoWorklog(worklogs));
+            mainRow.appendChild(sprintZone);
+
+            // Upcoming Zone (4 cols)
+            const upZone = document.createElement('div');
+            upZone.className = 'upcoming-zone';
+            const upHead = document.createElement('div');
+            upHead.className = 'dash-section-head';
+            upHead.innerHTML = `
+                <span class="dsh-title">即將到來</span>
+                <span class="dsh-hint">Upcoming</span>
+            `;
+            upZone.appendChild(upHead);
+
+            // Combine events + plans + worklog deadlines, sort by date
+            const upcoming = [];
+            events.forEach(e => {
+                if (!e.eventDate) return;
+                const d = new Date(e.eventDate);
+                if (d >= today) upcoming.push({ type: 'event', date: d, item: e });
+            });
+            worklogs.forEach(w => {
+                if (!w.endDate || w.progress >= 100) return;
+                const d = new Date(w.endDate);
+                if (d >= today) upcoming.push({ type: 'deadline', date: d, item: w });
+            });
+            upcoming.sort((a,b) => a.date - b.date);
+
+            const list = document.createElement('div');
+            list.className = 'upcoming-list';
+            if (upcoming.length === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-family:monospace;font-size:11px">無排程事件</div>';
+            } else {
+                upcoming.slice(0, 5).forEach(u => {
+                    const daysOut = Math.ceil((u.date - today)/(1000*60*60*24));
+                    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+                    const urgent = daysOut <= 14;
+                    const typeLabel = u.type === 'event' ? '賽事' : '截止 · ' + (u.item.workType || '');
+                    const item = document.createElement('div');
+                    item.className = 'upcoming-item';
+                    item.innerHTML = `
+                        <div class="ui-date ${urgent ? 'urgent' : ''}">
+                            <span class="uid-day">${u.date.getDate()}</span>
+                            <span class="uid-month">${months[u.date.getMonth()]}</span>
+                        </div>
+                        <div class="ui-body">
+                            <div class="ui-name">${u.item.name}</div>
+                            <div class="ui-meta">${typeLabel} · T-${daysOut}D</div>
+                        </div>
+                        <span class="ui-arrow">→</span>
+                    `;
+                    item.onclick = () => {
+                        if (u.type === 'event') showResourceDetail(u.item.id);
+                        else showWorklogDetail(u.item.id);
+                    };
+                    list.appendChild(item);
+                });
+            }
+            upZone.appendChild(list);
+            mainRow.appendChild(upZone);
+            wrap.appendChild(mainRow);
+
+            // === Lower Bento Section ===
+            const bento = document.createElement('div');
+            bento.className = 'lower-bento';
+
+            // Card 1: Featured Plan Hero (4x2)
+            const featuredPlan = plans.sort((a,b)=>(a.order||0)-(b.order||0))[0];
+            if (featuredPlan) {
+                const planCard = document.createElement('div');
+                planCard.className = 'lb-card lb-plan-hero lb-4x2';
+                planCard.innerHTML = `
+                    <div class="lb-eyebrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        <span>FEATURED PLAN</span>
+                    </div>
+                    <div class="lb-title">${featuredPlan.name}</div>
+                    <div class="lb-sub">${(featuredPlan.content||'').slice(0,90)}${(featuredPlan.content||'').length>90?'…':''}</div>
+                    <span class="lb-cta">View Plan →</span>
+                `;
+                planCard.onclick = () => showPlanDetail(featuredPlan.id);
+                bento.appendChild(planCard);
+            }
+
+            // Card 2: Team Roster (4x2)
+            if (people.length > 0) {
+                const rosterCard = document.createElement('div');
+                rosterCard.className = 'lb-card lb-4x2';
+                rosterCard.style.cursor = 'default';
+                rosterCard.innerHTML = `
+                    <div class="lb-eyebrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><circle cx="17" cy="9" r="3"/><path d="M2 21c0-3 3-6 7-6s7 3 7 6"/><path d="M14 21c0-2 2-4 4-4s4 2 4 4"/></svg>
+                        <span>TEAM · ${people.length} MEMBERS</span>
+                    </div>
+                `;
+                const rosterGrid = document.createElement('div');
+                rosterGrid.className = 'lb-roster-grid';
+                people.slice(0, 8).forEach(p => {
+                    const initial = p.name ? p.name.charAt(0) : '?';
+                    const avatarHTML = p.avatar && p.avatar.startsWith('data:')
+                        ? `<img src="${p.avatar}">`
+                        : `<span>${initial}</span>`;
+                    const m = document.createElement('div');
+                    m.className = 'lb-rmember';
+                    m.innerHTML = `
+                        <div class="lb-rmem-avatar">${avatarHTML}</div>
+                        <span class="lb-rmem-name">${p.name}</span>
+                    `;
+                    m.onclick = () => showPersonDetail(p.id);
+                    rosterGrid.appendChild(m);
+                });
+                rosterCard.appendChild(rosterGrid);
+                bento.appendChild(rosterCard);
+            }
+
+            // Card 3: Stats (4x2) — leader / progress summary
+            const leader = people.find(p => p.position === '隊長') || people[0];
+            if (leader) {
+                const leaderCard = document.createElement('div');
+                leaderCard.className = 'lb-card lb-4x2';
+                const initial = leader.name ? leader.name.charAt(0) : '?';
+                const avatarHTML = leader.avatar && leader.avatar.startsWith('data:')
+                    ? `<img src="${leader.avatar}">`
+                    : `<span>${initial}</span>`;
+                leaderCard.innerHTML = `
+                    <div class="lb-eyebrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.4L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.6-.6z"/></svg>
+                        <span>TEAM LEAD</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+                        <div style="width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:22px;font-weight:600;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">${avatarHTML}</div>
+                        <div style="min-width:0">
+                            <div class="lb-title">${leader.name}</div>
+                            <div class="lb-sub" style="margin-top:2px">${leader.position||''}${leader.department?' · '+leader.department:''}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:auto;padding-top:10px;border-top:0.5px solid rgba(0,0,0,0.06);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase">${leader.email||leader.phone||'NKUST RACING'}</div>
+                `;
+                leaderCard.onclick = () => showPersonDetail(leader.id);
+                bento.appendChild(leaderCard);
+            }
+
+            // Resource list cards (3x2 each)
+            const panelMap = [
+                { cat: '賽事資訊', label: 'EVENTS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>' },
+                { cat: '工程工具', label: 'TOOLS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7a4 4 0 0 0-5 5l-6 6 2 2 6-6a4 4 0 0 0 5-5l-2 2-2-2z"/></svg>' },
+                { cat: '零件供應商', label: 'SUPPLIERS', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4M21 7v10l-9 4M12 11v10"/></svg>' },
+                { cat: '學習資源', label: 'LIBRARY', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 4h7v16H4zM13 4h7v16h-7z"/></svg>' }
+            ];
+            panelMap.forEach(({ cat, label, icon }) => {
+                const items = resources.filter(r => r.category === cat);
+                if (items.length === 0) return;
+                const panel = document.createElement('div');
+                panel.className = 'lb-card lb-3x2';
+                panel.style.cursor = 'default';
+                panel.innerHTML = `
+                    <div class="lb-eyebrow">${icon}<span>${label} · ${items.length}</span></div>
+                `;
+                const list = document.createElement('div');
+                list.className = 'lb-list';
+                items.slice(0, 4).forEach((it, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'lb-row';
+                    const tag = (it.tag||'').split(',')[0];
+                    row.innerHTML = `
+                        <span class="lb-row-num">${String(idx+1).padStart(2,'0')}</span>
+                        <span class="lb-row-name">${it.name}</span>
+                        ${tag ? `<span class="lb-row-tag">${tag}</span>` : ''}
+                    `;
+                    row.onclick = () => {
+                        if (it.isPlan) showPlanDetail(it.id);
+                        else showResourceDetail(it.id);
+                    };
+                    list.appendChild(row);
+                });
+                panel.appendChild(list);
+                bento.appendChild(panel);
+            });
+
+            wrap.appendChild(bento);
+
+            return wrap;
         }
 
         function switchWorklogView(mode) {
@@ -3801,7 +3216,7 @@
 
             const imageHTML = plan.image ? 
                 `<img src="${plan.image}" alt="${plan.name}">` : 
-                `<img class="plan-og-img" alt="" style="display:none;"><span class="plan-img-placeholder">⛓️💥</span>`;
+                `<img class="plan-og-img" alt="" style="display:none;width:100%;height:100%;object-fit:cover"><svg class="plan-cover-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>`;
 
             card.innerHTML = `
                 <div class="plan-card-actions">
@@ -3827,11 +3242,12 @@
             // 沒有手動圖片但有 URL → 抓 og:image
             if (!plan.image && plan.url) {
                 const img = card.querySelector('.plan-og-img');
-                const placeholder = card.querySelector('.plan-img-placeholder');
+                const placeholder = card.querySelector('.plan-cover-icon');
                 if (ogImageCache[plan.url]) {
                     img.src = ogImageCache[plan.url];
                     img.style.display = 'block';
                     if (placeholder) placeholder.style.display = 'none';
+                    card.querySelector('.plan-card-image').classList.add('has-image');
                 } else {
                     fetch(`https://api.microlink.io/?url=${encodeURIComponent(plan.url)}`)
                         .then(r => r.json())
@@ -3842,6 +3258,7 @@
                                 img.src = imgUrl;
                                 img.style.display = 'block';
                                 if (placeholder) placeholder.style.display = 'none';
+                                card.querySelector('.plan-card-image').classList.add('has-image');
                             }
                         })
                         .catch(() => {});
@@ -3960,6 +3377,30 @@
             }
 
             document.getElementById('worklogDetailModal').classList.add('show');
+        }
+
+        function createPersonRowItem(person) {
+            const item = document.createElement('div');
+            item.className = 'person-row-item';
+            const workTypes = person.workTypes ? person.workTypes.split(',').map(t=>t.trim()).filter(Boolean) : [];
+            const initial = person.name ? person.name.charAt(0) : '?';
+            const avatarHTML = person.avatar && person.avatar.startsWith('data:')
+                ? `<img src="${person.avatar}">`
+                : `<span>${initial}</span>`;
+            const tags = workTypes.slice(0,2).map(type => {
+                const color = workTypeColors[type]||'#999';
+                return `<span class="work-type-tag" style="background:${color}">${type}</span>`;
+            }).join('');
+            item.innerHTML = `
+                <div class="pri-avatar">${avatarHTML}</div>
+                <div class="pri-body">
+                    <span class="pri-name">${person.name}</span>
+                    ${person.position ? `<span class="pri-pos">${person.position}</span>` : ''}
+                </div>
+                <div class="pri-tags">${tags}</div>
+            `;
+            item.onclick = () => showPersonDetail(person.id);
+            return item;
         }
 
         function createPersonCard(person) {
@@ -4602,3 +4043,5 @@
     </script>
 </body>
 </html>
+<style id="__om-edit-overrides">
+</style>
