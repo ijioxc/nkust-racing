@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NKUST Racing — 車體結構解析</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
@@ -78,7 +78,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
 .panel{width:360px;flex-shrink:0;background:#f0f0f4;border-left:var(--bm);display:flex;flex-direction:column;overflow:hidden}
 
 /* Glass card mixin */
-.gc{background:rgba(255,255,255,.72);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border:.5px solid rgba(255,255,255,.88);border-radius:16px;box-shadow:0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
+.gc{background:rgba(255,255,255,.72);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border:.5px solid rgba(255,255,255,.88);border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
 
 /* ── Idle Bento ─────────────────────────────────────────────────────────── */
 .pidle{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
@@ -109,14 +109,14 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
 .ph{padding:14px 14px 0;flex-shrink:0}
 .ph-card{padding:16px 18px 14px;display:flex;flex-direction:column;gap:6px}
 .psys{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.20em;text-transform:uppercase;color:var(--ink4)}
-.pnm{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.pnm{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
 .prf{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--ink4)}
 .pbar{height:2px;border-radius:1px;background:var(--red);transform-origin:left;animation:barin .4s var(--eout) both;margin-top:2px}
 @keyframes barin{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
 /* Tab bar */
 .tabs-wrap{padding:8px 14px 0;flex-shrink:0}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:rgba(0,0,0,.06);border-radius:10px;padding:3px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:rgba(0,0,0,.06);border-radius:10px;padding:3px}
 .tab{padding:6px 4px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);background:transparent;border:none;cursor:pointer;border-radius:7px;transition:background .15s,color .15s}
 .tab:hover{color:var(--ink3)}
 .tab.on{background:rgba(255,255,255,.90);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.10)}
@@ -157,16 +157,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
 .rules{display:flex;flex-wrap:wrap;gap:5px}
 .rule{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;color:var(--ink3);background:rgba(0,0,0,.05);border:var(--b);padding:3px 9px;border-radius:5px}
 .rule strong{color:var(--red);font-weight:700}
-
-/* Doc cards */
-.doc-card{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:inherit;transition:background .12s,transform .15s}
-.doc-card:hover{background:rgba(0,0,0,.03);transform:translateX(2px)}
-.doc-icon{width:30px;height:36px;flex-shrink:0;background:var(--red);border-radius:5px;display:flex;align-items:center;justify-content:center;position:relative}
-.doc-icon::after{content:'PDF';font-family:'IBM Plex Mono',monospace;font-size:6px;font-weight:700;color:#fff;letter-spacing:.06em}
-.doc-body{flex:1;min-width:0}
-.doc-name{font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:2px}
-.doc-desc{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink4);letter-spacing:.04em}
-.doc-arr{color:var(--ink4);font-size:14px;flex-shrink:0}
 
 @media(max-width:900px){
   html,body{overflow:auto}
@@ -293,14 +283,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,Bli
           <button class="tab on" data-tab="mfg">製造流程</button>
           <button class="tab" data-tab="concept">賽車概念</button>
           <button class="tab" data-tab="physics">汽車原理</button>
-          <button class="tab" data-tab="docs">文件資源</button>
         </div>
       </div>
       <div class="pbody">
         <div class="pane on" id="pane-mfg"></div>
         <div class="pane" id="pane-concept"></div>
         <div class="pane" id="pane-physics"></div>
-        <div class="pane" id="pane-docs"></div>
       </div>
     </div>
   </div>
@@ -317,47 +305,47 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // When GLB has named meshes, patterns match against mesh/node names.
 // When GLB is a single mesh, spatial grid is used and all cells get 'chassis' fallback.
 const GROUPS = {
-  wheel: {
-    label: '輪組', sub: 'Wheels & Tires',
-    hex: '#1a1a1a',
-    patterns: [/wheel/i, /tire/i, /tyre/i, /rim/i, /brake_rotor/i, /caliper/i],
-    explodeDir: 'radial_low',   // outward + slightly down
-  },
-  rear_wing: {
-    label: '後翼', sub: 'Rear Wing',
-    hex: '#334a5e',
-    patterns: [/rear.*wing/i, /rearwing/i, /back.*wing/i, /wing.*rear/i, /wing.*back/i, /mainplane/i, /endplate.*rear/i],
-    explodeDir: new THREE.Vector3(0, 0.6, -1).normalize(),
-  },
-  front_wing: {
-    label: '前端結構', sub: 'Front Bulkhead & Nose',
-    hex: '#5a7a5e',
-    patterns: [/front.*wing/i, /frontwing/i, /wing.*front/i, /splitter/i, /nose(?:cone)?/i, /endplate.*front/i, /front.*bulkhead/i, /front.*structure/i],
-    explodeDir: new THREE.Vector3(0, 0.3, 1).normalize(),
-  },
-  suspension: {
-    label: '懸吊系統', sub: 'Suspension & Uprights',
-    hex: '#4a6882',
-    patterns: [/suspension/i, /wishbone/i, /a.arm/i, /upright/i, /pushrod/i, /pullrod/i, /rocke[rt]/i, /hub/i],
-    explodeDir: 'radial',       // outward from car centre
-  },
-  bodywork: {
-    label: '車殼 / 整流罩', sub: 'Bodywork & Fairings',
-    hex: '#c8d4de',
-    patterns: [/body/i, /fairing/i, /sidepod/i, /floor/i, /diffuser/i, /undertray/i, /panel/i, /cover/i, /cowl/i],
-    explodeDir: new THREE.Vector3(0, 1, 0),
-  },
-  drivetrain: {
-    label: '動力系統', sub: 'Engine & Drivetrain',
-    hex: '#8a6030',
-    patterns: [/engine/i, /motor/i, /gearbox/i, /differential/i, /exhaust/i, /intake/i, /chain/i, /sprocket/i],
-    explodeDir: new THREE.Vector3(0, -0.5, -0.5).normalize(),
-  },
   chassis: {
-    label: '車架結構', sub: 'Space Frame',
+    label: '車架結構', sub: 'Space Frame · FSAE Part F',
     hex: '#bec8d2',
     patterns: [/chassis/i, /frame/i, /tube/i, /roll.*hoop/i, /main.*hoop/i, /front.*hoop/i, /bulkhead/i, /side.*impact/i],
-    explodeDir: 'zero',         // chassis stays in place
+    explodeDir: 'zero',
+  },
+  suspension: {
+    label: '懸吊系統', sub: 'Suspension · FSAE T.1',
+    hex: '#4a6882',
+    patterns: [/suspension/i, /wishbone/i, /a.arm/i, /upright/i, /pushrod/i, /pullrod/i, /rocke[rt]/i, /hub/i],
+    explodeDir: 'radial',
+  },
+  brake: {
+    label: '煞車系統', sub: 'Brakes · FSAE T.3',
+    hex: '#cc3333',
+    patterns: [/brake/i, /caliper/i, /rotor/i, /disc/i, /master.*cyl/i, /pedal/i],
+    explodeDir: 'radial_low',
+  },
+  wheel: {
+    label: '輪組', sub: 'Wheels & Tires · FSAE T.4',
+    hex: '#1a1a1a',
+    patterns: [/wheel/i, /tire/i, /tyre/i, /rim/i],
+    explodeDir: 'radial_low',
+  },
+  drivetrain: {
+    label: '動力系統', sub: 'Powertrain · FSAE T.6',
+    hex: '#8a6030',
+    patterns: [/engine/i, /motor/i, /drivetrain/i, /gearbox/i, /differential/i, /exhaust/i, /intake/i, /chain/i, /sprocket/i],
+    explodeDir: new THREE.Vector3(0, -0.5, -0.5).normalize(),
+  },
+  aero: {
+    label: '空力套件', sub: 'Aerodynamics · FSAE T.7',
+    hex: '#334a5e',
+    patterns: [/aero/i, /wing/i, /splitter/i, /diffuser/i, /endplate/i, /undertray/i],
+    explodeDir: new THREE.Vector3(0, 0.8, -0.5).normalize(),
+  },
+  bodywork: {
+    label: '車殼', sub: 'Bodywork & Fairings',
+    hex: '#c8d4de',
+    patterns: [/body/i, /fairing/i, /sidepod/i, /panel/i, /cover/i, /cowl/i, /nose/i],
+    explodeDir: new THREE.Vector3(0, 1, 0),
   },
 };
 
@@ -367,76 +355,43 @@ const PARTS = {
   'chassis':{system:'Primary Structure',name:'車架結構',ref:'Space Frame · FSAE F.3 / F.5',
     mfg:{specs:[['材料','4130 Chromoly 鋼管'],['主環等級','Size A（最高等級）'],['前環等級','Size C（可替代）'],['側衝擊管','Size B'],['焊接工法','TIG 冷焊 + 後退火'],['焊後強度 Sy','180 MPa'],['非焊強度 Sy','305 MPa']],note:'主環是唯一不允許替代材料的管件（F.3.2.1.g），其他管件替代時須提交 SES 等效截面模數計算。',rules:['F.3.2.1.g','F.5.6.1','F.3.4.2.a','F.3.4.2.b','F.3.2.1.e']},
     concept:{body:'空間框架（Space Frame）是 FSAE 最普遍的車架形式。由多根鋼管焊接成三角化節點，每根管件主要承受軸向力（拉伸/壓縮），而非彎矩，材料利用率高。\n\n主環、前環與側衝擊結構共同構成「生存區」（Survival Cell），翻車或碰撞時保護駕駛不受擠壓。',rules:['F.5.6.1','F.5.6.3','F.1.13']},
-    physics:{body:'空間框架的剛性來自三角化：三角形是唯一在節點鉸接時仍保持形狀的多邊形。每新增一個不共面的節點，需加入 3 根新管才能維持靜定。\n\n整車扭轉剛度（Torsional Stiffness）目標通常 ≥ 1500 N·m/deg，確保懸吊設定能被車架忠實傳達。',rules:['F.3.4.2']},
-    docs:[
-      {name:'FSAE Rules 2025',file:'docs/FSAE_Rules_2025.pdf',desc:'F.3 主結構 · F.5 主環 · F.1 車架通則'},
-      {name:'SES 鋼管等效截面計算表',file:'docs/SES_Steel_Tube_2025.pdf',desc:'替代管件時必備 · 2025 版'},
-      {name:'SES 單體殼 / 非鐵金屬',file:'docs/SES_Monocoque_2025.pdf',desc:'單體殼 / 混合式結構適用 · 2025 版'},
-      {name:'螺紋緊固件規範',file:'docs/Threaded_Fasteners.pdf',desc:'焊接接頭選型 · 鎖緊力矩計算'},
-      {name:'技術審查表 2026',file:'docs/Tech_Form_2026.pdf',desc:'靜態技術審查清單'},
-    ]},
+    physics:{body:'空間框架的剛性來自三角化：三角形是唯一在節點鉸接時仍保持形狀的多邊形。每新增一個不共面的節點，需加入 3 根新管才能維持靜定。\n\n整車扭轉剛度（Torsional Stiffness）目標通常 ≥ 1500 N·m/deg，確保懸吊設定能被車架忠實傳達。',rules:['F.3.4.2']}},
   // ── 懸吊系統 ──────────────────────────────────────────────────────────────
   'suspension':{system:'Suspension · Kinematics',name:'懸吊系統',ref:'Double Wishbone · FSAE T.1 / T.2',
     mfg:{specs:[['型式','四輪獨立雙 A 臂'],['上/下臂材料','4130 Chromoly 鋼管'],['接點材料','6061-T6 鋁合金'],['球頭型式','Rod End（Heim Joint）'],['調整範圍','Camber / Toe / Caster 全可調'],['安全係數','≥ 3.0']],note:'所有懸吊接點（Pickup Points）需能承受設計載荷的 3.0 倍。連桿截面需通過 FEA 或手算驗證。',rules:['T.1','T.2']},
     concept:{body:'雙 A 臂提供最完整的幾何調整自由度。懸吊設計的核心是即時轉向中心（Instant Center），決定側傾中心（Roll Center）高度——Roll Center 越低，側傾時輪胎 camber 變化越小，抓地力越穩定。\n\n車隊通常設計可調式 A 臂端點（Adjustable Pickup），讓比賽日能快速改變 camber、toe、anti-squat 等參數。',rules:[]},
-    physics:{body:'非彈簧質量（Unsprung Mass）是懸吊設計最重要的動力學參數：輪胎、輪圈、煞車盤、輪轂、A 臂全部計入。非彈簧質量↓，輪胎與路面的接觸力起伏↓，抓地力穩定性↑。\n\n彈簧-阻尼系統固有頻率 f = √(k/m)/(2π)，FSAE 車通常設定前 2.5–3.5 Hz、後 3.0–4.0 Hz（後高於前以避免激車頭俯仰）。',rules:[]},
-    docs:[
-      {name:'FSAE Rules 2025',file:'docs/FSAE_Rules_2025.pdf',desc:'T.1 懸吊通則 · T.2 轉向系統'},
-      {name:'駕艙控制力規範',file:'docs/Cockpit_Control_Forces.pdf',desc:'踏板力 · 轉向力矩要求 · SI 單位版'},
-      {name:'Carroll Smith 設計論文',file:'docs/Carroll_Smith_Design.pdf',desc:'懸吊幾何 · 車輛動態設計經典參考'},
-      {name:'螺紋緊固件規範',file:'docs/Threaded_Fasteners.pdf',desc:'Rod End / Heim Joint 接頭選型'},
-    ]},
+    physics:{body:'非彈簧質量（Unsprung Mass）是懸吊設計最重要的動力學參數：輪胎、輪圈、煞車盤、輪轂、A 臂全部計入。非彈簧質量↓，輪胎與路面的接觸力起伏↓，抓地力穩定性↑。\n\n彈簧-阻尼系統固有頻率 f = √(k/m)/(2π)，FSAE 車通常設定前 2.5–3.5 Hz、後 3.0–4.0 Hz（後高於前以避免激車頭俯仰）。',rules:[]}},
   // ── 輪組 ──────────────────────────────────────────────────────────────────
   'wheel':{system:'Wheel & Tire',name:'輪組',ref:'Wheel Assembly · FSAE T.4 / T.5',
     mfg:{specs:[['輪圈尺寸','10"（FSAE 常用）'],['輪圈材料','6061-T6 鋁合金'],['輪胎型號','Hoosier 18×6.0-10 R25B'],['輪胎寬度','152 mm'],['氣壓範圍','8–14 psi'],['螺栓型式','中央鎖緊（單螺帽）']],note:'輪胎是車輛與地面唯一的接觸介面，所有動力、制動、轉向力均需透過輪胎接觸面（Contact Patch）傳遞。',rules:['T.4.1','T.5.2']},
     concept:{body:'FSAE 賽車輪胎寬而矮（低扁平比），最大化接觸面積以提升抓地力。輪圈採 10 吋設計方便容納大口徑煞車盤，且市場上有豐富的 FSAE 專用輪胎選擇。\n\nCamber 設定對輪胎接觸面均勻性影響極大：通常靜態設定 −1° 至 −3°，讓側傾時外側輪維持接近 0° 以獲得最大接觸面積。',rules:[]},
-    physics:{body:'輪胎的 Magic Formula（Pacejka 模型）描述側向力 Fy 與側滑角 α 的非線性關係：Fy = D·sin(C·arctan(B·α − E·(B·α − arctan(B·α))))。\n\nLoad Sensitivity（負載敏感性）是輪胎重要特性：正向力加倍時，摩擦力不會等比例加倍，因此輕量化比提高下壓力更有效率。',rules:[]},
-    docs:[
-      {name:'FSAE Rules 2025',file:'docs/FSAE_Rules_2025.pdf',desc:'T.4 輪圈規範 · T.5 輪胎規範'},
-      {name:'設計評分表 2024',file:'docs/Design_Score_Sheet_2024.pdf',desc:'底盤 / 輪組設計審查評分標準'},
-    ]},
-  // ── 前翼 ────────────────────────────────────────────────────────────────
-  'front_wing':{system:'Frontal Protection',name:'前端結構',ref:'Front Bulkhead · FSAE F.3.2.1.a',
-    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['前隔板主管','Size B'],['前隔板支撐管','Size C'],['前端防撞','EPS 鼻錐（Nose Cone）'],['功能','正面撞擊第一道防線']],note:'前隔板後方的 Front Bulkhead Support 須以三角形接入主車架，形成衝擊盒（Crumple Zone），允許有控制地塑性變形以吸收衝擊能量。',rules:['F.3.2.1.a','F.3.2.1.b','T.4.3']},
-    concept:{body:'前端結構定義車輛的「衝擊盒」概念：正面撞擊時，允許前隔板支撐管有控制地塑性變形，延長撞擊時間、降低減速度峰值，保護駕駛艙不受擠壓。\n\n多數隊伍在外側安裝 EPS（發泡聚苯乙烯）鼻錐，進一步延長撞擊距離並吸收額外動能。',rules:['F.3.2.1.a']},
-    physics:{body:'正面撞擊動能：Ek = ½mv²。以 60 km/h 撞擊固定障礙、車重 250 kg 時，動能約 34.7 kJ 需全部由車體結構吸收。\n\n衝擊盒的設計目標是將減速峰值（Peak G）控制在 20–40G 以下，超過此值會造成駕駛脊椎傷害。',rules:['F.4.2.2','F.4.2.3']},
-    docs:[
-      {name:'FSAE Rules 2025',file:'docs/FSAE_Rules_2025.pdf',desc:'F.3.2 前隔板 · F.4 衝擊吸收結構'},
-      {name:'SES 鋼管等效截面計算表',file:'docs/SES_Steel_Tube_2025.pdf',desc:'前隔板支撐管替代計算'},
-      {name:'三視圖繪製標準',file:'docs/Three_View_Drawing.pdf',desc:'前端結構工程圖製作規範'},
-    ]},
-  // ── 後翼 ────────────────────────────────────────────────────────────────
-  'rear_wing':{system:'Aerodynamics',name:'後翼',ref:'Rear Wing · FSAE T.7',
-    mfg:{specs:[['材料','碳纖維複合板'],['翼型','高攻角 NACA / Selig'],['層數','4–8 層 CF 預浸布'],['攻角範圍','15°–35°（可調）'],['端板材料','3mm CF 平板'],['最大後懸','FSAE 不限制（需通過靜態審查）']],note:'後翼是全車最大的下壓力來源。翼端板需封閉翼展兩端以防止翼尖渦流洩壓。',rules:['T.7.1','T.7.2']},
-    concept:{body:'後翼的攻角（Angle of Attack）直接決定下壓力大小，同時增加阻力（Drag）。車隊需在高下壓力（耐久賽彎道抓地力）與低阻力（直線加速）間取得平衡。\n\nDRS（Drag Reduction System）在 FSAE 中少見，但部分頂尖隊伍會設計可調後翼，讓車手在測試期間調整設定。',rules:[]},
-    physics:{body:'後翼產生的下壓力通過翼支架傳到後車架，再由車架傳至後懸吊接點，最終壓在後輪上。這個力的傳遞路徑決定車架後段的設計需求。\n\n典型 FSAE 後翼在 80 km/h 時產生 150–300 N 下壓力，是前翼的 1.5–2 倍，維持 Aero Balance 偏後以避免轉向過靈。',rules:[]},
-    docs:[
-      {name:'FSAE Rules 2025',file:'docs/FSAE_Rules_2025.pdf',desc:'T.7 後翼尺寸 · 靜態載荷要求'},
-      {name:'三視圖繪製標準',file:'docs/Three_View_Drawing.pdf',desc:'空力套件工程圖製作規範'},
-      {name:'設計評分表 2024',file:'docs/Design_Score_Sheet_2024.pdf',desc:'空力設計審查評分標準'},
-    ]},
+    physics:{body:'輪胎的 Magic Formula（Pacejka 模型）描述側向力 Fy 與側滑角 α 的非線性關係：Fy = D·sin(C·arctan(B·α − E·(B·α − arctan(B·α))))。\n\nLoad Sensitivity（負載敏感性）是輪胎重要特性：正向力加倍時，摩擦力不會等比例加倍，因此輕量化比提高下壓力更有效率。',rules:[]}},
   // ── 動力系統 ──────────────────────────────────────────────────────────────
   'drivetrain':{system:'Powertrain',name:'動力系統',ref:'Engine · Drivetrain · FSAE IC / EV',
     mfg:{specs:[['引擎型式','單缸 / 雙缸四衝程（IC 組）'],['排量限制','610 cc（IC 組）'],['進氣限制','20 mm 節流孔'],['變速箱','序列式 4–6 速'],['傳動方式','鏈條 / 皮帶'],['差速器','扭力感應 LSD（選配）']],note:'IC 組進氣需通過直徑 20 mm 節流孔（Restrictor），有效限制馬力至約 80–100 hp。EV 組則受最大功率 80 kW 限制。',rules:['IC.2.3','IC.5','T.6']},
     concept:{body:'動力系統的核心指標是功率重量比（P/W Ratio）。FSAE 賽車典型目標是 200–300 W/kg，遠高於一般量產車（約 100 W/kg）。\n\n進氣節流孔讓賽車趨向扭力型設定：增大進排氣凸輪、優化進氣道截面積，在節流孔限制下最大化低轉扭力輸出。',rules:[]},
-    physics:{body:'發動機熱效率（Thermal Efficiency）是燃料能量轉化為機械功的比例，FSAE 引擎約 25–35%。其餘能量以廢熱排出，這也是為何冷卻系統設計至關重要。\n\n鏈條傳動效率約 98–99%，是所有傳動方式中最高效的選項之一，且重量輕、維修簡單，是 FSAE 的主流選擇。',rules:[]},
-    docs:[
-      {name:'FSAE Rules 2025',file:'docs/FSAE_Rules_2025.pdf',desc:'IC.2 進氣限制 · IC.5 排氣 · T.6 傳動'},
-      {name:'IC 設計規格表 2025',file:'docs/IC_Spec_Sheet_2025.pdf',desc:'引擎系統靜態設計文件模板'},
-      {name:'IC 設計規格表 2026',file:'docs/IC_Spec_Sheet_2026.pdf',desc:'2026 賽季更新版規格表'},
-      {name:'設計評分表 2024',file:'docs/Design_Score_Sheet_2024.pdf',desc:'動力系統設計審查評分標準'},
-    ]},
+    physics:{body:'發動機熱效率（Thermal Efficiency）是燃料能量轉化為機械功的比例，FSAE 引擎約 25–35%。其餘能量以廢熱排出，這也是為何冷卻系統設計至關重要。\n\n鏈條傳動效率約 98–99%，是所有傳動方式中最高效的選項之一，且重量輕、維修簡單，是 FSAE 的主流選擇。',rules:[]}},
+  // ── 煞車系統 ──────────────────────────────────────────────────────────────
+  'brake':{system:'Brakes',name:'煞車系統',ref:'Brake System · FSAE T.3',
+    mfg:{specs:[['煞車碟盤','鑄鐵 / 不鏽鋼 220–240 mm'],['卡鉗型式','對向四活塞（前）/ 雙活塞（後）'],['總泵','雙迴路前後獨立'],['踏板比','4:1 – 6:1'],['煞車油','DOT 4'],['煞車平衡桿','可調式（Balance Bar）']],note:'FSAE T.3.2 要求煞車系統必須為雙迴路：前後任一迴路失效時，另一迴路仍能鎖死至少兩輪。所有車輛需通過煞車測試（Brake Test）方可上賽道。',rules:['T.3.1','T.3.2','T.3.3','T.3.4']},
+    concept:{body:'FSAE 煞車設計的核心是煞車力分配（Brake Bias）。理想分配使前後輪同時到達鎖死臨界點，最大化總煞車力。實際上前輪分配約 60–70%，因為煞車時重心前移（Weight Transfer）增加前輪正向力。\n\n可調式煞車平衡桿（Balance Bar）讓車手能在賽場上即時調整前後分配，適應不同路面抓地力條件。',rules:[]},
+    physics:{body:'煞車力矩 = 煞車油壓 × 活塞面積 × 摩擦係數 × 有效半徑。碟盤直徑↑，有效半徑↑，煞車力矩↑，但非彈簧質量也↑。\n\n煞車熱管理是耐久賽關鍵：碟盤溫度超過 600°C 時摩擦係數急劇下降（Brake Fade）。散熱設計需確保連續煞車 22 km 耐久賽全程不衰退。',rules:[]}},
+  // ── 空力套件 ──────────────────────────────────────────────────────────────
+  'aero':{system:'Aerodynamics',name:'空力套件',ref:'Aerodynamics · FSAE T.7',
+    mfg:{specs:[['前翼材料','碳纖維複合板'],['後翼材料','碳纖維複合板'],['翼型','NACA / Selig 系列'],['攻角範圍','15°–35°（可調）'],['端板材料','3mm CF 平板'],['底板','碳纖維 / 鋁板']],note:'後翼是全車最大的下壓力來源。前翼面積較小但對空氣動力平衡（Aero Balance）影響極大。翼端板封閉翼展兩端防止翼尖渦流洩壓。',rules:['T.7.1','T.7.2']},
+    concept:{body:'FSAE 空力套件的設計目標是最大化下壓力與阻力之比（L/D Ratio）。典型的後翼在 80 km/h 時可產生 150–300 N 下壓力，前翼約為後翼的 50–70%。\n\n空氣動力平衡（Aero Balance）決定高速彎道的操控特性：偏後則轉向不足更穩定，偏前則轉向過度更靈敏。',rules:[]},
+    physics:{body:'下壓力 F = ½ρv²CₗA，與速度平方成正比。FSAE 最高車速約 100 km/h，因此空力效果在低速項目（8 字繞錐）幾乎為零，但在高速耐久賽和加速賽中至關重要。\n\n翼型的 Reynolds Number 在 FSAE 速度範圍約 2×10⁵–5×10⁵，屬於低 Re 區間，需選擇專為低 Re 設計的翼型（如 Selig S1223）。',rules:[]}},
 };
 
 // ── Group key → Part ID 直接對應（不用點位猜測）────────────────────────────
 const GROUP_TO_PART = {
   chassis:    'chassis',
   suspension: 'suspension',
+  brake:      'brake',
   wheel:      'wheel',
-  front_wing: 'front_wing',
-  rear_wing:  'rear_wing',
   drivetrain: 'drivetrain',
-  bodywork:   'chassis',  // fallback to chassis info
+  aero:       'aero',
+  bodywork:   'chassis',
 };
 function classifyPt(gkey) {
   return GROUP_TO_PART[gkey] ?? 'chassis';
@@ -824,7 +779,7 @@ function showPart(id) {
   const bar = document.getElementById('pbar');
   bar.style.display = 'block'; bar.style.animation = 'none';
   requestAnimationFrame(() => bar.style.animation = '');
-  fMfg(d.mfg); fText('pane-concept', d.concept); fText('pane-physics', d.physics); fDocs(d.docs);
+  fMfg(d.mfg); fText('pane-concept', d.concept); fText('pane-physics', d.physics);
   document.getElementById('pidle').style.display = 'none';
   document.getElementById('pc').style.display = 'flex';
   document.querySelectorAll('.tab').forEach(t  => t.classList.toggle('on', t.dataset.tab === 'mfg'));
@@ -864,27 +819,6 @@ function fText(pid, d) {
   if (!h) h = `<div class="gc spec-card"><div class="bt"><p style="color:var(--ink4)">—</p></div></div>`;
   document.getElementById(pid).innerHTML = h;
 }
-function fDocs(d) {
-  if (!d?.length) {
-    document.getElementById('pane-docs').innerHTML =
-      `<div class="gc spec-card"><div class="bt"><p style="color:var(--ink4)">暫無對應文件</p></div></div>`;
-    return;
-  }
-  let h = `<div class="sl">參考規範文件</div><div class="gc" style="padding:4px 0">`;
-  d.forEach(doc => {
-    h += `<a class="doc-card gc" href="${doc.file}" target="_blank" style="border-radius:12px;background:transparent;box-shadow:none;border:none">
-      <div class="doc-icon"></div>
-      <div class="doc-body">
-        <div class="doc-name">${doc.name}</div>
-        <div class="doc-desc">${doc.desc}</div>
-      </div>
-      <div class="doc-arr">↗</div>
-    </a>`;
-  });
-  h += `</div>`;
-  document.getElementById('pane-docs').innerHTML = h;
-}
-
 document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
   const t = b.dataset.tab;
   document.querySelectorAll('.tab').forEach(x  => x.classList.toggle('on', x === b));
