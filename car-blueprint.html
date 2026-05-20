@@ -305,47 +305,47 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // When GLB has named meshes, patterns match against mesh/node names.
 // When GLB is a single mesh, spatial grid is used and all cells get 'chassis' fallback.
 const GROUPS = {
-  wheel: {
-    label: '輪組', sub: 'Wheels & Tires',
-    hex: '#1a1a1a',
-    patterns: [/wheel/i, /tire/i, /tyre/i, /rim/i, /brake_rotor/i, /caliper/i],
-    explodeDir: 'radial_low',   // outward + slightly down
-  },
-  rear_wing: {
-    label: '後翼', sub: 'Rear Wing',
-    hex: '#334a5e',
-    patterns: [/rear.*wing/i, /rearwing/i, /back.*wing/i, /wing.*rear/i, /wing.*back/i, /mainplane/i, /endplate.*rear/i],
-    explodeDir: new THREE.Vector3(0, 0.6, -1).normalize(),
-  },
-  front_wing: {
-    label: '前端結構', sub: 'Front Bulkhead & Nose',
-    hex: '#5a7a5e',
-    patterns: [/front.*wing/i, /frontwing/i, /wing.*front/i, /splitter/i, /nose(?:cone)?/i, /endplate.*front/i, /front.*bulkhead/i, /front.*structure/i],
-    explodeDir: new THREE.Vector3(0, 0.3, 1).normalize(),
-  },
-  suspension: {
-    label: '懸吊系統', sub: 'Suspension & Uprights',
-    hex: '#4a6882',
-    patterns: [/suspension/i, /wishbone/i, /a.arm/i, /upright/i, /pushrod/i, /pullrod/i, /rocke[rt]/i, /hub/i],
-    explodeDir: 'radial',       // outward from car centre
-  },
-  bodywork: {
-    label: '車殼 / 整流罩', sub: 'Bodywork & Fairings',
-    hex: '#c8d4de',
-    patterns: [/body/i, /fairing/i, /sidepod/i, /floor/i, /diffuser/i, /undertray/i, /panel/i, /cover/i, /cowl/i],
-    explodeDir: new THREE.Vector3(0, 1, 0),
-  },
-  drivetrain: {
-    label: '動力系統', sub: 'Engine & Drivetrain',
-    hex: '#8a6030',
-    patterns: [/engine/i, /motor/i, /gearbox/i, /differential/i, /exhaust/i, /intake/i, /chain/i, /sprocket/i],
-    explodeDir: new THREE.Vector3(0, -0.5, -0.5).normalize(),
-  },
   chassis: {
-    label: '車架結構', sub: 'Space Frame',
+    label: '車架結構', sub: 'Space Frame · FSAE Part F',
     hex: '#bec8d2',
     patterns: [/chassis/i, /frame/i, /tube/i, /roll.*hoop/i, /main.*hoop/i, /front.*hoop/i, /bulkhead/i, /side.*impact/i],
-    explodeDir: 'zero',         // chassis stays in place
+    explodeDir: 'zero',
+  },
+  suspension: {
+    label: '懸吊系統', sub: 'Suspension · FSAE T.1',
+    hex: '#4a6882',
+    patterns: [/suspension/i, /wishbone/i, /a.arm/i, /upright/i, /pushrod/i, /pullrod/i, /rocke[rt]/i, /hub/i],
+    explodeDir: 'radial',
+  },
+  brake: {
+    label: '煞車系統', sub: 'Brakes · FSAE T.3',
+    hex: '#cc3333',
+    patterns: [/brake/i, /caliper/i, /rotor/i, /disc/i, /master.*cyl/i, /pedal/i],
+    explodeDir: 'radial_low',
+  },
+  wheel: {
+    label: '輪組', sub: 'Wheels & Tires · FSAE T.4',
+    hex: '#1a1a1a',
+    patterns: [/wheel/i, /tire/i, /tyre/i, /rim/i],
+    explodeDir: 'radial_low',
+  },
+  drivetrain: {
+    label: '動力系統', sub: 'Powertrain · FSAE T.6',
+    hex: '#8a6030',
+    patterns: [/engine/i, /motor/i, /drivetrain/i, /gearbox/i, /differential/i, /exhaust/i, /intake/i, /chain/i, /sprocket/i],
+    explodeDir: new THREE.Vector3(0, -0.5, -0.5).normalize(),
+  },
+  aero: {
+    label: '空力套件', sub: 'Aerodynamics · FSAE T.7',
+    hex: '#334a5e',
+    patterns: [/aero/i, /wing/i, /splitter/i, /diffuser/i, /endplate/i, /undertray/i],
+    explodeDir: new THREE.Vector3(0, 0.8, -0.5).normalize(),
+  },
+  bodywork: {
+    label: '車殼', sub: 'Bodywork & Fairings',
+    hex: '#c8d4de',
+    patterns: [/body/i, /fairing/i, /sidepod/i, /panel/i, /cover/i, /cowl/i, /nose/i],
+    explodeDir: new THREE.Vector3(0, 1, 0),
   },
 };
 
@@ -366,32 +366,32 @@ const PARTS = {
     mfg:{specs:[['輪圈尺寸','10"（FSAE 常用）'],['輪圈材料','6061-T6 鋁合金'],['輪胎型號','Hoosier 18×6.0-10 R25B'],['輪胎寬度','152 mm'],['氣壓範圍','8–14 psi'],['螺栓型式','中央鎖緊（單螺帽）']],note:'輪胎是車輛與地面唯一的接觸介面，所有動力、制動、轉向力均需透過輪胎接觸面（Contact Patch）傳遞。',rules:['T.4.1','T.5.2']},
     concept:{body:'FSAE 賽車輪胎寬而矮（低扁平比），最大化接觸面積以提升抓地力。輪圈採 10 吋設計方便容納大口徑煞車盤，且市場上有豐富的 FSAE 專用輪胎選擇。\n\nCamber 設定對輪胎接觸面均勻性影響極大：通常靜態設定 −1° 至 −3°，讓側傾時外側輪維持接近 0° 以獲得最大接觸面積。',rules:[]},
     physics:{body:'輪胎的 Magic Formula（Pacejka 模型）描述側向力 Fy 與側滑角 α 的非線性關係：Fy = D·sin(C·arctan(B·α − E·(B·α − arctan(B·α))))。\n\nLoad Sensitivity（負載敏感性）是輪胎重要特性：正向力加倍時，摩擦力不會等比例加倍，因此輕量化比提高下壓力更有效率。',rules:[]}},
-  // ── 前翼 ────────────────────────────────────────────────────────────────
-  'front_wing':{system:'Frontal Protection',name:'前端結構',ref:'Front Bulkhead · FSAE F.3.2.1.a',
-    mfg:{specs:[['材料','4130 Chromoly 鋼管'],['前隔板主管','Size B'],['前隔板支撐管','Size C'],['前端防撞','EPS 鼻錐（Nose Cone）'],['功能','正面撞擊第一道防線']],note:'前隔板後方的 Front Bulkhead Support 須以三角形接入主車架，形成衝擊盒（Crumple Zone），允許有控制地塑性變形以吸收衝擊能量。',rules:['F.3.2.1.a','F.3.2.1.b','T.4.3']},
-    concept:{body:'前端結構定義車輛的「衝擊盒」概念：正面撞擊時，允許前隔板支撐管有控制地塑性變形，延長撞擊時間、降低減速度峰值，保護駕駛艙不受擠壓。\n\n多數隊伍在外側安裝 EPS（發泡聚苯乙烯）鼻錐，進一步延長撞擊距離並吸收額外動能。',rules:['F.3.2.1.a']},
-    physics:{body:'正面撞擊動能：Ek = ½mv²。以 60 km/h 撞擊固定障礙、車重 250 kg 時，動能約 34.7 kJ 需全部由車體結構吸收。\n\n衝擊盒的設計目標是將減速峰值（Peak G）控制在 20–40G 以下，超過此值會造成駕駛脊椎傷害。',rules:['F.4.2.2','F.4.2.3']}},
-  // ── 後翼 ────────────────────────────────────────────────────────────────
-  'rear_wing':{system:'Aerodynamics',name:'後翼',ref:'Rear Wing · FSAE T.7',
-    mfg:{specs:[['材料','碳纖維複合板'],['翼型','高攻角 NACA / Selig'],['層數','4–8 層 CF 預浸布'],['攻角範圍','15°–35°（可調）'],['端板材料','3mm CF 平板'],['最大後懸','FSAE 不限制（需通過靜態審查）']],note:'後翼是全車最大的下壓力來源。翼端板需封閉翼展兩端以防止翼尖渦流洩壓。',rules:['T.7.1','T.7.2']},
-    concept:{body:'後翼的攻角（Angle of Attack）直接決定下壓力大小，同時增加阻力（Drag）。車隊需在高下壓力（耐久賽彎道抓地力）與低阻力（直線加速）間取得平衡。\n\nDRS（Drag Reduction System）在 FSAE 中少見，但部分頂尖隊伍會設計可調後翼，讓車手在測試期間調整設定。',rules:[]},
-    physics:{body:'後翼產生的下壓力通過翼支架傳到後車架，再由車架傳至後懸吊接點，最終壓在後輪上。這個力的傳遞路徑決定車架後段的設計需求。\n\n典型 FSAE 後翼在 80 km/h 時產生 150–300 N 下壓力，是前翼的 1.5–2 倍，維持 Aero Balance 偏後以避免轉向過靈。',rules:[]}},
   // ── 動力系統 ──────────────────────────────────────────────────────────────
   'drivetrain':{system:'Powertrain',name:'動力系統',ref:'Engine · Drivetrain · FSAE IC / EV',
     mfg:{specs:[['引擎型式','單缸 / 雙缸四衝程（IC 組）'],['排量限制','610 cc（IC 組）'],['進氣限制','20 mm 節流孔'],['變速箱','序列式 4–6 速'],['傳動方式','鏈條 / 皮帶'],['差速器','扭力感應 LSD（選配）']],note:'IC 組進氣需通過直徑 20 mm 節流孔（Restrictor），有效限制馬力至約 80–100 hp。EV 組則受最大功率 80 kW 限制。',rules:['IC.2.3','IC.5','T.6']},
     concept:{body:'動力系統的核心指標是功率重量比（P/W Ratio）。FSAE 賽車典型目標是 200–300 W/kg，遠高於一般量產車（約 100 W/kg）。\n\n進氣節流孔讓賽車趨向扭力型設定：增大進排氣凸輪、優化進氣道截面積，在節流孔限制下最大化低轉扭力輸出。',rules:[]},
     physics:{body:'發動機熱效率（Thermal Efficiency）是燃料能量轉化為機械功的比例，FSAE 引擎約 25–35%。其餘能量以廢熱排出，這也是為何冷卻系統設計至關重要。\n\n鏈條傳動效率約 98–99%，是所有傳動方式中最高效的選項之一，且重量輕、維修簡單，是 FSAE 的主流選擇。',rules:[]}},
+  // ── 煞車系統 ──────────────────────────────────────────────────────────────
+  'brake':{system:'Brakes',name:'煞車系統',ref:'Brake System · FSAE T.3',
+    mfg:{specs:[['煞車碟盤','鑄鐵 / 不鏽鋼 220–240 mm'],['卡鉗型式','對向四活塞（前）/ 雙活塞（後）'],['總泵','雙迴路前後獨立'],['踏板比','4:1 – 6:1'],['煞車油','DOT 4'],['煞車平衡桿','可調式（Balance Bar）']],note:'FSAE T.3.2 要求煞車系統必須為雙迴路：前後任一迴路失效時，另一迴路仍能鎖死至少兩輪。所有車輛需通過煞車測試（Brake Test）方可上賽道。',rules:['T.3.1','T.3.2','T.3.3','T.3.4']},
+    concept:{body:'FSAE 煞車設計的核心是煞車力分配（Brake Bias）。理想分配使前後輪同時到達鎖死臨界點，最大化總煞車力。實際上前輪分配約 60–70%，因為煞車時重心前移（Weight Transfer）增加前輪正向力。\n\n可調式煞車平衡桿（Balance Bar）讓車手能在賽場上即時調整前後分配，適應不同路面抓地力條件。',rules:[]},
+    physics:{body:'煞車力矩 = 煞車油壓 × 活塞面積 × 摩擦係數 × 有效半徑。碟盤直徑↑，有效半徑↑，煞車力矩↑，但非彈簧質量也↑。\n\n煞車熱管理是耐久賽關鍵：碟盤溫度超過 600°C 時摩擦係數急劇下降（Brake Fade）。散熱設計需確保連續煞車 22 km 耐久賽全程不衰退。',rules:[]}},
+  // ── 空力套件 ──────────────────────────────────────────────────────────────
+  'aero':{system:'Aerodynamics',name:'空力套件',ref:'Aerodynamics · FSAE T.7',
+    mfg:{specs:[['前翼材料','碳纖維複合板'],['後翼材料','碳纖維複合板'],['翼型','NACA / Selig 系列'],['攻角範圍','15°–35°（可調）'],['端板材料','3mm CF 平板'],['底板','碳纖維 / 鋁板']],note:'後翼是全車最大的下壓力來源。前翼面積較小但對空氣動力平衡（Aero Balance）影響極大。翼端板封閉翼展兩端防止翼尖渦流洩壓。',rules:['T.7.1','T.7.2']},
+    concept:{body:'FSAE 空力套件的設計目標是最大化下壓力與阻力之比（L/D Ratio）。典型的後翼在 80 km/h 時可產生 150–300 N 下壓力，前翼約為後翼的 50–70%。\n\n空氣動力平衡（Aero Balance）決定高速彎道的操控特性：偏後則轉向不足更穩定，偏前則轉向過度更靈敏。',rules:[]},
+    physics:{body:'下壓力 F = ½ρv²CₗA，與速度平方成正比。FSAE 最高車速約 100 km/h，因此空力效果在低速項目（8 字繞錐）幾乎為零，但在高速耐久賽和加速賽中至關重要。\n\n翼型的 Reynolds Number 在 FSAE 速度範圍約 2×10⁵–5×10⁵，屬於低 Re 區間，需選擇專為低 Re 設計的翼型（如 Selig S1223）。',rules:[]}},
 };
 
 // ── Group key → Part ID 直接對應（不用點位猜測）────────────────────────────
 const GROUP_TO_PART = {
   chassis:    'chassis',
   suspension: 'suspension',
+  brake:      'brake',
   wheel:      'wheel',
-  front_wing: 'front_wing',
-  rear_wing:  'rear_wing',
   drivetrain: 'drivetrain',
-  bodywork:   'chassis',  // fallback to chassis info
+  aero:       'aero',
+  bodywork:   'chassis',
 };
 function classifyPt(gkey) {
   return GROUP_TO_PART[gkey] ?? 'chassis';
