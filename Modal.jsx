@@ -247,9 +247,73 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
       <div className="field"><label>內容描述</label>
         <textarea value={p.body} onChange={e => update("body", e.target.value)} rows={3}/>
       </div>
-      <div className="field"><label>封面圖（路徑，可留空）</label>
-        <input type="text" value={p.cover || ""} onChange={e => update("cover", e.target.value || null)}
-          placeholder="assets/car-snapshots/..."/>
+      <div className="field">
+        <label>封面圖</label>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input 
+            type="text" 
+            value={p.cover || ""} 
+            onChange={e => update("cover", e.target.value || null)}
+            placeholder="輸入圖片網址、路徑，或點擊右側上傳..."
+            style={{ flex: 1 }}
+          />
+          <Button 
+            variant="ghost" 
+            icon="upload" 
+            onClick={() => {
+              const fileInput = document.createElement("input");
+              fileInput.type = "file";
+              fileInput.accept = "image/*";
+              fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (evt) => {
+                    update("cover", evt.target.result);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              };
+              fileInput.click();
+            }}
+          >
+            上傳
+          </Button>
+          {p.cover && (
+            <Button 
+              variant="danger" 
+              icon="trash" 
+              onClick={() => update("cover", null)}
+              title="移除封面"
+              style={{ minWidth: "auto", padding: "0 10px" }}
+            >
+              移除
+            </Button>
+          )}
+        </div>
+        {p.cover && (
+          <div style={{ 
+            marginTop: 8, 
+            borderRadius: 6, 
+            overflow: "hidden", 
+            border: "1px solid var(--border)", 
+            height: 120, 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            background: "rgba(255,255,255,0.02)",
+            position: "relative"
+          }}>
+            <img 
+              src={p.cover} 
+              alt="Cover Preview" 
+              style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
+            />
+          </div>
+        )}
       </div>
     </Modal>
   );
