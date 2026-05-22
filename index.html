@@ -110,7 +110,7 @@
   
   async function bootstrap() {
     // Ensure the CRDT store with its native imports is loaded and initialized FIRST
-    await import('./crdt-store.js?v=9');
+    await import('./crdt-store.js?v=10');
 
     await esbuild.initialize({
       wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.20.2/esbuild.wasm',

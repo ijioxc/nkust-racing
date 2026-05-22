@@ -18,14 +18,8 @@ const webrtcProvider = new WebrtcProvider('nkust-racing-room-v1', ydoc, {
   ]
 });
 
-// 定義各個模組的共用陣列 (YArray)
-const yCollections = {
-  tasks: ydoc.getArray('tasks'),
-  people: ydoc.getArray('people'),
-  plans: ydoc.getArray('plans'),
-  suppliers: ydoc.getArray('suppliers'),
-  resources: ydoc.getArray('resources')
-};
+// 各個模組的共用陣列快取 (YArray)
+const yCollections = {};
 
 /**
  * useCrdtState(collectionName, seed)
@@ -33,6 +27,9 @@ const yCollections = {
  * 監聽 Yjs Array 的變化並觸發 React 重新渲染。
  */
 function useCrdtState(coll, seed) {
+  if (!yCollections[coll]) {
+    yCollections[coll] = ydoc.getArray(coll);
+  }
   const yArray = yCollections[coll];
   const [items, setLocal] = React.useState(yArray.toJSON());
   const seededRef = React.useRef(false);
