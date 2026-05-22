@@ -482,13 +482,6 @@ function ResourceCard({ item, onClick, onDelete }) {
           transition: "border-color 0.3s",
         }}
       >
-        {/* macOS Traffic Lights */}
-        <div style={{ display: "flex", gap: 5.5, position: "absolute", left: 10 }}>
-          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f56", display: "inline-block" }} />
-          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffbd2e", display: "inline-block" }} />
-          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#27c93f", display: "inline-block" }} />
-        </div>
-
         {/* Address Bar */}
         <div
           style={{
