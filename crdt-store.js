@@ -1,6 +1,6 @@
 import * as Y from 'https://cdn.jsdelivr.net/npm/yjs@13.6.14/+esm';
 import { IndexeddbPersistence } from 'https://cdn.jsdelivr.net/npm/y-indexeddb@9.0.12/+esm';
-import { WebrtcProvider } from 'https://cdn.jsdelivr.net/npm/y-webrtc@13.0.3/+esm';
+import { WebrtcProvider } from 'https://cdn.jsdelivr.net/npm/y-webrtc@10.3.0/+esm';
 
 // 建立全域的 Yjs Document
 const ydoc = new Y.Doc();
