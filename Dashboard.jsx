@@ -616,6 +616,10 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
     setDrag(null); setOver(null);
   };
 
+  const onScaleChange = (id, newScale) => {
+    setPlans(prev => prev.map(p => p.id === id ? { ...p, scale: newScale } : p));
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       <SectionHead title="設計提案 · Plans" hint={`${plans.length} CARDS · DRAG TO REORDER`}
@@ -636,16 +640,18 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
             onDragEnd={onDragEnd}
             onDrop={onDrop(p.id)}
             onClick={() => openPlan(p)}
-            onDelete={() => onDelete(p)}/>
+            onDelete={() => onDelete(p)}
+            onScaleChange={onScaleChange}/>
         ))}
       </div>
     </div>
   );
 }
 
-function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver, onDragEnd, onDrop, onClick, onDelete }) {
+function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver, onDragEnd, onDrop, onClick, onDelete, onScaleChange }) {
   const layout = plan.layout === "portrait" || plan.layout === "a4" ? "portrait" : "landscape";
   const color = SUBSYSTEM_COLOR[plan.sub] || "var(--accent)";
+  const scale = plan.scale || (layout === "portrait" ? 1 : 2);
   
   return (
     <div
@@ -662,7 +668,7 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
         position: "relative",
         outline: dragOver ? "2px solid var(--accent)" : "none",
         outlineOffset: -2,
-        gridColumn: layout === "portrait" ? "span 1" : "span 2",
+        gridColumn: `span ${scale}`,
         aspectRatio: layout === "portrait" ? "1 / 1.414" : "1.414 / 1",
         display: "flex",
         flexDirection: "column",
@@ -671,10 +677,20 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
       onMouseEnter={(e) => {
         const img = e.currentTarget.querySelector(".plan-cover-img");
         if (img) img.style.transform = "scale(1.05)";
+        const handle = e.currentTarget.querySelector(".resize-handle");
+        if (handle) {
+          handle.style.opacity = "1";
+          handle.style.transform = "none";
+        }
       }}
       onMouseLeave={(e) => {
         const img = e.currentTarget.querySelector(".plan-cover-img");
         if (img) img.style.transform = "none";
+        const handle = e.currentTarget.querySelector(".resize-handle");
+        if (handle) {
+          handle.style.opacity = "0";
+          handle.style.transform = "translateY(4px)";
+        }
       }}
     >
       {/* 1. Background image or blueprint */}
@@ -846,6 +862,57 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
         }}>
           {plan.body}
         </div>
+      </div>
+
+      {/* 5. Bottom-Right Dynamic Scale Controller (Revealed on hover) */}
+      <div 
+        className="resize-handle"
+        style={{
+          position: "absolute",
+          bottom: 12,
+          right: 12,
+          zIndex: 4,
+          opacity: 0,
+          transform: "translateY(4px)",
+          transition: "opacity 0.25s ease, transform 0.25s ease",
+        }}
+      >
+        <span 
+          onClick={(e) => {
+            e.stopPropagation();
+            const nextScale = layout === "portrait" 
+              ? (scale === 1 ? 2 : 1) 
+              : (scale === 2 ? 3 : (scale === 3 ? 1 : 2));
+            onScaleChange(plan.id, nextScale);
+          }}
+          style={{
+            width: 26,
+            height: 26,
+            borderRadius: 6,
+            background: "rgba(255, 255, 255, 0.12)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#ffffff",
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            cursor: "pointer",
+            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.22)";
+            e.currentTarget.style.transform = "scale(1.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
+            e.currentTarget.style.transform = "none";
+          }}
+          title={`點擊切換 A4 比例卡片尺寸等級 (目前寬度 span: ${scale})`}
+        >
+          <UIIcon kind="resize" size={12}/>
+        </span>
       </div>
     </div>
   );
