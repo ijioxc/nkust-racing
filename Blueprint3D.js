@@ -14,9 +14,11 @@ function init(canvas, onGroupSelect, onProgress) {
   const offscreen = canvas.transferControlToOffscreen();
   
   const rect = canvas.getBoundingClientRect();
+  const absGlbPath = new URL('fsae-car-7.snapshot.4/chassis_grouped.glb', window.location.href).href;
   worker.postMessage({
     type: 'init',
     canvas: offscreen,
+    glbPath: absGlbPath,
     width: rect.width || 800,
     height: rect.height || 600,
     pixelRatio: Math.min(window.devicePixelRatio, 2)

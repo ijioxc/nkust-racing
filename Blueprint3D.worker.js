@@ -3,8 +3,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.m
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
 
-const GLB_PATH = 'fsae-car-7.snapshot.4/chassis_grouped.glb';
-
 let renderer, scene, camera, controls, animId;
 let groupMeshes = {};
 let origMaterials = new Map();
@@ -51,7 +49,7 @@ class DummyDOMElement {
 
 const dummyCanvas = new DummyDOMElement();
 
-function init(canvas, width, height, pixelRatio) {
+function init(canvas, width, height, pixelRatio, glbPath) {
   dummyCanvas.clientWidth = width;
   dummyCanvas.clientHeight = height;
 
@@ -99,11 +97,10 @@ function init(canvas, width, height, pixelRatio) {
   controls.maxDistance = 30;
   controls.maxPolarAngle = Math.PI * 0.88;
 
-  // Load Model (use absolute URL relative to location)
+  // Load Model
   const loader = new GLTFLoader();
-  const absPath = new URL(GLB_PATH, self.location.href).href;
   
-  loader.load(absPath, gltf => {
+  loader.load(glbPath, gltf => {
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const ctr = box.getCenter(new THREE.Vector3());
@@ -227,7 +224,7 @@ self.onmessage = function(e) {
   const data = e.data;
   switch (data.type) {
     case 'init':
-      init(data.canvas, data.width, data.height, data.pixelRatio);
+      init(data.canvas, data.width, data.height, data.pixelRatio, data.glbPath);
       break;
     case 'resize':
       resize(data.width, data.height);
