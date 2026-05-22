@@ -104,7 +104,7 @@ function Blueprint() {
     return () => window.BlueprintGL.destroy();
   }, [mode3d]);
 
-  const view  = views.find(v => v.id === viewId) || views[0];
+  const view  = views.find(v => v.id === viewId) || views[0] || { id: "", label: "", short: "", image: "" };
   const viewParts = parts.filter(p => p.viewId === viewId);
   const selected = parts.find(p => p.id === selectedPartId);
 
