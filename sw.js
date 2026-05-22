@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nkust-racing-v2';
+const CACHE_NAME = 'nkust-racing-v3';
 
 // Install event: skip waiting
 self.addEventListener('install', event => {
@@ -34,9 +34,14 @@ self.addEventListener('fetch', event => {
       caches.match(event.request).then(cachedResponse => {
         if (cachedResponse) return cachedResponse;
         return fetch(event.request).then(response => {
-          const resClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+          if (response && response.status === 200 && (response.type === 'basic' || response.type === 'cors')) {
+            const resClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+          }
           return response;
+        }).catch(err => {
+          console.error('Fetch heavy asset failed:', err);
+          return new Response('Network error', { status: 488 });
         });
       })
     );
@@ -47,14 +52,14 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       const fetchPromise = fetch(event.request).then(networkResponse => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic' || networkResponse.type === 'cors') {
+        if (networkResponse && networkResponse.status === 200 && (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
           const resClone = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
         }
         return networkResponse;
       }).catch(err => {
-        // network failure, just ignore if we have cache
         console.warn('Fetch failed, using cache:', err);
+        return cachedResponse || new Response('Network error', { status: 488 });
       });
 
       return cachedResponse || fetchPromise;
