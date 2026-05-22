@@ -83,7 +83,9 @@ function init(canvas, onGroupSelect, onProgress) {
 
   const ro = new ResizeObserver(() => {
     const r = canvas.getBoundingClientRect();
-    worker.postMessage({ type: 'resize', width: r.width, height: r.height });
+    if (worker) {
+      worker.postMessage({ type: 'resize', width: r.width, height: r.height });
+    }
   });
   ro.observe(canvas.parentElement || canvas);
   canvas._ro = ro;

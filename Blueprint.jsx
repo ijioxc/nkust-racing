@@ -104,6 +104,19 @@ function Blueprint() {
     return () => window.BlueprintGL.destroy();
   }, [mode3d]);
 
+  const view  = views.find(v => v.id === viewId) || views[0] || { id: "", label: "", short: "", image: "" };
+  const viewParts = parts.filter(p => p.viewId === viewId);
+  const selected = parts.find(p => p.id === selectedPartId);
+
+  // Ensure selection is in current view; fall back to first part
+  React.useEffect(() => {
+    if (mode3d) return;
+    if (!selected || selected.viewId !== viewId) {
+      setSelectedPartId(viewParts[0]?.id || null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewId, parts.length, mode3d]);
+
   if (!views || views.length === 0) {
     return (
       <div className="tcard large" style={{
@@ -121,19 +134,6 @@ function Blueprint() {
       </div>
     );
   }
-
-  const view  = views.find(v => v.id === viewId) || views[0] || { id: "", label: "", short: "", image: "" };
-  const viewParts = parts.filter(p => p.viewId === viewId);
-  const selected = parts.find(p => p.id === selectedPartId);
-
-  // Ensure selection is in current view; fall back to first part
-  React.useEffect(() => {
-    if (mode3d) return;
-    if (!selected || selected.viewId !== viewId) {
-      setSelectedPartId(viewParts[0]?.id || null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewId, parts.length, mode3d]);
 
   // Save / delete handlers
   const savePart = (p) => setParts(prev => {
