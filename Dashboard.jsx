@@ -642,6 +642,8 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
 
 function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver, onDragEnd, onDrop, onClick, onDelete }) {
   const color = SUBSYSTEM_COLOR[plan.sub];
+  const isA4 = plan.layout === "a4";
+  const headerHeight = isA4 ? 380 : 180;
   return (
     <div
       draggable={draggable}
@@ -659,26 +661,85 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
       }}
       onMouseEnter={(e) => {
         const img = e.currentTarget.querySelector(".plan-cover-img");
-        if (img) img.style.transform = "scale(1.05)";
+        if (img) img.style.transform = "scale(1.03)";
       }}
       onMouseLeave={(e) => {
         const img = e.currentTarget.querySelector(".plan-cover-img");
         if (img) img.style.transform = "none";
       }}
     >
-      <div style={{ height: 180, position: "relative", overflow: "hidden" }}>
+      <div style={{ height: headerHeight, position: "relative", overflow: "hidden", transition: "height 0.3s ease" }}>
         {plan.cover ? (
-          <div
-            className="plan-cover-img"
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.65) 100%), url('${plan.cover}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          />
+          isA4 ? (
+            <div
+              className="plan-cover-img"
+              style={{
+                position: "absolute",
+                inset: 0,
+                transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              {/* 底層高斯模糊背景以填補 A4 左右空白 */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: -15,
+                  backgroundImage: `url('${plan.cover}')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  filter: "blur(24px) brightness(0.4)",
+                  transform: "scale(1.15)",
+                }}
+              />
+              {/* 表層直式 A4 等比例完整渲染圖片，絕不裁切 */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: "16px 20px",
+                  backgroundImage: `url('${plan.cover}')`,
+                  backgroundSize: "contain",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.5))",
+                }}
+              />
+              {/* 工業設計圖紙細邊線框 */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 8,
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 6,
+                  pointerEvents: "none",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  left: 14,
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 6.5,
+                  color: "rgba(255, 255, 255, 0.3)",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                A4 DOCUMENT · FIT SCALE
+              </div>
+            </div>
+          ) : (
+            <div
+              className="plan-cover-img"
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.65) 100%), url('${plan.cover}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            />
+          )
         ) : (
           <div
             style={{
@@ -704,7 +765,7 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
             <div style={{
               position: "absolute",
               fontFamily: "var(--font-mono)",
-              fontSize: 48,
+              fontSize: isA4 ? 54 : 48,
               fontWeight: 900,
               color: "rgba(255, 255, 255, 0.015)",
               letterSpacing: "0.1em",
@@ -734,7 +795,7 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
               color: "rgba(255, 255, 255, 0.25)",
               letterSpacing: "0.08em",
             }}>
-              SCALE: 1:10 · NKUST-RACING · REV03
+              {isA4 ? "SCALE: 1:1 · A4 BLUEPRINT · REV03" : "SCALE: 1:10 · NKUST-RACING · REV03"}
             </div>
           </div>
         )}

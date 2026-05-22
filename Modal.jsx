@@ -213,7 +213,7 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
 
 // ─── Plan editor ───────────────────────────────────────────
 function PlanModal({ open, onClose, onSave, onDelete, initial }) {
-  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體" };
+  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體", layout: "standard" };
   const [p, setP] = React.useState(initial || blank);
   React.useEffect(() => { setP(initial || blank); }, [initial, open]);
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
@@ -234,13 +234,19 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
       <div className="field"><label>計畫標題</label>
         <input type="text" value={p.title} onChange={e => update("title", e.target.value)} autoFocus/>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
         <div className="field"><label>Kicker（英文副標）</label>
           <input type="text" value={p.kicker} onChange={e => update("kicker", e.target.value)} placeholder="DESIGN PROPOSAL"/>
         </div>
         <div className="field"><label>子系統</label>
           <select value={p.sub} onChange={e => update("sub", e.target.value)}>
             {SUBSYSTEMS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="field"><label>圖卡比例版面</label>
+          <select value={p.layout || "standard"} onChange={e => update("layout", e.target.value)}>
+            <option value="standard">標準橫幅 (16:9)</option>
+            <option value="a4">直立 A4 比例 (1:1.4)</option>
           </select>
         </div>
       </div>
