@@ -50,7 +50,9 @@
 
 <script type="text/babel" src="tweaks-panel.jsx"></script>
 <script type="text/babel" src="data.js"></script>
-<script type="text/babel" src="crdt-store.jsx"></script>
+<!-- crdt-store uses ES module imports, load it natively before esbuild bootstrap -->
+<script type="module" src="crdt-store.jsx"></script>
+
 <script type="text/babel" src="icons.jsx"></script>
 <script type="text/babel" src="atoms.jsx"></script>
 <script type="text/babel" src="Modal.jsx"></script>
