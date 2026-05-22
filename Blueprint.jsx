@@ -14,9 +14,57 @@
 // (or add a new <SpecRow> below). See PART_FIELDS at the bottom for the
 // editable schema definition.
 
+// ─── Group name → subsystem (handles chassis_grouped.glb names) ──
+const GROUP_MAP = {
+  chassis:    "車體",
+  bodywork:   "車體",
+  body:       "車體",
+  frame:      "車體",
+  suspension: "懸吊",
+  susp:       "懸吊",
+  wheel:      "懸吊",
+  drivetrain: "引擎",
+  engine:     "引擎",
+  powertrain: "引擎",
+  brake:      "煞車",
+  brakes:     "煞車",
+  aero:       "空力",
+  aerodynamics: "空力",
+  wings:      "空力",
+  electrical: "電裝",
+  ecu:        "電裝",
+  harness:    "電裝",
+};
+
+function guessSubsystem(groupName) {
+  const n = (groupName || "").toLowerCase().replace(/[_\-\s]+/g, "");
+  for (const [key, sub] of Object.entries(GROUP_MAP)) {
+    if (n.includes(key)) return sub;
+  }
+  // CJK fallback
+  if (/車體|body/.test(groupName))  return "車體";
+  if (/懸吊|susp/.test(groupName))  return "懸吊";
+  if (/引擎|engine/.test(groupName)) return "引擎";
+  if (/煞車|brake/.test(groupName))  return "煞車";
+  if (/電裝|elec/.test(groupName))   return "電裝";
+  if (/空力|aero/.test(groupName))   return "空力";
+  return "其他";
+}
+
+// Display label for GLB group button
+const GROUP_LABEL = {
+  chassis:    "主架 · Chassis",
+  bodywork:   "車殼 · Body",
+  suspension: "懸吊 · Susp",
+  drivetrain: "傳動 · Drive",
+  aero:       "空力 · Aero",
+  wheel:      "輪組 · Wheel",
+  brake:      "煞車 · Brake",
+};
+
 function Blueprint() {
-  const [views, setViews]           = React.useState(BLUEPRINT_VIEWS);
-  const [parts, setParts]           = React.useState(BLUEPRINT_PARTS);
+  const [views, setViews]           = useRtdbState("blueprintViews", BLUEPRINT_VIEWS);
+  const [parts, setParts]           = useRtdbState("blueprintParts", BLUEPRINT_PARTS);
   const [viewId, setViewId]         = React.useState(BLUEPRINT_VIEWS[0].id);
   const [selectedPartId, setSelectedPartId] = React.useState(null);
   const [addingMode, setAddingMode] = React.useState(false);
@@ -24,17 +72,50 @@ function Blueprint() {
   const [viewEditing, setViewEditing] = React.useState({ open: false, initial: null });
   const [confirm, setConfirm]       = React.useState(null);
 
+  // 3D mode
+  const [mode3d,   setMode3d]   = React.useState(false);
+  const [loadPct,  setLoadPct]  = React.useState(0);
+  const [glGroups, setGlGroups] = React.useState([]);  // names from GLB
+  const canvasRef = React.useRef(null);
+
+  // Init / destroy Three.js scene when switching modes
+  React.useEffect(() => {
+    if (!mode3d) return;
+    const canvas = canvasRef.current;
+    if (!canvas || !window.BlueprintGL) return;
+
+    window.BlueprintGL.init(
+      canvas,
+      (groupName) => {
+        if (!groupName) { setSelectedPartId(null); return; }
+        const sub = guessSubsystem(groupName);
+        const match = parts.find(p => p.sub === sub) || parts[0];
+        if (match) setSelectedPartId(match.id);
+      },
+      (pct) => {
+        setLoadPct(pct);
+        if (pct >= 100) {
+          const names = window.BlueprintGL.getGroupNames();
+          setGlGroups(names);
+          console.log('[Blueprint] GLB groups:', names);
+        }
+      },
+    );
+    return () => window.BlueprintGL.destroy();
+  }, [mode3d]);
+
   const view  = views.find(v => v.id === viewId) || views[0];
   const viewParts = parts.filter(p => p.viewId === viewId);
   const selected = parts.find(p => p.id === selectedPartId);
 
   // Ensure selection is in current view; fall back to first part
   React.useEffect(() => {
+    if (mode3d) return;
     if (!selected || selected.viewId !== viewId) {
       setSelectedPartId(viewParts[0]?.id || null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewId, parts.length]);
+  }, [viewId, parts.length, mode3d]);
 
   // Save / delete handlers
   const savePart = (p) => setParts(prev => {
@@ -88,128 +169,251 @@ function Blueprint() {
       {/* Viewer */}
       <div className="tcard large" style={{
         padding: 0, overflow: "hidden", position: "relative",
-        background: "linear-gradient(180deg, #fafafa 0%, #ededef 100%)",
-        cursor: addingMode ? "crosshair" : "default",
+        background: mode3d
+          ? "linear-gradient(160deg, #0e0f11 0%, #1a1c22 100%)"
+          : "linear-gradient(180deg, #fafafa 0%, #ededef 100%)",
+        cursor: mode3d ? "grab" : (addingMode ? "crosshair" : "default"),
+        transition: "background .4s",
       }}>
-        {/* View selector strip */}
+        {/* Top controls bar */}
         <div style={{
           position: "absolute", top: 16, left: 16, right: 16, zIndex: 5,
           display: "flex", justifyContent: "space-between", gap: 10,
+          alignItems: "flex-start",
         }}>
-          <ViewStrip views={views} viewId={viewId} onChange={setViewId}
-            onEditView={(v) => setViewEditing({ open: true, initial: v })}
-            onAddView={() => setViewEditing({ open: true, initial: null })}/>
+          {/* View selector (photo mode) / group tags (3D mode) */}
+          {mode3d ? (
+            <div style={{
+              display: "flex", gap: 4, flexWrap: "wrap", maxWidth: "72%",
+            }}>
+              {glGroups.length > 0 && glGroups.map(g => {
+                const sub   = guessSubsystem(g);
+                const color = (window.SUBSYSTEM_COLOR || SUBSYSTEM_COLOR)[sub] || "#888";
+                const label = GROUP_LABEL[g] || g;
+                return (
+                  <button key={g} onClick={() => {
+                    window.BlueprintGL?.setHighlight(g);
+                    const match = parts.find(p => p.sub === sub) || parts[0];
+                    if (match) setSelectedPartId(match.id);
+                  }} style={{
+                    padding: "4px 11px", borderRadius: 999, border: "none",
+                    background: `${color}28`,
+                    backdropFilter: "blur(10px)",
+                    color: "#fff", fontSize: 10, fontWeight: 600,
+                    fontFamily: "var(--font-mono)", letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 5,
+                    transition: "background .15s",
+                    boxShadow: `inset 0 0 0 1px ${color}55`,
+                  }} onMouseEnter={e => e.currentTarget.style.background = `${color}55`}
+                     onMouseLeave={e => e.currentTarget.style.background = `${color}28`}>
+                    <SubsystemIcon kind={sub} size={10}/>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <ViewStrip views={views} viewId={viewId} onChange={setViewId}
+              onEditView={(v) => setViewEditing({ open: true, initial: v })}
+              onAddView={() => setViewEditing({ open: true, initial: null })}/>
+          )}
+
+          {/* Right controls */}
           <div style={{
             display: "flex", gap: 4, padding: 4,
-            background: "rgba(255,255,255,0.78)",
+            background: mode3d ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.78)",
             backdropFilter: "blur(14px) saturate(160%)",
             WebkitBackdropFilter: "blur(14px) saturate(160%)",
             borderRadius: 999,
-            border: "0.5px solid rgba(0,0,0,0.08)",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            border: "0.5px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
           }}>
-            <IconBtn icon="rotate" title="重設視角" size={28}/>
-            <IconBtn icon="target" title="居中" size={28}/>
-            <IconBtn icon="plus"  title="放大" size={28}/>
-            <IconBtn icon="minus" title="縮小" size={28}/>
+            {mode3d ? (
+              <>
+                <IconBtn icon="rotate" title="重設視角" size={28}
+                  style={{ color: "#fff" }}
+                  onClick={() => window.BlueprintGL?.resetView()}/>
+                <IconBtn icon="target" title="取消高亮" size={28}
+                  style={{ color: "#fff" }}
+                  onClick={() => window.BlueprintGL?.clearHighlight()}/>
+              </>
+            ) : (
+              <>
+                <IconBtn icon="rotate" title="重設視角" size={28}/>
+                <IconBtn icon="target" title="居中" size={28}/>
+              </>
+            )}
+            {/* Mode toggle */}
+            <button onClick={() => { setMode3d(v => !v); setAddingMode(false); }} style={{
+              padding: "4px 10px", borderRadius: 999, border: 0,
+              background: mode3d ? "rgba(0,113,227,0.7)" : "rgba(0,0,0,0.06)",
+              color: mode3d ? "#fff" : "var(--ink)",
+              fontSize: 10, fontWeight: 700,
+              fontFamily: "var(--font-mono)", letterSpacing: "0.06em",
+              cursor: "pointer", height: 24,
+              transition: "all .2s",
+            }}>
+              {mode3d ? "2D 圖解" : "3D 模型"}
+            </button>
           </div>
         </div>
 
-        {/* Image + hotspots */}
-        <div onClick={onImageClick} style={{
-          position: "absolute", inset: 0,
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <div style={{
-            position: "relative",
-            width: "90%", height: "82%",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <img src={view.image} alt={view.label}
-              style={{
-                maxWidth: "100%", maxHeight: "100%",
-                objectFit: "contain", filter: "saturate(0.92)",
-                userSelect: "none", pointerEvents: "none",
-              }}/>
-            {/* hotspots */}
-            {viewParts.map(p => (
-              <Hotspot key={p.id} part={p}
-                active={selectedPartId === p.id}
-                onClick={(e) => { e.stopPropagation(); setSelectedPartId(p.id); }}/>
-            ))}
-            {/* Adding hint overlay */}
-            {addingMode && (
+        {/* ─── 3D canvas ─── */}
+        {mode3d && (
+          <div style={{ position: "absolute", inset: 0 }}>
+            <canvas ref={canvasRef} style={{
+              width: "100%", height: "100%", display: "block",
+            }}/>
+            {/* Loading bar */}
+            {loadPct < 100 && (
               <div style={{
                 position: "absolute", inset: 0,
-                background: "rgba(0,113,227,0.04)",
-                border: "1px dashed var(--accent)",
-                borderRadius: 12,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                pointerEvents: "none",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
+                gap: 16, pointerEvents: "none",
               }}>
                 <div style={{
-                  padding: "8px 14px",
-                  background: "var(--accent)", color: "#fff",
                   fontFamily: "var(--font-mono)", fontSize: 11,
-                  letterSpacing: "0.06em", borderRadius: 999,
-                  boxShadow: "0 4px 14px rgba(0,113,227,0.32)",
-                }}>點擊任意位置新增零件 · ESC 取消</div>
+                  color: "rgba(255,255,255,0.6)", letterSpacing: "0.12em",
+                }}>LOADING GLB · {loadPct}%</div>
+                <div style={{ width: 180, height: 2, background: "rgba(255,255,255,0.1)", borderRadius: 99 }}>
+                  <div style={{
+                    height: "100%", borderRadius: 99,
+                    width: `${loadPct}%`,
+                    background: "var(--accent)",
+                    transition: "width .3s",
+                  }}/>
+                </div>
+              </div>
+            )}
+            {/* 3D hint */}
+            {loadPct >= 100 && (
+              <div style={{
+                position: "absolute", bottom: 16, left: "50%",
+                transform: "translateX(-50%)",
+                padding: "5px 14px",
+                background: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(10px)",
+                border: "0.5px solid rgba(255,255,255,0.12)",
+                borderRadius: 999, pointerEvents: "none",
+                fontFamily: "var(--font-mono)", fontSize: 9,
+                color: "rgba(255,255,255,0.5)", letterSpacing: "0.08em",
+                whiteSpace: "nowrap",
+              }}>
+                拖曳旋轉 · 滾輪縮放 · 點擊高亮零件群組
               </div>
             )}
           </div>
-        </div>
+        )}
 
-        {/* Bottom bar */}
-        <div style={{
-          position: "absolute", bottom: 16, left: 16, right: 16, zIndex: 5,
-          display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
-        }}>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {[...new Set(viewParts.map(p => p.sub))].map(s => (
-              <SubsystemTag key={s} kind={s} size="sm"/>
-            ))}
-          </div>
-          <div style={{ display: "flex", gap: 6 }}>
-            <Button variant={addingMode ? "primary" : "default"}
-              icon={addingMode ? "x" : "plus"}
-              onClick={() => setAddingMode(v => !v)}
-              style={{
-                background: addingMode ? "var(--accent)" : "rgba(255,255,255,0.78)",
-                backdropFilter: "blur(14px)",
-                color: addingMode ? "#fff" : "var(--ink)",
-                border: "0.5px solid rgba(0,0,0,0.08)",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        {/* ─── 2D Image + hotspots ─── */}
+        {!mode3d && (
+          <>
+            <div onClick={onImageClick} style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <div style={{
+                position: "relative",
+                width: "90%", height: "82%",
+                display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-              {addingMode ? "取消新增" : "新增零件"}
-            </Button>
+                <img src={view.image} alt={view.label}
+                  style={{
+                    maxWidth: "100%", maxHeight: "100%",
+                    objectFit: "contain", filter: "saturate(0.92)",
+                    userSelect: "none", pointerEvents: "none",
+                  }}/>
+                {viewParts.map(p => (
+                  <Hotspot key={p.id} part={p}
+                    active={selectedPartId === p.id}
+                    onClick={(e) => { e.stopPropagation(); setSelectedPartId(p.id); }}/>
+                ))}
+                {addingMode && (
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    background: "rgba(0,113,227,0.04)",
+                    border: "1px dashed var(--accent)",
+                    borderRadius: 12,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    pointerEvents: "none",
+                  }}>
+                    <div style={{
+                      padding: "8px 14px",
+                      background: "var(--accent)", color: "#fff",
+                      fontFamily: "var(--font-mono)", fontSize: 11,
+                      letterSpacing: "0.06em", borderRadius: 999,
+                      boxShadow: "0 4px 14px rgba(0,113,227,0.32)",
+                    }}>點擊任意位置新增零件 · ESC 取消</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom bar (2D only) */}
             <div style={{
-              fontFamily: "var(--font-mono)", fontSize: 9,
-              color: "var(--muted)", letterSpacing: "0.08em",
-              background: "rgba(255,255,255,0.78)",
-              backdropFilter: "blur(14px)",
-              padding: "8px 12px", borderRadius: 999,
-              border: "0.5px solid rgba(0,0,0,0.08)",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>{viewParts.length} PARTS · {view.short}</div>
-          </div>
-        </div>
+              position: "absolute", bottom: 16, left: 16, right: 16, zIndex: 5,
+              display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
+            }}>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {[...new Set(viewParts.map(p => p.sub))].map(s => (
+                  <SubsystemTag key={s} kind={s} size="sm"/>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <Button variant={addingMode ? "primary" : "default"}
+                  icon={addingMode ? "x" : "plus"}
+                  onClick={() => setAddingMode(v => !v)}
+                  style={{
+                    background: addingMode ? "var(--accent)" : "rgba(255,255,255,0.78)",
+                    backdropFilter: "blur(14px)",
+                    color: addingMode ? "#fff" : "var(--ink)",
+                    border: "0.5px solid rgba(0,0,0,0.08)",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                  }}>
+                  {addingMode ? "取消新增" : "新增零件"}
+                </Button>
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: 9,
+                  color: "var(--muted)", letterSpacing: "0.08em",
+                  background: "rgba(255,255,255,0.78)",
+                  backdropFilter: "blur(14px)",
+                  padding: "8px 12px", borderRadius: 999,
+                  border: "0.5px solid rgba(0,0,0,0.08)",
+                  display: "flex", alignItems: "center", gap: 6,
+                }}>{viewParts.length} PARTS · {view.short}</div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Inspector */}
       <Inspector
         part={selected}
         allParts={parts}
-        viewParts={viewParts}
+        viewParts={mode3d ? parts : viewParts}
         views={views}
         currentViewId={viewId}
         selectedId={selectedPartId}
+        mode3d={mode3d}
         onSelect={(partId, partViewId) => {
-          if (partViewId && partViewId !== viewId) setViewId(partViewId);
           setSelectedPartId(partId);
+          if (mode3d) {
+            const p = parts.find(x => x.id === partId);
+            if (p && window.BlueprintGL) {
+              const names = window.BlueprintGL.getGroupNames();
+              const g = names.find(n => guessSubsystem(n) === p.sub);
+              if (g) window.BlueprintGL.setHighlight(g);
+            }
+            return;
+          }
+          if (partViewId && partViewId !== viewId) setViewId(partViewId);
         }}
         onEdit={() => selected && setEditing({ open: true, initial: selected })}
         onDelete={() => selected && setConfirm({ kind: "part", target: selected })}
-        onAdd={() => setAddingMode(true)}/>
+        onAdd={mode3d ? null : () => setAddingMode(true)}/>
     </div>
 
     <PartModal open={editing.open} initial={editing.initial}
@@ -335,7 +539,7 @@ function Hotspot({ part, active, onClick }) {
 }
 
 // ─── Inspector side panel ────────────────────────────────
-function Inspector({ part, allParts, viewParts, views, currentViewId, selectedId, onSelect, onEdit, onDelete, onAdd }) {
+function Inspector({ part, allParts, viewParts, views, currentViewId, selectedId, onSelect, onEdit, onDelete, onAdd, mode3d }) {
   const [search, setSearch] = React.useState("");
   // Accordion — only one subsystem open at a time
   const [openSub, setOpenSub] = React.useState(part?.sub || null);
@@ -369,14 +573,17 @@ function Inspector({ part, allParts, viewParts, views, currentViewId, selectedId
             fontSize: 18, fontWeight: 700, color: "var(--muted)",
             letterSpacing: "-0.018em", lineHeight: 1.2,
           }}>沒有選定的零件</div>
+          {!mode3d && onAdd && (
           <Button variant="primary" icon="plus" onClick={onAdd}
             style={{ marginTop: 12 }}>新增零件</Button>
+        )}
         </div>
         <PartLibrary search={search} setSearch={setSearch}
           grouped={grouped} totalCount={allParts.length}
           selectedId={selectedId} currentViewId={currentViewId}
           views={views} onSelect={onSelect} onAdd={onAdd}
-          collapsed={null} openSub={openSub} toggleSub={toggleSub}/>
+          collapsed={null} openSub={openSub} toggleSub={toggleSub}
+          mode3d={mode3d}/>
       </div>
     );
   }
@@ -441,7 +648,7 @@ function Inspector({ part, allParts, viewParts, views, currentViewId, selectedId
 }
 
 function PartLibrary({ search, setSearch, grouped, totalCount, selectedId,
-                      currentViewId, views, onSelect, onAdd, openSub, toggleSub }) {
+                      currentViewId, views, onSelect, onAdd, openSub, toggleSub, mode3d }) {
   const visibleCount = grouped.reduce((a, g) => a + g.parts.length, 0);
   return (
     <div style={{
@@ -461,14 +668,16 @@ function PartLibrary({ search, setSearch, grouped, totalCount, selectedId,
           alignItems: "baseline",
         }}>
           <div className="eyebrow">ALL PARTS · {visibleCount}{visibleCount !== totalCount && ` / ${totalCount}`}</div>
-          <button onClick={onAdd} title="新增零件" style={{
-            background: "transparent", border: 0, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 4,
-            color: "var(--accent)", fontSize: 11, fontWeight: 600,
-            fontFamily: "inherit", padding: 0,
-          }}>
-            <UIIcon kind="plus" size={11}/> 新增
-          </button>
+          {!mode3d && onAdd && (
+            <button onClick={onAdd} title="新增零件" style={{
+              background: "transparent", border: 0, cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 4,
+              color: "var(--accent)", fontSize: 11, fontWeight: 600,
+              fontFamily: "inherit", padding: 0,
+            }}>
+              <UIIcon kind="plus" size={11}/> 新增
+            </button>
+          )}
         </div>
         <div style={{
           display: "flex", alignItems: "center", gap: 6,

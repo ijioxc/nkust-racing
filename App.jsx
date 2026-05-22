@@ -12,12 +12,12 @@ function App() {
   const [subTab, setSubTab] = React.useState("overview");
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
-  // Live data state — all mutations flow through these
-  const [tasks,     setTasks]     = React.useState(INITIAL_TASKS);
-  const [people,    setPeople]    = React.useState(INITIAL_PEOPLE);
-  const [plans,     setPlans]     = React.useState(INITIAL_PLANS);
-  const [suppliers, setSuppliers] = React.useState(INITIAL_SUPPLIERS);
-  const [resources, setResources] = React.useState(INITIAL_RESOURCES);
+  // Live data state — synced to Firebase RTDB, live across devices/users
+  const [tasks,     setTasks]     = useRtdbState("tasks",     INITIAL_TASKS);
+  const [people,    setPeople]    = useRtdbState("people",    INITIAL_PEOPLE);
+  const [plans,     setPlans]     = useRtdbState("plans",     INITIAL_PLANS);
+  const [suppliers, setSuppliers] = useRtdbState("suppliers", INITIAL_SUPPLIERS);
+  const [resources, setResources] = useRtdbState("resources", INITIAL_RESOURCES);
 
   // Apply theme + density on root
   React.useEffect(() => {

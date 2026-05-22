@@ -104,11 +104,11 @@ const STATUS_TONES = {
 
 // Blueprint multi-view + extensible parts
 const BLUEPRINT_VIEWS = [
-  { id: "iso",   label: "ISO 立體",  short: "ISO",   image: "assets/car-snapshots/untitled.16.jpg" },
-  { id: "rear",  label: "後視 + 尾翼", short: "REAR",  image: "assets/car-snapshots/457.jpg" },
-  { id: "side",  label: "側視 + 進氣", short: "SIDE",  image: "assets/car-snapshots/cgdykj.jpg" },
-  { id: "front", label: "前視 + 鼻翼", short: "FRONT", image: "assets/car-snapshots/untitled.17.jpg" },
-  { id: "top",   label: "俯視 + 配重", short: "TOP",   image: "assets/car-snapshots/6UegT.jpg" },
+  { id: "iso",   label: "ISO 立體",  short: "ISO",   image: "assets/car-snapshots/view_iso.png" },
+  { id: "side",  label: "側視",      short: "SIDE",  image: "assets/car-snapshots/view_side.png" },
+  { id: "front", label: "前視",      short: "FRONT", image: "assets/car-snapshots/view_front.png" },
+  { id: "rear",  label: "後視",      short: "REAR",  image: "assets/car-snapshots/view_rear.png" },
+  { id: "top",   label: "俯視",      short: "TOP",   image: "assets/car-snapshots/view_top.png" },
 ];
 
 // Blueprint parts — extensible schema for future Claude Code work
