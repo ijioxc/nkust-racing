@@ -34,26 +34,26 @@ indexeddbProvider.on('synced', () => {
  */
 function useCrdtState(coll, seed) {
   if (!yCollections[coll]) {
-    yCollections[coll] = ydoc.getArray(coll);
+    yCollections[coll] = ydoc.getArray(coll || "default");
   }
   const yArray = yCollections[coll];
-  const [items, setLocal] = React.useState(yArray.toJSON());
+  const [items, setLocal] = React.useState(() => yArray ? yArray.toJSON() : []);
   const seededRef = React.useRef(false);
 
   React.useEffect(() => {
     const observer = () => {
-      setLocal(yArray.toJSON());
+      setLocal(yArray ? yArray.toJSON() : []);
     };
-    yArray.observe(observer);
+    if (yArray) yArray.observe(observer);
 
     const checkAndSeed = () => {
-      if (yArray.length === 0 && seed && !seededRef.current) {
+      if (yArray && yArray.length === 0 && seed && !seededRef.current) {
         seededRef.current = true;
         ydoc.transact(() => {
           yArray.push(seed);
         });
       }
-      setLocal(yArray.toJSON());
+      setLocal(yArray ? yArray.toJSON() : []);
     };
 
     // 雙重防線：若 IndexedDB 在元件 mount 之前或瞬間就已完成 synced，則直接呼叫 seeding 與狀態拉取；否則才綁定 once 事件。
@@ -68,6 +68,7 @@ function useCrdtState(coll, seed) {
 
   // 更新邏輯
   const setItems = React.useCallback((updater) => {
+    if (!yArray) return;
     ydoc.transact(() => {
       const prev = yArray.toJSON();
       const next = typeof updater === "function" ? updater(prev) : updater;

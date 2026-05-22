@@ -651,7 +651,9 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
 function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver, onDragEnd, onDrop, onClick, onDelete, onScaleChange }) {
   const layout = plan.layout === "portrait" || plan.layout === "a4" ? "portrait" : "landscape";
   const color = SUBSYSTEM_COLOR[plan.sub] || "var(--accent)";
-  const scale = plan.scale || (layout === "portrait" ? 1 : 2);
+  const maxScale = layout === "portrait" ? 2 : 3;
+  const minScale = layout === "portrait" ? 1 : 2;
+  const scale = plan.scale || minScale;
   
   return (
     <div
