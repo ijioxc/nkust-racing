@@ -500,12 +500,23 @@ function GanttRow({ task, colW, onClick, onDelete }) {
 
 // ─── Bento Board ───────────────────────────────────────────
 function BentoBoard({ tasks, onTaskClick }) {
+  // 將卡片依照尺寸權重排序，讓大方塊 (3x2, 2x2, 2x1) 優先繪製，從而自動往左上角排列
+  const sortedTasks = React.useMemo(() => {
+    const getWeight = (size) => {
+      if (size === "3x2") return 6;
+      if (size === "2x2") return 4;
+      if (size === "2x1") return 2;
+      return 1; // 1x1
+    };
+    return [...tasks].sort((a, b) => getWeight(b.size || "1x1") - getWeight(a.size || "1x1"));
+  }, [tasks]);
+
   return (
     <div style={{
       display: "grid", gridTemplateColumns: "repeat(6, 1fr)",
       gridAutoRows: "var(--bento-row-h)", gap: 10, gridAutoFlow: "dense",
     }}>
-      {tasks.map(t => <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)}/>)}
+      {sortedTasks.map(t => <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)}/>)}
     </div>
   );
 }
