@@ -621,7 +621,10 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
       <SectionHead title="設計提案 · Plans" hint={`${plans.length} CARDS · DRAG TO REORDER`}
         action={<Button variant="primary" icon="plus" onClick={newPlan}>新增計畫</Button>}/>
       <div style={{
-        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--gap-card)",
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "var(--gap-card)",
+        gridAutoFlow: "dense",
       }}>
         {plans.map(p => (
           <PlanCard key={p.id} plan={p}
@@ -641,9 +644,9 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
 }
 
 function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver, onDragEnd, onDrop, onClick, onDelete }) {
-  const color = SUBSYSTEM_COLOR[plan.sub];
-  const isA4 = plan.layout === "a4";
-  const headerHeight = isA4 ? 380 : 180;
+  const layout = plan.layout === "portrait" || plan.layout === "a4" ? "portrait" : "landscape";
+  const color = SUBSYSTEM_COLOR[plan.sub] || "var(--accent)";
+  
   return (
     <div
       draggable={draggable}
@@ -654,194 +657,195 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
       onClick={onClick}
       className={`tcard hoverable large ${dragging ? "dragging" : ""} ${dragOver ? "drag-over" : ""}`}
       style={{
-        cursor: "pointer", overflow: "hidden", display: "flex", flexDirection: "column",
+        cursor: "pointer",
+        overflow: "hidden",
         position: "relative",
         outline: dragOver ? "2px solid var(--accent)" : "none",
         outlineOffset: -2,
+        gridColumn: layout === "portrait" ? "span 1" : "span 2",
+        aspectRatio: layout === "portrait" ? "1 / 1.414" : "1.414 / 1",
+        display: "flex",
+        flexDirection: "column",
+        minWidth: 0,
       }}
       onMouseEnter={(e) => {
         const img = e.currentTarget.querySelector(".plan-cover-img");
-        if (img) img.style.transform = "scale(1.03)";
+        if (img) img.style.transform = "scale(1.05)";
       }}
       onMouseLeave={(e) => {
         const img = e.currentTarget.querySelector(".plan-cover-img");
         if (img) img.style.transform = "none";
       }}
     >
-      <div style={{ height: headerHeight, position: "relative", overflow: "hidden", transition: "height 0.3s ease" }}>
-        {plan.cover ? (
-          isA4 ? (
-            <div
-              className="plan-cover-img"
-              style={{
-                position: "absolute",
-                inset: 0,
-                transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-            >
-              {/* 底層高斯模糊背景以填補 A4 左右空白 */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: -15,
-                  backgroundImage: `url('${plan.cover}')`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  filter: "blur(24px) brightness(0.4)",
-                  transform: "scale(1.15)",
-                }}
-              />
-              {/* 表層直式 A4 等比例完整渲染圖片，絕不裁切 */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: "16px 20px",
-                  backgroundImage: `url('${plan.cover}')`,
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                  filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.5))",
-                }}
-              />
-              {/* 工業設計圖紙細邊線框 */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 8,
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  borderRadius: 6,
-                  pointerEvents: "none",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 12,
-                  left: 14,
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 6.5,
-                  color: "rgba(255, 255, 255, 0.3)",
-                  letterSpacing: "0.1em",
-                }}
-              >
-                A4 DOCUMENT · FIT SCALE
-              </div>
-            </div>
-          ) : (
-            <div
-              className="plan-cover-img"
-              style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.65) 100%), url('${plan.cover}')`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-            />
-          )
-        ) : (
+      {/* 1. Background image or blueprint */}
+      {plan.cover ? (
+        <>
+          <div
+            className="plan-cover-img"
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url('${plan.cover}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+              zIndex: 1,
+            }}
+          />
+          {/* Deep gradient protection for text readability */}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              background: `
-                radial-gradient(circle at 100% 150%, rgba(0, 113, 227, 0.15) 24%, transparent 24%),
-                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(135deg, #0b1a30, #040a14)
-              `,
-              backgroundSize: "100% 100%, 40px 40px, 40px 40px, 10px 10px, 10px 10px, 100% 100%",
-              backgroundPosition: "0 0, 0 0, 0 0, 0 0, 0 0, 0 0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
+              background: "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.88) 100%)",
+              zIndex: 2,
+              pointerEvents: "none",
             }}
-          >
-            {/* Watermark Grid Elements */}
-            <div style={{
-              position: "absolute",
-              fontFamily: "var(--font-mono)",
-              fontSize: isA4 ? 54 : 48,
-              fontWeight: 900,
-              color: "rgba(255, 255, 255, 0.015)",
-              letterSpacing: "0.1em",
-              transform: "rotate(-12deg) scale(1.1)",
-              pointerEvents: "none",
-              userSelect: "none",
-              whiteSpace: "nowrap",
-            }}>
-              {plan.sub} SECTION
-            </div>
-            
-            {/* Technical grid borders */}
-            <div style={{
-              position: "absolute",
-              border: "1px dashed rgba(255,255,255,0.08)",
-              inset: 12,
-              borderRadius: 6,
-              pointerEvents: "none",
-            }} />
-            
-            <div style={{
-              position: "absolute",
-              bottom: 8,
-              left: 18,
-              fontFamily: "var(--font-mono)",
-              fontSize: 7,
-              color: "rgba(255, 255, 255, 0.25)",
-              letterSpacing: "0.08em",
-            }}>
-              {isA4 ? "SCALE: 1:1 · A4 BLUEPRINT · REV03" : "SCALE: 1:10 · NKUST-RACING · REV03"}
-            </div>
-          </div>
-        )}
-
-        {/* Content overlaid on top of the image/blueprint */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "flex-end",
-          padding: 14,
-          zIndex: 2,
-        }}>
-          <SubsystemTag kind={plan.sub}/>
-          <span className="drag-handle" style={{
-            position: "absolute", top: 12, left: 12,
-            width: 24, height: 24, borderRadius: 8,
-            background: "rgba(255,255,255,0.7)",
-            backdropFilter: "blur(8px)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--ink)",
-          }}>
-            <UIIcon kind="grip" size={13}/>
-          </span>
+          />
+        </>
+      ) : (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `
+              radial-gradient(circle at 100% 100%, ${color}1e 0%, transparent 60%),
+              linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+              linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px),
+              linear-gradient(135deg, #0b1a30, #040a14)
+            `,
+            backgroundSize: "100% 100%, 40px 40px, 40px 40px, 10px 10px, 10px 10px, 100% 100%",
+            zIndex: 1,
+          }}
+        >
+          {/* Technical drafting grid borders */}
           <div style={{
-            position: "absolute", top: 10, right: 10,
-            display: "flex", gap: 2, opacity: 0.92,
+            position: "absolute",
+            border: "1px dashed rgba(255,255,255,0.06)",
+            inset: 12,
+            borderRadius: 8,
+            pointerEvents: "none",
+          }} />
+          
+          {/* Technical labels in the background */}
+          <div style={{
+            position: "absolute",
+            top: 50,
+            left: 18,
+            fontFamily: "var(--font-mono)",
+            fontSize: layout === "portrait" ? 36 : 48,
+            fontWeight: 900,
+            color: "rgba(255, 255, 255, 0.015)",
+            letterSpacing: "0.1em",
+            transform: "rotate(-8deg)",
+            pointerEvents: "none",
+            userSelect: "none",
+            whiteSpace: "nowrap",
           }}>
-            <IconBtn icon="edit" size={26} onClick={(e) => { e.stopPropagation(); onClick(); }}/>
-            <IconBtn icon="trash" size={26} danger onClick={(e) => { e.stopPropagation(); onDelete(); }}/>
+            {plan.sub} SECTION
+          </div>
+
+          <div style={{
+            position: "absolute",
+            top: 18,
+            right: 18,
+            fontFamily: "var(--font-mono)",
+            fontSize: 7,
+            color: "rgba(255, 255, 255, 0.25)",
+            letterSpacing: "0.08em",
+            pointerEvents: "none",
+          }}>
+            A4_SPEC_SYS_{plan.sub.toUpperCase()}
           </div>
         </div>
+      )}
+
+      {/* 2. Top-left drag handle and Subsystem Tag */}
+      <div style={{
+        position: "absolute",
+        top: 12,
+        left: 12,
+        display: "flex",
+        gap: 6,
+        alignItems: "center",
+        zIndex: 3,
+      }}>
+        <span className="drag-handle" style={{
+          width: 24,
+          height: 24,
+          borderRadius: 6,
+          background: "rgba(255,255,255,0.12)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "rgba(255,255,255,0.8)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          cursor: "grab",
+        }}>
+          <UIIcon kind="grip" size={12}/>
+        </span>
+        <SubsystemTag kind={plan.sub}/>
       </div>
-      <div style={{ padding: 18 }}>
-        <div className="eyebrow" style={{ marginBottom: 8 }}>{plan.kicker}</div>
+
+      {/* 3. Top-right actions */}
+      <div style={{
+        position: "absolute",
+        top: 12,
+        right: 12,
+        display: "flex",
+        gap: 6,
+        zIndex: 3,
+      }}>
+        <IconBtn icon="edit" size={26} onClick={(e) => { e.stopPropagation(); onClick(); }}/>
+        <IconBtn icon="trash" size={26} danger onClick={(e) => { e.stopPropagation(); onDelete(); }}/>
+      </div>
+
+      {/* 4. Bottom Glassmorphism Title Panel */}
+      <div style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: "16px 18px",
+        zIndex: 3,
+        background: "linear-gradient(180deg, rgba(10,15,30,0) 0%, rgba(10,15,30,0.65) 30%, rgba(10,15,30,0.92) 100%)",
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
+        borderTop: "1px solid rgba(255,255,255,0.05)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+      }}>
+        <div className="eyebrow" style={{ color: color, fontSize: 10, letterSpacing: "0.08em" }}>
+          {plan.kicker || "DESIGN PROPOSAL"}
+        </div>
         <div style={{
           fontFamily: "var(--display-family)",
-          fontSize: 19, fontWeight: 700, letterSpacing: "-0.018em",
-          lineHeight: 1.25, color: "var(--ink)",
-        }}>{plan.title}</div>
+          fontSize: layout === "portrait" ? 17 : 19,
+          fontWeight: 700,
+          letterSpacing: "-0.015em",
+          lineHeight: 1.25,
+          color: "#ffffff",
+        }}>
+          {plan.title}
+        </div>
         <div style={{
-          fontSize: 13, color: "var(--faint)", marginTop: 8,
-          lineHeight: 1.5, textWrap: "pretty",
-          display: "-webkit-box", WebkitLineClamp: 3,
-          WebkitBoxOrient: "vertical", overflow: "hidden",
-        }}>{plan.body}</div>
+          fontSize: 12,
+          color: "rgba(255,255,255,0.65)",
+          marginTop: 4,
+          lineHeight: 1.45,
+          textWrap: "pretty",
+          display: "-webkit-box",
+          WebkitLineClamp: layout === "portrait" ? 3 : 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}>
+          {plan.body}
+        </div>
       </div>
     </div>
   );

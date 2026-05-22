@@ -213,7 +213,7 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
 
 // ─── Plan editor ───────────────────────────────────────────
 function PlanModal({ open, onClose, onSave, onDelete, initial }) {
-  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體", layout: "standard" };
+  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體", layout: "landscape" };
   const [p, setP] = React.useState(initial || blank);
   React.useEffect(() => { setP(initial || blank); }, [initial, open]);
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
@@ -244,9 +244,9 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
           </select>
         </div>
         <div className="field"><label>圖卡比例版面</label>
-          <select value={p.layout || "standard"} onChange={e => update("layout", e.target.value)}>
-            <option value="standard">標準橫幅 (16:9)</option>
-            <option value="a4">直立 A4 比例 (1:1.4)</option>
+          <select value={p.layout || "landscape"} onChange={e => update("layout", e.target.value)}>
+            <option value="landscape">橫式 A4 比例 (1.41:1)</option>
+            <option value="portrait">直式 A4 比例 (1:1.41)</option>
           </select>
         </div>
       </div>
