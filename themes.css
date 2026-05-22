@@ -1,0 +1,287 @@
+/* ============================================================
+   NKUST Racing — Theme overrides
+   Three modes: glass (default), flat, editorial
+   Plus density modes: compact / default / spacious
+   ============================================================ */
+
+:root {
+  /* page chrome — colorful aurora ONLY in corners, so glass cards have
+     something to blur but the center stays calm and cards read as distinct
+     surfaces (not color smears). */
+  --page-bg: #eef0f3;
+  --page-gradient:
+    radial-gradient(45% 36% at 0% 0%,    rgba(255,150,80,0.32)  0%, transparent 70%),
+    radial-gradient(42% 36% at 100% 0%,  rgba(0,113,227,0.26)   0%, transparent 70%),
+    radial-gradient(50% 42% at 0% 100%,  rgba(184,48,37,0.22)   0%, transparent 70%),
+    radial-gradient(45% 38% at 100% 100%,rgba(46,107,127,0.26)  0%, transparent 70%),
+    radial-gradient(40% 35% at 50% 100%, rgba(246,171,0,0.14)   0%, transparent 75%);
+
+  /* card surfaces — frosted white glass */
+  --card-fill:        rgba(255,255,255,0.66);
+  --card-blur:        blur(28px) saturate(180%);
+  --card-border:      0.5px solid rgba(255,255,255,0.55);
+  --card-highlight:   inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -0.5px 0 rgba(0,0,0,0.03);
+  --card-shadow:      0 1px 3px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.05);
+  --card-shadow-hover:0 2px 6px rgba(0,0,0,0.05), 0 20px 48px rgba(0,0,0,0.09);
+
+  /* accent glass — tinted blue glass, same blur recipe as white glass
+     so all surfaces feel like one material. */
+  --card-fill-accent:   rgba(0,113,227,0.72);
+  --card-border-accent: 0.5px solid rgba(255,255,255,0.4);
+  --card-highlight-accent: inset 0 1px 0 rgba(255,255,255,0.35);
+
+  /* layout scale */
+  --radius-card:   18px;
+  --radius-large:  22px;
+  --radius-tile:   14px;
+  --radius-input:  10px;
+
+  /* density (gap units) */
+  --gap-zone:      28px;
+  --gap-card:      14px;
+  --gap-tight:     10px;
+  --card-pad:      22px;
+  --tile-pad:      18px 20px;
+  --bento-row-h:   92px;
+
+  /* type accents (overridden by editorial) */
+  --section-head-family: var(--font-sans);
+  --section-head-weight: 700;
+  --section-head-size: 13px;
+  --section-head-transform: uppercase;
+  --section-head-tracking: 0.04em;
+
+  --display-family: var(--font-sans);
+
+  --hover-lift: -2px;
+}
+
+/* ───── FLAT theme: functional, less blur, sharper corners ───── */
+[data-theme="flat"] {
+  --page-bg: #f4f4f6;
+  --page-gradient: none;
+
+  --card-fill:        rgba(255,255,255,0.92);
+  --card-blur:        blur(0px) saturate(100%);
+  --card-border:      0.5px solid rgba(0,0,0,0.10);
+  --card-highlight:   none;
+  --card-shadow:      0 1px 0 rgba(0,0,0,0.04);
+  --card-shadow-hover:0 1px 0 rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.05);
+
+  --card-fill-accent:   #0071e3;
+  --card-border-accent: 0.5px solid #0071e3;
+  --card-highlight-accent: none;
+
+  --radius-card:   8px;
+  --radius-large:  10px;
+  --radius-tile:   6px;
+  --radius-input:  6px;
+
+  --section-head-size: 11px;
+  --section-head-tracking: 0.08em;
+
+  --hover-lift: 0px;
+}
+
+/* ───── EDITORIAL theme: magazine, more whitespace, serif heads ───── */
+[data-theme="editorial"] {
+  --page-bg: #f6f1e8;
+  --page-gradient:
+    radial-gradient(55% 50% at 10% 8%,  rgba(184,48,37,0.32) 0%, transparent 65%),
+    radial-gradient(50% 50% at 90% 95%, rgba(28,61,94,0.32)  0%, transparent 65%),
+    radial-gradient(40% 40% at 50% 30%, rgba(246,171,0,0.20) 0%, transparent 70%);
+
+  --card-fill:        rgba(255,254,250,0.66);
+  --card-blur:        blur(34px) saturate(180%);
+  --card-border:      0.5px solid rgba(255,255,255,0.5);
+  --card-highlight:   inset 0 1px 0 rgba(255,255,255,0.7);
+  --card-shadow:      0 1px 3px rgba(0,0,0,0.03), 0 16px 40px rgba(0,0,0,0.06);
+
+  --card-fill-accent:   rgba(0,113,227,0.68);
+  --card-border-accent: 0.5px solid rgba(255,255,255,0.4);
+  --card-highlight-accent: inset 0 1px 0 rgba(255,255,255,0.35);
+
+  --radius-card:   20px;
+  --radius-large:  28px;
+  --radius-tile:   18px;
+  --radius-input:  12px;
+
+  --section-head-family: var(--font-serif);
+  --section-head-weight: 700;
+  --section-head-size: 22px;
+  --section-head-transform: none;
+  --section-head-tracking: -0.015em;
+
+  --display-family: var(--font-serif);
+
+  --hover-lift: -3px;
+}
+
+/* ───── DENSITY (orthogonal to theme) ───── */
+[data-density="compact"] {
+  --gap-zone:    20px;
+  --gap-card:    10px;
+  --gap-tight:   8px;
+  --card-pad:    16px;
+  --tile-pad:    14px 16px;
+  --bento-row-h: 78px;
+}
+[data-density="spacious"] {
+  --gap-zone:    40px;
+  --gap-card:    20px;
+  --gap-tight:   14px;
+  --card-pad:    28px;
+  --tile-pad:    24px 28px;
+  --bento-row-h: 108px;
+}
+
+/* ============================================================
+   Re-usable theme-aware utility classes
+   ============================================================ */
+.tcard {
+  background: var(--card-fill);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border: var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-highlight), var(--card-shadow);
+  transition: transform .42s var(--ease-back), box-shadow .3s var(--ease-out);
+}
+.tcard.large { border-radius: var(--radius-large); }
+.tcard.tile  { border-radius: var(--radius-tile); }
+.tcard.hoverable:hover {
+  transform: translateY(var(--hover-lift));
+  box-shadow: var(--card-highlight), var(--card-shadow-hover);
+}
+
+/* Accent-tinted glass — same blur recipe as .tcard so light glass and
+   tinted glass feel like the same material. */
+.tcard-accent {
+  background: var(--card-fill-accent);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border: var(--card-border-accent);
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-highlight-accent), var(--card-shadow);
+  color: #fff;
+  transition: transform .42s var(--ease-back), box-shadow .3s var(--ease-out);
+}
+.tcard-accent.large { border-radius: var(--radius-large); }
+.tcard-accent.tile  { border-radius: var(--radius-tile); }
+.tcard-accent.hoverable:hover {
+  transform: translateY(var(--hover-lift));
+  box-shadow: var(--card-highlight-accent), var(--card-shadow-hover);
+}
+
+.section-head {
+  font-family: var(--section-head-family);
+  font-weight: var(--section-head-weight);
+  font-size: var(--section-head-size);
+  text-transform: var(--section-head-transform);
+  letter-spacing: var(--section-head-tracking);
+  color: var(--ink);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 7px 14px;
+  background: rgba(0,0,0,0.05);
+  color: var(--ink);
+  border: 0;
+  border-radius: var(--r-full);
+  font: 500 12px/1 var(--font-sans);
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background .15s var(--ease-out);
+}
+.btn:hover  { background: rgba(0,0,0,0.08); }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:hover { background: #005bb5; }
+.btn.ghost   { background: transparent; }
+.btn.ghost:hover { background: rgba(0,0,0,0.05); }
+.btn.danger  { background: rgba(184,48,37,0.10); color: #b83025; }
+.btn.danger:hover { background: rgba(184,48,37,0.16); }
+.btn .icn { width: 13px; height: 13px; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: var(--r-full);
+  font: 700 9px/1.4 var(--font-mono);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.pill.high { background: var(--status-high-bg); color: var(--status-high-fg); }
+.pill.mid  { background: var(--status-mid-bg);  color: var(--status-mid-fg);  }
+.pill.low  { background: var(--status-low-bg);  color: var(--status-low-fg);  }
+.pill.muted{ background: rgba(0,0,0,0.04);      color: var(--muted);          }
+
+/* Form inputs — borderless w/ bottom rule */
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field > label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+}
+.field input[type="text"], .field input[type="email"], .field input[type="number"],
+.field select, .field textarea {
+  background: rgba(0,0,0,0.025);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: var(--radius-input) var(--radius-input) 0 0;
+  padding: 9px 12px;
+  font: 400 13.5px/1.4 var(--font-sans);
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  transition: border-color .15s, background .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  background: var(--accent-bg);
+}
+.field textarea { resize: vertical; min-height: 60px; }
+
+/* Modal overlay */
+.modal-back {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(20,20,25,0.32);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px;
+  animation: modal-fade .25s var(--ease-out);
+}
+@keyframes modal-fade { from { opacity: 0; } to { opacity: 1; } }
+.modal-card {
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 0.5px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-modal);
+  max-width: 520px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  animation: modal-pop .3s var(--ease-out);
+}
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Drag handle */
+.drag-handle {
+  cursor: grab;
+  color: var(--muted);
+  opacity: 0; transition: opacity .2s;
+}
+.dragging .drag-handle, *:hover > .drag-handle { opacity: 1; }
+.drag-handle:active { cursor: grabbing; }
+.dragging { opacity: 0.5; }
+.drag-over { background: var(--accent-bg) !important; }

@@ -1,0 +1,270 @@
+/* ============================================================
+   NKUST Racing — Design Tokens
+   Apple‑inspired · Glassmorphism · Swiss typographic hierarchy
+   ============================================================ */
+
+/* ---- Fonts (Google CDN — see /fonts/ when self‑hosting) ---- */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Serif+TC:wght@300;400;700;900&display=swap');
+
+:root {
+  /* ============ COLOR ============ */
+
+  /* Surface (light) */
+  --bg:           #ffffff;
+  --surface:      #ffffff;
+  --surface-2:   #f5f5f7;     /* off‑white page bg, avatar slot */
+  --surface-3:   #ebebed;     /* darker resting tile */
+
+  /* Ink (text) */
+  --ink:          #1d1d1f;    /* primary */
+  --faint:        #6e6e73;    /* secondary */
+  --muted:        #86868b;    /* eyebrows, mono labels */
+  --rule:         #d2d2d7;    /* 0.5–1px dividers when unavoidable */
+
+  /* Accent (single brand accent) */
+  --accent:       #0071e3;
+  --accent-bg:    #f0f7ff;
+  --accent-mid:   #d6e7fb;
+
+  /* Status (used only as soft tinted backgrounds) */
+  --status-high-bg:    #f0f7ff;   --status-high-fg:    #0071e3;
+  --status-mid-bg:     #fef6e8;   --status-mid-fg:     #9a6120;
+  --status-low-bg:     #edf2fa;   --status-low-fg:     #2f5fa0;
+
+  /* Sub‑system tags — used in `.work-type-tag`. Earthy palette. */
+  --sub-chassis:     #b83025;    /* 車體 — chassis red */
+  --sub-engine:      #8a6610;    /* 引擎 — engine gold */
+  --sub-suspension:  #1c3d5e;    /* 懸吊 — suspension blue */
+  --sub-brake:       #2a6b38;    /* 煞車 — brake green */
+  --sub-electrical:  #6b21a8;    /* 電裝 — electrical purple */
+  --sub-aero:        #0e7490;    /* 空力 — aero teal */
+  --sub-other:       #444444;    /* 其他 — neutral grey */
+
+  /* Legacy team livery (helmet / car wraps — NOT painted on the new UI) */
+  --legacy-orange:   #ED6C00;
+  --legacy-yellow:   #F6AB00;
+  --legacy-blue:     #006DAD;
+
+  /* Glass material */
+  --glass-fill:        rgba(255,255,255,0.62);
+  --glass-fill-strong: rgba(255,255,255,0.82);
+  --glass-fill-soft:   rgba(255,255,255,0.55);
+  --glass-border:      0.5px solid rgba(0,0,0,0.08);
+  --glass-highlight:   inset 0 1px 0 rgba(255,255,255,0.7);
+  --glass-blur:        blur(24px) saturate(160%);
+  --glass-blur-light:  blur(20px) saturate(140%);
+  --glass-blur-heavy:  blur(40px) saturate(180%);
+
+  /* Shadows — always layered: tight + diffuse */
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.03);
+  --shadow-2: 0 1px 3px rgba(0,0,0,0.03), 0 8px 20px rgba(0,0,0,0.03);
+  --shadow-3: 0 6px 18px rgba(0,0,0,0.06), 0 24px 48px rgba(0,0,0,0.04);
+  --shadow-modal: 0 32px 80px rgba(13,10,8,0.22);
+
+  /* Radius — concentric scale (outer = inner + padding) */
+  --r-xs:  6px;     /* pill option, small icon button */
+  --r-sm:  8px;     /* form input, small chip */
+  --r-md:  12px;    /* kanban card, modal inner field */
+  --r-lg:  14px;    /* bento small tile */
+  --r-xl:  18px;    /* worklog/resource card */
+  --r-2xl: 22px;    /* large bento card, plan card */
+  --r-3xl: 40px;    /* full‑screen "sheet" surface */
+  --r-full: 980px;  /* Apple‑style capsule */
+
+  /* Spacing — base 4 */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 14px;     /* card gap default */
+  --s-5: 20px;
+  --s-6: 24px;     /* between dashboard zones */
+  --s-8: 40px;     /* page padding desktop */
+  --s-10: 60px;
+
+  /* Easing */
+  --ease-out:   cubic-bezier(.16, 1, .3, 1);    /* workhorse */
+  --ease-back:  cubic-bezier(.34, 1.56, .64, 1); /* gentle overshoot */
+  --d-fast: .15s;
+  --d-mid:  .25s;
+  --d-slow: .42s;
+
+  /* ============ TYPOGRAPHY ============ */
+  --font-sans:    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'SF Pro', Helvetica, Arial, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif:   'Noto Serif TC', 'Songti TC', serif; /* essay / first‑principles only */
+
+  /* Numeric features (apply on .data, KPI, percentages) */
+  --num-features: 'tnum' 1, 'ss01' 1, 'cv11' 1;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { background: var(--surface-2); color: var(--ink); }
+
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
+  font-variant-numeric: tabular-nums;
+  line-height: 1.47059;
+  letter-spacing: -.003em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--accent-mid); color: var(--ink); }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 99px; }
+* { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
+
+/* ============================================================
+   TYPE SCALE — Display / UI / Mono
+   Hierarchy is built with WEIGHT, not COLOR.
+   ============================================================ */
+
+/* Display — KPI numerals, hero titles. Tabular. */
+.t-display-1 {
+  font-family: var(--font-sans);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--ink);
+  font-feature-settings: var(--num-features);
+}
+.t-display-2 {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.025em;
+  color: var(--ink);
+}
+
+/* Headings */
+h1, .t-h1 {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  color: var(--ink);
+}
+h2, .t-h2 {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.022em;
+  color: var(--ink);
+}
+h3, .t-h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+  color: var(--ink);
+}
+h4, .t-h4 {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.015em;
+  color: var(--ink);
+}
+
+/* Body */
+p, .t-body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.t-body-faint {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--faint);
+}
+.t-caption {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--faint);
+}
+
+/* Mono — labels, eyebrows, data */
+.t-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.t-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.t-data {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  font-feature-settings: var(--num-features);
+  color: var(--ink);
+}
+.t-data-lg {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  font-feature-settings: var(--num-features);
+  color: var(--ink);
+}
+
+/* Serif — essay only */
+.t-serif-display {
+  font-family: var(--font-serif);
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.t-serif-body {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.85;
+  color: var(--ink);
+}
+
+/* ============================================================
+   GLASS + UTIL helpers
+   ============================================================ */
+.glass {
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--shadow-2);
+}
+.glass-strong {
+  background: var(--glass-fill-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--shadow-2);
+}

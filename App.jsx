@@ -1,0 +1,103 @@
+// App.jsx — top-level router + state + tweaks panel
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "glass",
+  "density": "default",
+  "showWeekRuler": true,
+  "blurStrength": 24
+}/*EDITMODE-END*/;
+
+function App() {
+  const [page, setPage] = React.useState("dashboard");
+  const [subTab, setSubTab] = React.useState("overview");
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // Live data state — all mutations flow through these
+  const [tasks,     setTasks]     = React.useState(INITIAL_TASKS);
+  const [people,    setPeople]    = React.useState(INITIAL_PEOPLE);
+  const [plans,     setPlans]     = React.useState(INITIAL_PLANS);
+  const [suppliers, setSuppliers] = React.useState(INITIAL_SUPPLIERS);
+  const [resources, setResources] = React.useState(INITIAL_RESOURCES);
+
+  // Apply theme + density on root
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", t.theme);
+    document.documentElement.setAttribute("data-density", t.density);
+    // Optional blur override
+    document.documentElement.style.setProperty(
+      "--card-blur",
+      `blur(${t.blurStrength}px) saturate(${t.theme === "flat" ? 100 : 160}%)`,
+    );
+  }, [t.theme, t.density, t.blurStrength]);
+
+  const dashTabs = [
+    { id: "overview",  label: "總覽",   icon: "target",   count: undefined },
+    { id: "worklog",   label: "工作日誌", icon: "calendar", count: tasks.length },
+    { id: "plans",     label: "計畫",   icon: "wrench",   count: plans.length },
+    { id: "people",    label: "人員",   icon: "users",    count: people.length },
+    { id: "parts",     label: "零件",   icon: "factory",  count: suppliers.length },
+    { id: "resources", label: "資源",   icon: "book",     count: resources.length },
+  ];
+
+  return (
+    <div data-screen-label={`${page === "dashboard" ? subTab : page}`}
+         style={{ minHeight: "100vh" }}>
+      <Header
+        page={page} onPageChange={setPage}
+        subTab={subTab} onSubTabChange={setSubTab}
+        dashTabs={dashTabs}/>
+
+      <main style={{
+        maxWidth: 1440, margin: "0 auto",
+        padding: "32px 40px 80px",
+      }}>
+        {page === "dashboard" && (
+          <Dashboard
+            tab={subTab}
+            tasks={tasks}         setTasks={setTasks}
+            people={people}       setPeople={setPeople}
+            plans={plans}         setPlans={setPlans}
+            suppliers={suppliers} setSuppliers={setSuppliers}
+            resources={resources} setResources={setResources}/>
+        )}
+        {page === "blueprint" && <Blueprint/>}
+        {page === "essay"     && <Essay/>}
+      </main>
+
+      <TweaksPanel title="Tweaks · 統一視覺">
+        <TweakSection label="VISUAL DIRECTION"/>
+        <TweakRadio label="Theme" value={t.theme}
+          options={["glass", "flat", "editorial"]}
+          onChange={v => setTweak("theme", v)}/>
+        <TweakRadio label="Density" value={t.density}
+          options={["compact", "default", "spacious"]}
+          onChange={v => setTweak("density", v)}/>
+        <TweakSlider label="Glass blur" value={t.blurStrength}
+          min={0} max={48} step={2} unit="px"
+          onChange={v => setTweak("blurStrength", v)}/>
+        <TweakSection label="QUICK NAVIGATION"/>
+        <TweakSelect label="Open page" value={page}
+          options={[
+            { value: "dashboard", label: "工作台" },
+            { value: "blueprint", label: "車體圖解" },
+            { value: "essay",     label: "技術手冊" },
+          ]}
+          onChange={v => setPage(v)}/>
+        {page === "dashboard" && (
+          <TweakSelect label="Sub-tab" value={subTab}
+            options={[
+              { value: "overview",  label: "總覽" },
+              { value: "worklog",   label: "工作日誌" },
+              { value: "plans",     label: "計畫" },
+              { value: "people",    label: "人員" },
+              { value: "parts",     label: "零件" },
+              { value: "resources", label: "資源" },
+            ]}
+            onChange={v => setSubTab(v)}/>
+        )}
+      </TweaksPanel>
+    </div>
+  );
+}
+
+window.App = App;
