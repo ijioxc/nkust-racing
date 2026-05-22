@@ -40,7 +40,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
       {page === "dashboard" && dashTabs &&
       <div style={hdrStyles.subBar}>
           <div style={{ ...hdrStyles.subInner, opacity: "1" }}>
-            <nav style={hdrStyles.subNav} data-comment-anchor="8443d0cdcc-nav-43-13">
+            <nav style={hdrStyles.subNav}>
               {dashTabs.map((t) =>
             <button key={t.id} onClick={() => onSubTabChange(t.id)}
             style={{
