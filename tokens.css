@@ -45,12 +45,12 @@
   --legacy-yellow:   #F6AB00;
   --legacy-blue:     #006DAD;
 
-  /* Glass material */
-  --glass-fill:        rgba(255,255,255,0.62);
-  --glass-fill-strong: rgba(255,255,255,0.82);
-  --glass-fill-soft:   rgba(255,255,255,0.55);
-  --glass-border:      0.5px solid rgba(0,0,0,0.08);
-  --glass-highlight:   inset 0 1px 0 rgba(255,255,255,0.7);
+  /* Glass material (Modern color-mix) */
+  --glass-fill:        color-mix(in srgb, var(--surface) 62%, transparent);
+  --glass-fill-strong: color-mix(in srgb, var(--surface) 82%, transparent);
+  --glass-fill-soft:   color-mix(in srgb, var(--surface) 55%, transparent);
+  --glass-border:      0.5px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  --glass-highlight:   inset 0 1px 0 color-mix(in srgb, var(--surface) 70%, transparent);
   --glass-blur:        blur(24px) saturate(160%);
   --glass-blur-light:  blur(20px) saturate(140%);
   --glass-blur-heavy:  blur(40px) saturate(180%);
