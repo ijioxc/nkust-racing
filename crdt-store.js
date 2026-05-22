@@ -21,6 +21,12 @@ const webrtcProvider = new WebrtcProvider('nkust-racing-room-v1', ydoc, {
 // 各個模組的共用陣列快取 (YArray)
 const yCollections = {};
 
+// 追蹤 IndexedDB 是否已完成初始同步，防範與 React 元件 mount 之間的 Race Condition 競態問題
+let isIndexedDbSynced = false;
+indexeddbProvider.on('synced', () => {
+  isIndexedDbSynced = true;
+});
+
 /**
  * useCrdtState(collectionName, seed)
  * 用來取代 useState 的 Hook。
@@ -40,16 +46,22 @@ function useCrdtState(coll, seed) {
     };
     yArray.observe(observer);
 
-    // Initial seed if empty and loaded from IndexedDB
-    indexeddbProvider.once('synced', () => {
+    const checkAndSeed = () => {
       if (yArray.length === 0 && seed && !seededRef.current) {
         seededRef.current = true;
         ydoc.transact(() => {
-          seed.forEach(item => yArray.push([item]));
+          yArray.push(seed);
         });
       }
       setLocal(yArray.toJSON());
-    });
+    };
+
+    // 雙重防線：若 IndexedDB 在元件 mount 之前或瞬間就已完成 synced，則直接呼叫 seeding 與狀態拉取；否則才綁定 once 事件。
+    if (isIndexedDbSynced || indexeddbProvider.synced) {
+      checkAndSeed();
+    } else {
+      indexeddbProvider.once('synced', checkAndSeed);
+    }
 
     return () => yArray.unobserve(observer);
   }, [coll, yArray, seed]);
