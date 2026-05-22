@@ -656,32 +656,116 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
         position: "relative",
         outline: dragOver ? "2px solid var(--accent)" : "none",
         outlineOffset: -2,
-      }}>
-      <div style={{
-        height: 180, position: "relative",
-        background: plan.cover
-          ? `linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.42) 100%), url('${plan.cover}')`
-          : `linear-gradient(135deg, ${color}, ${color}88)`,
-        backgroundSize: "cover", backgroundPosition: "center",
-        display: "flex", alignItems: "flex-end", padding: 14,
-      }}>
-        <SubsystemTag kind={plan.sub}/>
-        <span className="drag-handle" style={{
-          position: "absolute", top: 12, left: 12,
-          width: 24, height: 24, borderRadius: 8,
-          background: "rgba(255,255,255,0.7)",
-          backdropFilter: "blur(8px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: "var(--ink)",
-        }}>
-          <UIIcon kind="grip" size={13}/>
-        </span>
+      }}
+      onMouseEnter={(e) => {
+        const img = e.currentTarget.querySelector(".plan-cover-img");
+        if (img) img.style.transform = "scale(1.05)";
+      }}
+      onMouseLeave={(e) => {
+        const img = e.currentTarget.querySelector(".plan-cover-img");
+        if (img) img.style.transform = "none";
+      }}
+    >
+      <div style={{ height: 180, position: "relative", overflow: "hidden" }}>
+        {plan.cover ? (
+          <div
+            className="plan-cover-img"
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.65) 100%), url('${plan.cover}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `
+                radial-gradient(circle at 100% 150%, rgba(0, 113, 227, 0.15) 24%, transparent 24%),
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(135deg, #0b1a30, #040a14)
+              `,
+              backgroundSize: "100% 100%, 40px 40px, 40px 40px, 10px 10px, 10px 10px, 100% 100%",
+              backgroundPosition: "0 0, 0 0, 0 0, 0 0, 0 0, 0 0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            {/* Watermark Grid Elements */}
+            <div style={{
+              position: "absolute",
+              fontFamily: "var(--font-mono)",
+              fontSize: 48,
+              fontWeight: 900,
+              color: "rgba(255, 255, 255, 0.015)",
+              letterSpacing: "0.1em",
+              transform: "rotate(-12deg) scale(1.1)",
+              pointerEvents: "none",
+              userSelect: "none",
+              whiteSpace: "nowrap",
+            }}>
+              {plan.sub} SECTION
+            </div>
+            
+            {/* Technical grid borders */}
+            <div style={{
+              position: "absolute",
+              border: "1px dashed rgba(255,255,255,0.08)",
+              inset: 12,
+              borderRadius: 6,
+              pointerEvents: "none",
+            }} />
+            
+            <div style={{
+              position: "absolute",
+              bottom: 8,
+              left: 18,
+              fontFamily: "var(--font-mono)",
+              fontSize: 7,
+              color: "rgba(255, 255, 255, 0.25)",
+              letterSpacing: "0.08em",
+            }}>
+              SCALE: 1:10 · NKUST-RACING · REV03
+            </div>
+          </div>
+        )}
+
+        {/* Content overlaid on top of the image/blueprint */}
         <div style={{
-          position: "absolute", top: 10, right: 10,
-          display: "flex", gap: 2, opacity: 0.92,
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "flex-end",
+          padding: 14,
+          zIndex: 2,
         }}>
-          <IconBtn icon="edit" size={26} onClick={(e) => { e.stopPropagation(); onClick(); }}/>
-          <IconBtn icon="trash" size={26} danger onClick={(e) => { e.stopPropagation(); onDelete(); }}/>
+          <SubsystemTag kind={plan.sub}/>
+          <span className="drag-handle" style={{
+            position: "absolute", top: 12, left: 12,
+            width: 24, height: 24, borderRadius: 8,
+            background: "rgba(255,255,255,0.7)",
+            backdropFilter: "blur(8px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "var(--ink)",
+          }}>
+            <UIIcon kind="grip" size={13}/>
+          </span>
+          <div style={{
+            position: "absolute", top: 10, right: 10,
+            display: "flex", gap: 2, opacity: 0.92,
+          }}>
+            <IconBtn icon="edit" size={26} onClick={(e) => { e.stopPropagation(); onClick(); }}/>
+            <IconBtn icon="trash" size={26} danger onClick={(e) => { e.stopPropagation(); onDelete(); }}/>
+          </div>
         </div>
       </div>
       <div style={{ padding: 18 }}>

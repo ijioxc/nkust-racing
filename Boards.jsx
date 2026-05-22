@@ -141,7 +141,30 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
         <div style={{
           fontSize: 12.5, fontWeight: 600, color: "var(--ink)",
           letterSpacing: "-0.005em", lineHeight: 1.3, flex: 1,
-        }}>{supplier.name}</div>
+          display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap",
+        }}>
+          {supplier.name}
+          {supplier.url && (
+            <a
+              href={supplier.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                display: "inline-flex",
+                color: "var(--accent)",
+                opacity: 0.6,
+                transition: "opacity 0.2s, transform 0.2s",
+                padding: "2px 4px",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.transform = "scale(1.15)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.6; e.currentTarget.style.transform = "scale(1)"; }}
+              title="前往官方網站"
+            >
+              <UIIcon kind="external" size={11} />
+            </a>
+          )}
+        </div>
         <span className="drag-handle" style={{ flexShrink: 0, marginTop: 1 }}>
           <UIIcon kind="grip" size={12}/>
         </span>
@@ -177,7 +200,7 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
 // ─── Supplier modal ────────────────────────────────────────
 function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
   const blank = { name: "", price: "", cat: "輪圈", sub: "車體",
-                  priority: "MID", status: "詢價", origin: "" };
+                  priority: "MID", status: "詢價", origin: "", url: "" };
   const [s, setS] = React.useState(initial || blank);
   React.useEffect(() => { setS(initial || blank); }, [initial, open]);
   const u = (k, v) => setS(prev => ({ ...prev, [k]: v }));
@@ -219,6 +242,9 @@ function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
           <input type="text" value={s.origin} onChange={e => u("origin", e.target.value)}/>
         </div>
       </div>
+      <div className="field"><label>網頁連結（選填）</label>
+        <input type="text" value={s.url || ""} onChange={e => u("url", e.target.value)} placeholder="https://..."/>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field"><label>優先度</label>
           <select value={s.priority} onChange={e => u("priority", e.target.value)}>
@@ -242,6 +268,7 @@ function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
 // ═══════════════════════════════════════════════════════════
 function ResourcesView({ resources, setResources }) {
   const [filter, setFilter] = React.useState("all");
+  const [viewMode, setViewMode] = React.useState("card");
   const [editing, setEditing] = React.useState({ open: false, initial: null });
   const [confirm, setConfirm] = React.useState(null);
   const [search, setSearch] = React.useState("");
@@ -315,6 +342,10 @@ function ResourcesView({ resources, setResources }) {
               { id: "tools",    label: "工具" },
               { id: "learning", label: "學習" },
             ]}/>
+            <SegmentedFilter value={viewMode} onChange={setViewMode} options={[
+              { id: "card",     label: "圖卡" },
+              { id: "list",     label: "列表" },
+            ]}/>
             <Button variant="primary" icon="plus"
               onClick={() => setEditing({ open: true, initial: { group: filter === "all" ? "races" : filter } })}>
               新增資源
@@ -343,13 +374,28 @@ function ResourcesView({ resources, setResources }) {
                 }}>{g.label}</div>
                 <div className="eyebrow">{g.en} · {items.length}</div>
               </div>
-              <div className="tcard large" style={{ padding: 8 }}>
-                {items.map((r, i) => (
-                  <ResourceRow key={r.id} item={r} index={i + 1}
-                    onClick={() => setEditing({ open: true, initial: r })}
-                    onDelete={() => setConfirm(r)}/>
-                ))}
-              </div>
+              {viewMode === "list" ? (
+                <div className="tcard large" style={{ padding: 8 }}>
+                  {items.map((r, i) => (
+                    <ResourceRow key={r.id} item={r} index={i + 1}
+                      onClick={() => setEditing({ open: true, initial: r })}
+                      onDelete={() => setConfirm(r)}/>
+                  ))}
+                </div>
+              ) : (
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                  gap: 16,
+                  marginBottom: 16
+                }}>
+                  {items.map((r) => (
+                    <ResourceCard key={r.id} item={r}
+                      onClick={() => setEditing({ open: true, initial: r })}
+                      onDelete={() => setConfirm(r)}/>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}
@@ -363,6 +409,275 @@ function ResourcesView({ resources, setResources }) {
         title="確定刪除這筆資料？"
         body={confirm ? `「${confirm.name}」將被永久移除。` : ""}
         onConfirm={() => confirm && remove(confirm)}/>
+    </div>
+  );
+}
+
+const getDomain = (url) => {
+  if (!url) return "";
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.replace("www.", "");
+  } catch (e) {
+    const match = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/i);
+    return match ? match[1] : url;
+  }
+};
+
+const getMonogram = (item) => {
+  const domain = getDomain(item.url);
+  if (domain) return domain[0].toUpperCase();
+  return (item.org || item.name || "?")[0].toUpperCase();
+};
+
+function ResourceCard({ item, onClick, onDelete }) {
+  const domain = getDomain(item.url);
+  const monogram = getMonogram(item);
+  const tone = STATUS_TONES[item.priority] || { bg: "rgba(0,0,0,0.04)", fg: "var(--muted)" };
+  const prioTone = item.priority === "HIGH" ? "high" : item.priority === "MID" ? "mid" : "low";
+
+  return (
+    <div
+      onClick={onClick}
+      className="tcard large hoverable"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        height: 200,
+        position: "relative",
+        background: "var(--card-fill)",
+        border: "var(--card-border)",
+        boxShadow: "var(--card-shadow)",
+        cursor: "pointer",
+        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-4px) scale(1.01)";
+        const img = e.currentTarget.querySelector(".mock-content");
+        if (img) img.style.transform = "scale(1.05)";
+        const hdr = e.currentTarget.querySelector(".mock-window-header");
+        if (hdr) hdr.style.borderBottomColor = "rgba(0, 113, 227, 0.2)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "none";
+        const img = e.currentTarget.querySelector(".mock-content");
+        if (img) img.style.transform = "none";
+        const hdr = e.currentTarget.querySelector(".mock-window-header");
+        if (hdr) hdr.style.borderBottomColor = "var(--rule)";
+      }}
+    >
+      {/* Browser Header (macOS Style) */}
+      <div
+        className="mock-window-header"
+        style={{
+          height: 28,
+          background: "rgba(0,0,0,0.025)",
+          borderBottom: "0.5px solid var(--rule)",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 10px",
+          position: "relative",
+          zIndex: 2,
+          transition: "border-color 0.3s",
+        }}
+      >
+        {/* macOS Traffic Lights */}
+        <div style={{ display: "flex", gap: 5.5, position: "absolute", left: 10 }}>
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f56", display: "inline-block" }} />
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffbd2e", display: "inline-block" }} />
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#27c93f", display: "inline-block" }} />
+        </div>
+
+        {/* Address Bar */}
+        <div
+          style={{
+            flex: 1,
+            margin: "0 54px",
+            background: "#fff",
+            height: 18,
+            borderRadius: 4,
+            border: "0.5px solid rgba(0,0,0,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 4,
+            fontSize: 9,
+            color: "var(--muted)",
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.02em",
+          }}
+        >
+          {item.url ? (
+            <>
+              <svg width="7" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#27c93f" }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>
+                {domain}
+              </span>
+            </>
+          ) : (
+            <span style={{ color: "var(--muted)" }}>LOCAL_DOCS</span>
+          )}
+        </div>
+
+        {/* External Link (if URL exists) */}
+        {item.url && (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "absolute",
+              right: 8,
+              width: 18,
+              height: 18,
+              borderRadius: "50%",
+              background: "rgba(0,0,0,0.04)",
+              color: "var(--ink)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background 0.2s, color 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--accent)";
+              e.currentTarget.style.color = "#fff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(0,0,0,0.04)";
+              e.currentTarget.style.color = "var(--ink)";
+            }}
+            title="開啟連結"
+          >
+            <UIIcon kind="external" size={9} />
+          </a>
+        )}
+      </div>
+
+      {/* Browser Body Mockup */}
+      <div
+        style={{
+          flex: 1,
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          padding: 12,
+          justifyContent: "space-between",
+          zIndex: 1,
+        }}
+      >
+        {/* Mock Graphic Content Background */}
+        <div
+          className="mock-content"
+          style={{
+            position: "absolute",
+            inset: 0,
+            overflow: "hidden",
+            pointerEvents: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: 0.08,
+            zIndex: 0,
+            transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          {/* A glowing geometric layout simulation */}
+          <div style={{
+            width: "85%",
+            height: "85%",
+            border: "1px dashed var(--ink)",
+            borderRadius: 8,
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            padding: 8,
+          }}>
+            <div style={{ display: "flex", gap: 6, height: "40%" }}>
+              <div style={{ flex: 1, border: "0.5px solid var(--ink)", borderRadius: 4, background: "rgba(0,0,0,0.05)" }} />
+              <div style={{ width: "30%", border: "0.5px solid var(--ink)", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800 }}>{monogram}</div>
+            </div>
+            <div style={{ flex: 1, border: "0.5px solid var(--ink)", borderRadius: 4, display: "flex", flexDirection: "column", gap: 3, padding: 4 }}>
+              <div style={{ height: 3, width: "90%", background: "currentColor", borderRadius: 2 }} />
+              <div style={{ height: 3, width: "75%", background: "currentColor", borderRadius: 2 }} />
+              <div style={{ height: 3, width: "50%", background: "currentColor", borderRadius: 2 }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Real Card Content (foreground) */}
+        <div style={{ zIndex: 1, display: "flex", flexDirection: "column", gap: 4, height: "100%", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+              <span style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 8,
+                color: "var(--muted)",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+              }}>{item.org || "NKUST RACING"}</span>
+              <span className={`pill ${prioTone}`} style={{ fontSize: 7, padding: "1px 5px" }}>
+                {item.priority === "HIGH" ? "高" : item.priority === "MID" ? "中" : "低"}
+              </span>
+            </div>
+            <div style={{
+              fontSize: 13.5,
+              fontWeight: 700,
+              color: "var(--ink)",
+              letterSpacing: "-0.01em",
+              lineHeight: 1.3,
+              marginTop: 4,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textWrap: "pretty",
+            }}>{item.name}</div>
+            <div style={{
+              fontSize: 11.5,
+              color: "var(--faint)",
+              lineHeight: 1.4,
+              marginTop: 4,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textWrap: "pretty",
+            }}>{item.note}</div>
+          </div>
+
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingTop: 8,
+            borderTop: "0.5px solid var(--rule)",
+            fontFamily: "var(--font-mono)",
+            fontSize: 9,
+            color: "var(--muted)",
+          }}>
+            <span>{item.date || "NO DATE"}</span>
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              style={{
+                background: "transparent",
+                border: 0,
+                padding: 4,
+                cursor: "pointer",
+                color: "#b83025",
+                opacity: 0.5,
+                transition: "opacity 0.2s",
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = 0.5}
+            >
+              <UIIcon kind="trash" size={10} />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

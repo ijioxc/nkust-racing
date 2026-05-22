@@ -52,21 +52,21 @@ const INITIAL_PLANS = [
 
 // ─── Supplier / parts (Kanban) ─────────────────────────────
 const INITIAL_SUPPLIERS = [
-  { id: "s1",  cat: "輪圈",   sub: "車體", name: "OZ Racing FS Wheels",   price: "€420 / set",     priority: "HIGH", origin: "Italy",  status: "已下單" },
-  { id: "s2",  cat: "輪圈",   sub: "車體", name: 'Keizer Aluminum 10"',   price: "$890 / set",     priority: "HIGH", origin: "USA",    status: "詢價" },
-  { id: "s3",  cat: "輪圈",   sub: "車體", name: "Enkei SF-01",            price: "¥38,000 / set",  priority: "MID",  origin: "Japan",  status: "比較中" },
-  { id: "s4",  cat: "輪胎",   sub: "車體", name: "Hoosier FSAE 20×7.5",   price: "$245 / unit",    priority: "HIGH", origin: "USA",    status: "已下單" },
-  { id: "s5",  cat: "輪胎",   sub: "車體", name: "GY Racing FSAE",         price: "AU$220",         priority: "MID",  origin: "AUS",    status: "備案" },
-  { id: "s6",  cat: "煞車",   sub: "煞車", name: "Wilwood PS-1 Caliper",  price: "$169",           priority: "HIGH", origin: "USA",    status: "已收到" },
-  { id: "s7",  cat: "煞車",   sub: "煞車", name: "Tilton Master Cyl.",     price: "$240",           priority: "MID",  origin: "USA",    status: "詢價" },
-  { id: "s8",  cat: "煞車",   sub: "煞車", name: "Hawk DTC-60 Pad",        price: "$180",           priority: "MID",  origin: "USA",    status: "比較中" },
-  { id: "s9",  cat: "煞車",   sub: "煞車", name: "DOT 5.1 Fluid",          price: "$32",            priority: "LOW",  origin: "USA",    status: "已收到" },
-  { id: "s10", cat: "引擎",   sub: "引擎", name: "Yoshimura R-77 Exhaust",price: "$1,290",         priority: "HIGH", origin: "Japan",  status: "詢價" },
-  { id: "s11", cat: "引擎",   sub: "引擎", name: "K&N Filter",             price: "$78",            priority: "LOW",  origin: "USA",    status: "已收到" },
-  { id: "s12", cat: "電裝",   sub: "電裝", name: "MoTeC M150 ECU",         price: "$5,200",         priority: "HIGH", origin: "AUS",    status: "贊助申請" },
-  { id: "s13", cat: "電裝",   sub: "電裝", name: "AEM CD-5 Dash",          price: "$995",           priority: "MID",  origin: "USA",    status: "比較中" },
-  { id: "s14", cat: "其他",   sub: "其他", name: "OMP HTE-R Seat",         price: "€790",           priority: "MID",  origin: "Italy",  status: "已下單" },
-  { id: "s15", cat: "其他",   sub: "其他", name: "Sparco 6pt Harness",     price: "€280",           priority: "MID",  origin: "Italy",  status: "詢價" },
+  { id: "s1",  cat: "輪圈",   sub: "車體", name: "OZ Racing FS Wheels",   price: "€420 / set",     priority: "HIGH", origin: "Italy",  status: "已下單", url: "https://www.ozracing.com" },
+  { id: "s2",  cat: "輪圈",   sub: "車體", name: 'Keizer Aluminum 10"',   price: "$890 / set",     priority: "HIGH", origin: "USA",    status: "詢價", url: "https://www.keizerwheels.com" },
+  { id: "s3",  cat: "輪圈",   sub: "車體", name: "Enkei SF-01",            price: "¥38,000 / set",  priority: "MID",  origin: "Japan",  status: "比較中", url: "" },
+  { id: "s4",  cat: "輪胎",   sub: "車體", name: "Hoosier FSAE 20×7.5",   price: "$245 / unit",    priority: "HIGH", origin: "USA",    status: "已下單", url: "https://www.hoosiertire.com" },
+  { id: "s5",  cat: "輪胎",   sub: "車體", name: "GY Racing FSAE",         price: "AU$220",         priority: "MID",  origin: "AUS",    status: "備案", url: "" },
+  { id: "s6",  cat: "煞車",   sub: "煞車", name: "Wilwood PS-1 Caliper",  price: "$169",           priority: "HIGH", origin: "USA",    status: "已收到", url: "https://www.wilwood.com" },
+  { id: "s7",  cat: "煞車",   sub: "煞車", name: "Tilton Master Cyl.",     price: "$240",           priority: "MID",  origin: "USA",    status: "詢價", url: "" },
+  { id: "s8",  cat: "煞車",   sub: "煞車", name: "Hawk DTC-60 Pad",        price: "$180",           priority: "MID",  origin: "USA",    status: "比較中", url: "" },
+  { id: "s9",  cat: "煞車",   sub: "煞車", name: "DOT 5.1 Fluid",          price: "$32",            priority: "LOW",  origin: "USA",    status: "已收到", url: "" },
+  { id: "s10", cat: "引擎",   sub: "引擎", name: "Yoshimura R-77 Exhaust",price: "$1,290",         priority: "HIGH", origin: "Japan",  status: "詢價", url: "https://www.yoshimura-rd.com" },
+  { id: "s11", cat: "引擎",   sub: "引擎", name: "K&N Filter",             price: "$78",            priority: "LOW",  origin: "USA",    status: "已收到", url: "" },
+  { id: "s12", cat: "電裝",   sub: "電裝", name: "MoTeC M150 ECU",         price: "$5,200",         priority: "HIGH", origin: "AUS",    status: "贊助申請", url: "https://www.motec.com.au" },
+  { id: "s13", cat: "電裝",   sub: "電裝", name: "AEM CD-5 Dash",          price: "$995",           priority: "MID",  origin: "USA",    status: "比較中", url: "" },
+  { id: "s14", cat: "其他",   sub: "其他", name: "OMP HTE-R Seat",         price: "€790",           priority: "MID",  origin: "Italy",  status: "已下單", url: "" },
+  { id: "s15", cat: "其他",   sub: "其他", name: "Sparco 6pt Harness",     price: "€280",           priority: "MID",  origin: "Italy",  status: "詢價", url: "" },
 ];
 
 // ─── Resource library (races / tools / learning) ──────────
