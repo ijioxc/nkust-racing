@@ -104,6 +104,24 @@ function Blueprint() {
     return () => window.BlueprintGL.destroy();
   }, [mode3d]);
 
+  if (!views || views.length === 0) {
+    return (
+      <div className="tcard large" style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "calc(100vh - 92px - 80px)",
+        minHeight: 560,
+        fontFamily: "var(--font-mono)",
+        fontSize: 12,
+        color: "var(--muted)",
+        letterSpacing: "0.08em",
+      }}>
+        INITIALIZING BLUEPRINT VIEWS · SYNCING CRDT...
+      </div>
+    );
+  }
+
   const view  = views.find(v => v.id === viewId) || views[0] || { id: "", label: "", short: "", image: "" };
   const viewParts = parts.filter(p => p.viewId === viewId);
   const selected = parts.find(p => p.id === selectedPartId);
