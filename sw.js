@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nkust-racing-v10';
+const CACHE_NAME = 'nkust-racing-v11';
 
 // Install event: skip waiting
 self.addEventListener('install', event => {
@@ -19,7 +19,7 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch event: Stale-While-Revalidate for most, Cache-First for GLB/WASM
+// Fetch event: Stale-While-Revalidate for standard assets, Cache-First for GLB/WASM, Network-First for JSX
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
@@ -28,7 +28,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Cache-First for heavy assets (GLB, WASM)
+  // 1. Cache-First for heavy assets (GLB, WASM)
   if (url.pathname.endsWith('.glb') || url.pathname.endsWith('.wasm')) {
     event.respondWith(
       caches.match(event.request).then(cachedResponse => {
@@ -48,7 +48,26 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Stale-While-Revalidate for everything else (HTML, JS, CSS)
+  // 2. Network-First for React JSX components to prevent cache lag React crashes
+  if (url.pathname.endsWith('.jsx')) {
+    event.respondWith(
+      fetch(event.request).then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200 && (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
+          const resClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+        }
+        return networkResponse;
+      }).catch(err => {
+        console.warn('Fetch JSX from network failed, falling back to cache:', err);
+        return caches.match(event.request).then(cachedResponse => {
+          return cachedResponse || new Response('Offline network error', { status: 488 });
+        });
+      })
+    );
+    return;
+  }
+
+  // 3. Stale-While-Revalidate for everything else (HTML, JS, CSS)
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       const fetchPromise = fetch(event.request).then(networkResponse => {

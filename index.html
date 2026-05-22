@@ -34,7 +34,7 @@
 <div id="root"></div>
 
 <!-- Three.js scene manager — must load before React mounts Blueprint -->
-<script type="module" src="Blueprint3D.js?v=10"></script>
+<script type="module" src="Blueprint3D.js?v=11"></script>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -48,18 +48,18 @@
   }
 </script>
 
-<script type="text/babel" src="tweaks-panel.jsx?v=10"></script>
-<script type="text/babel" src="data.js?v=10"></script>
-<script type="text/babel" src="icons.jsx?v=10"></script>
-<script type="text/babel" src="atoms.jsx?v=10"></script>
-<script type="text/babel" src="Modal.jsx?v=10"></script>
-<script type="text/babel" src="Header.jsx?v=10"></script>
-<script type="text/babel" src="Dashboard.jsx?v=10"></script>
-<script type="text/babel" src="Boards.jsx?v=10"></script>
-<script type="text/babel" src="Blueprint.jsx?v=10"></script>
-<script type="text/babel" src="EssayWidgets.jsx?v=10"></script>
-<script type="text/babel" src="Essay.jsx?v=10"></script>
-<script type="text/babel" src="App.jsx?v=10"></script>
+<script type="text/babel" src="tweaks-panel.jsx?v=11"></script>
+<script type="text/babel" src="data.js?v=11"></script>
+<script type="text/babel" src="icons.jsx?v=11"></script>
+<script type="text/babel" src="atoms.jsx?v=11"></script>
+<script type="text/babel" src="Modal.jsx?v=11"></script>
+<script type="text/babel" src="Header.jsx?v=11"></script>
+<script type="text/babel" src="Dashboard.jsx?v=11"></script>
+<script type="text/babel" src="Boards.jsx?v=11"></script>
+<script type="text/babel" src="Blueprint.jsx?v=11"></script>
+<script type="text/babel" src="EssayWidgets.jsx?v=11"></script>
+<script type="text/babel" src="Essay.jsx?v=11"></script>
+<script type="text/babel" src="App.jsx?v=11"></script>
 
 <script type="text/babel">
   const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -110,7 +110,7 @@
   
   async function bootstrap() {
     // Ensure the CRDT store with its native imports is loaded and initialized FIRST
-    await import('./crdt-store.js?v=10');
+    await import('./crdt-store.js?v=11');
 
     await esbuild.initialize({
       wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.20.2/esbuild.wasm',
