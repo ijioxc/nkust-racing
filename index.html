@@ -50,9 +50,6 @@
 
 <script type="text/babel" src="tweaks-panel.jsx"></script>
 <script type="text/babel" src="data.js"></script>
-<!-- crdt-store uses ES module imports, load it natively before esbuild bootstrap -->
-<script type="module" src="crdt-store.jsx"></script>
-
 <script type="text/babel" src="icons.jsx"></script>
 <script type="text/babel" src="atoms.jsx"></script>
 <script type="text/babel" src="Modal.jsx"></script>
@@ -73,6 +70,9 @@
   import * as esbuild from 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.20.2/esm/browser.min.js';
   
   async function bootstrap() {
+    // Ensure the CRDT store with its native imports is loaded and initialized FIRST
+    await import('./crdt-store.js');
+
     await esbuild.initialize({
       wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.20.2/esbuild.wasm',
     });

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nkust-racing-v1';
+const CACHE_NAME = 'nkust-racing-v2';
 
 // Install event: skip waiting
 self.addEventListener('install', event => {
