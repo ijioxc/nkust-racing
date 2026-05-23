@@ -174,18 +174,19 @@
 /* ── Dark Mode — toggled via :root[data-appearance="dark"]
    (App.jsx resolves "auto" against prefers-color-scheme and sets a concrete value) ── */
 :root[data-appearance="dark"] {
-  --bg-primary:       #000000;
-  --bg-secondary:     #1C1C1E;
-  --bg-tertiary:      #2C2C2E;
-  --bg-grouped:       #000000;
+  /* Soft "elevated" dark — Apple macOS style, NOT pure black (less harsh) */
+  --bg-primary:       #1B1B1F;   /* page base */
+  --bg-secondary:     #2A2A2F;   /* cards / surfaces — sits above page */
+  --bg-tertiary:      #38383E;   /* inputs, raised tiles */
+  --bg-grouped:       #1B1B1F;
 
-  --label-primary:    #FFFFFF;
-  --label-secondary:  rgba(235,235,245,0.60);
-  --label-tertiary:   rgba(235,235,245,0.30);
+  --label-primary:    #F5F5F7;   /* slightly off-white, softer than pure #FFF */
+  --label-secondary:  rgba(235,235,245,0.62);
+  --label-tertiary:   rgba(235,235,245,0.32);
   --label-quaternary: rgba(235,235,245,0.18);
 
-  --separator:        rgba(84,84,88,0.65);
-  --separator-opaque: #38383A;
+  --separator:        rgba(120,120,128,0.42);
+  --separator-opaque: #45454B;
 
   --blue:    #0A84FF;
   --green:   #30D158;
@@ -220,10 +221,10 @@
   --shadow-3: 0 8px 24px rgba(0,0,0,0.40), 0 2px 6px rgba(0,0,0,0.15);
   --shadow-4: 0 16px 40px rgba(0,0,0,0.50), 0 4px 10px rgba(0,0,0,0.20);
 
-  /* Header chrome — dark frosted */
-  --header-bg:     rgba(28,28,30,0.72);
-  --header-border: rgba(255,255,255,0.10);
-  --header-shadow: 0 1px 0 rgba(0,0,0,0.30);
+  /* Header chrome — dark frosted (lifted, matches soft surfaces) */
+  --header-bg:     rgba(42,42,47,0.68);
+  --header-border: rgba(255,255,255,0.08);
+  --header-shadow: 0 1px 0 rgba(0,0,0,0.25);
 }
 
 /* ============================================================

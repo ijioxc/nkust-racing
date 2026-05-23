@@ -58,20 +58,21 @@
 
 /* ───── DARK MODE — toggled via [data-appearance="dark"] ───── */
 [data-appearance="dark"] {
-  --page-bg: #000000;
+  /* Soft dark page — darker than cards so glass surfaces float (not pure black) */
+  --page-bg: #141417;
   --page-gradient:
-    radial-gradient(45% 36% at 0% 0%,    rgba(255,100,40,0.20)  0%, transparent 70%),
-    radial-gradient(42% 36% at 100% 0%,  rgba(10,132,255,0.18)  0%, transparent 70%),
-    radial-gradient(50% 42% at 0% 100%,  rgba(255,69,58,0.14)   0%, transparent 70%),
-    radial-gradient(45% 38% at 100% 100%,rgba(100,210,255,0.14) 0%, transparent 70%),
-    radial-gradient(40% 35% at 50% 100%, rgba(255,214,10,0.09)  0%, transparent 75%);
+    radial-gradient(45% 36% at 0% 0%,    rgba(255,120,60,0.16)  0%, transparent 72%),
+    radial-gradient(42% 36% at 100% 0%,  rgba(10,132,255,0.15)  0%, transparent 72%),
+    radial-gradient(50% 42% at 0% 100%,  rgba(255,69,58,0.10)   0%, transparent 72%),
+    radial-gradient(45% 38% at 100% 100%,rgba(100,210,255,0.11) 0%, transparent 72%),
+    radial-gradient(40% 35% at 50% 100%, rgba(255,214,10,0.07)  0%, transparent 78%);
 
-  /* Dark glass — frosted dark surface (Liquid Glass dark variant) */
-  --card-fill:         rgba(28,28,30,0.78);
-  --card-border:       0.5px solid rgba(255,255,255,0.10);
-  --card-highlight:    inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -0.5px 0 rgba(0,0,0,0.20);
-  --card-shadow:       0 1px 3px rgba(0,0,0,0.20), 0 12px 32px rgba(0,0,0,0.35);
-  --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.30), 0 20px 48px rgba(0,0,0,0.50);
+  /* Dark glass — frosted elevated surface (Liquid Glass dark variant) */
+  --card-fill:         rgba(44,44,50,0.74);
+  --card-border:       0.5px solid rgba(255,255,255,0.09);
+  --card-highlight:    inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -0.5px 0 rgba(0,0,0,0.18);
+  --card-shadow:       0 1px 3px rgba(0,0,0,0.18), 0 12px 32px rgba(0,0,0,0.28);
+  --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.26), 0 20px 48px rgba(0,0,0,0.40);
 
   /* Accent glass dark */
   --card-fill-accent:   rgba(10,132,255,0.70);
@@ -105,13 +106,13 @@
 
 /* Modal dark */
 [data-appearance="dark"] .modal-card {
-  background: rgba(28,28,30,0.96);
+  background: rgba(42,42,47,0.96);
   border: 0.5px solid rgba(255,255,255,0.10);
 }
 
 /* Slide-over dark */
 [data-appearance="dark"] .slide-over-panel {
-  background: rgba(28,28,30,0.96);
+  background: rgba(42,42,47,0.96);
   border-left-color: rgba(255,255,255,0.08);
 }
 

@@ -2,11 +2,21 @@
 
 function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearance = "auto", onAppearanceChange }) {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const menuWrapRef = React.useRef(null);
   React.useEffect(() => {
     if (!settingsOpen) return;
-    const close = () => setSettingsOpen(false);
-    window.addEventListener("click", close);
-    return () => window.removeEventListener("click", close);
+    const onDown = (e) => {
+      if (menuWrapRef.current && !menuWrapRef.current.contains(e.target)) {
+        setSettingsOpen(false);
+      }
+    };
+    const onEsc = (e) => { if (e.key === "Escape") setSettingsOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onEsc);
+    };
   }, [settingsOpen]);
   return (
     <div style={hdrStyles.bar}>
@@ -47,47 +57,57 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           <button style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
           <button style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
 
-          {/* Settings — appearance toggle */}
-          <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
-            <button style={{ ...hdrStyles.hdrBtn, color: settingsOpen ? "var(--blue)" : "var(--label-secondary)", background: settingsOpen ? "var(--fill-tertiary)" : "transparent" }}
-              title="設定" onClick={() => setSettingsOpen(v => !v)}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
+          {/* Avatar — doubles as the account / settings menu trigger */}
+          <div ref={menuWrapRef} style={{ position: "relative" }}>
+            <button style={{ ...hdrStyles.avatarBtn, boxShadow: settingsOpen ? "0 0 0 2px var(--blue)" : "none" }}
+              title="帳號與設定" onClick={() => setSettingsOpen(v => !v)}>
+              <Avatar name="陳" size={28} />
             </button>
 
             {settingsOpen && (
-              <div style={hdrStyles.settingsPanel}>
-                <div style={hdrStyles.settingsLabel}>外觀 · APPEARANCE</div>
-                <div style={hdrStyles.appearanceRow}>
-                  {[
-                    { id: "light", label: "淺色", icon: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4", circle: true },
-                    { id: "dark",  label: "深色", moon: true },
-                    { id: "auto",  label: "自動", auto: true },
-                  ].map(opt => {
-                    const active = appearance === opt.id;
-                    return (
-                      <button key={opt.id} onClick={() => onAppearanceChange?.(opt.id)}
-                        style={{ ...hdrStyles.appearanceBtn,
-                          background: active ? "var(--blue)" : "var(--fill-tertiary)",
-                          color: active ? "#fff" : "var(--label-secondary)",
-                        }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          {opt.circle && <><circle cx="12" cy="12" r="4"/><path d={opt.icon}/></>}
-                          {opt.moon && <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>}
-                          {opt.auto && <><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></>}
-                        </svg>
-                        <span style={{ fontSize: 12, fontWeight: 600 }}>{opt.label}</span>
-                      </button>
-                    );
-                  })}
+              <div style={hdrStyles.menu}>
+                {/* Account header */}
+                <div style={hdrStyles.menuProfile}>
+                  <Avatar name="陳" size={38} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={hdrStyles.menuName}>陳偉成</div>
+                    <div style={hdrStyles.menuRole}>隊長 · 高科大賽車隊</div>
+                  </div>
                 </div>
+
+                <div style={hdrStyles.menuDivider}/>
+
+                <div style={hdrStyles.menuSectionLabel}>外觀</div>
+                {[
+                  { id: "light", label: "淺色" },
+                  { id: "dark",  label: "深色" },
+                  { id: "auto",  label: "自動" },
+                ].map(opt => {
+                  const active = appearance === opt.id;
+                  return (
+                    <button key={opt.id} onClick={() => onAppearanceChange?.(opt.id)}
+                      style={hdrStyles.menuRow}
+                      onMouseEnter={e => e.currentTarget.style.background = "var(--fill-tertiary)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      <span style={hdrStyles.menuRowIcon}>
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                          {opt.id === "light" && <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>}
+                          {opt.id === "dark" && <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>}
+                          {opt.id === "auto" && <><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></>}
+                        </svg>
+                      </span>
+                      <span style={{ flex: 1, textAlign: "left", fontSize: 14, fontWeight: 400, color: "var(--label-primary)" }}>{opt.label}</span>
+                      {active && (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
-
-          <Avatar name="陳" size={26} dark />
         </div>
       </header>
       {page === "dashboard" && dashTabs &&
@@ -172,28 +192,52 @@ const hdrStyles = {
     transition: "background .15s, transform .1s",
     marginInline: -6,                 /* compensate extra touch area */
   },
-  settingsPanel: {
-    position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 200,
+  avatarBtn: {
+    width: 28, height: 28, padding: 0, border: "none", background: "transparent",
+    borderRadius: "50%", cursor: "pointer", flexShrink: 0,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "box-shadow .15s",
+  },
+  /* ── Apple-style account / settings menu ── */
+  menu: {
+    position: "absolute", top: "calc(100% + 10px)", right: 0, zIndex: 200,
     background: "var(--bg-secondary)",
     border: "0.5px solid var(--separator)",
-    borderRadius: "var(--radius-lg)",
-    boxShadow: "var(--shadow-3)",
-    padding: 12, minWidth: 220,
+    borderRadius: 14,
+    boxShadow: "var(--shadow-4)",
+    padding: 7, minWidth: 248,
     backdropFilter: "blur(40px) saturate(180%)",
     WebkitBackdropFilter: "blur(40px) saturate(180%)",
-    animation: "modal-pop .25s var(--ease-out)",
+    transformOrigin: "top right",
+    animation: "modal-pop .22s var(--ease-out)",
   },
-  settingsLabel: {
-    fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
-    textTransform: "uppercase", color: "var(--label-tertiary)",
-    marginBottom: 8, paddingInline: 2,
+  menuProfile: {
+    display: "flex", alignItems: "center", gap: 11,
+    padding: "8px 10px 10px",
   },
-  appearanceRow: { display: "flex", gap: 6 },
-  appearanceBtn: {
-    flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-    gap: 6, padding: "10px 6px", border: "none",
-    borderRadius: "var(--radius-sm)", cursor: "pointer",
-    fontFamily: "inherit", transition: "background .15s, color .15s",
+  menuName: {
+    fontSize: 15, fontWeight: 600, color: "var(--label-primary)",
+    letterSpacing: "-0.01em", lineHeight: 1.2,
+    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+  },
+  menuRole: {
+    fontSize: 12, color: "var(--label-secondary)", lineHeight: 1.3, marginTop: 2,
+    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+  },
+  menuDivider: { height: "0.5px", background: "var(--separator)", margin: "3px 4px 5px" },
+  menuSectionLabel: {
+    fontSize: 11, fontWeight: 600, color: "var(--label-tertiary)",
+    letterSpacing: "0.02em", padding: "4px 12px 6px",
+  },
+  menuRow: {
+    display: "flex", alignItems: "center", gap: 11, width: "100%",
+    padding: "8px 12px", border: "none", background: "transparent",
+    borderRadius: 8, cursor: "pointer", fontFamily: "inherit",
+    transition: "background .12s",
+  },
+  menuRowIcon: {
+    width: 22, display: "flex", alignItems: "center", justifyContent: "center",
+    color: "var(--label-secondary)", flexShrink: 0,
   },
   subBar: {
     background: "transparent"
