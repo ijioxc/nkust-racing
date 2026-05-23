@@ -35,7 +35,7 @@ function PartsView({ suppliers, setSuppliers }) {
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       <div style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="TOTAL"     value={total}   foot="ITEMS TRACKED"/>
-        <KPI label="HIGH PRIO" value={high}    foot={`/ ${total} ITEMS`} accent/>
+        <KPI label="HIGH PRIO" value={high}    foot={`/ ${total} ITEMS`}/>
         <KPI label="ORDERED"   value={ordered} unit={`/ ${total}`} foot="已下單 + 已收到"/>
         <KPI label="SPONSOR"   value={sponsor} foot="贊助申請中"/>
       </div>

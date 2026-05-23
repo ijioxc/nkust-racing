@@ -362,7 +362,7 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
       {/* KPI strip */}
       <div style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`} foot="IN PROGRESS"/>
-        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`}  foot="OF ACTIVE" accent/>
+        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`}  foot="OF ACTIVE"/>
         <KPI label="OVERDUE" value={overdue} foot="ACT BY EOW"/>
         <KPI label="AVG"     value={donePct} unit="%" foot="ALL TASKS"/>
       </div>
@@ -700,7 +700,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
       {/* KPI row */}
       <div style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="TOTAL PROPOSALS" value={total} foot="計畫提案總數" />
-        <KPI label="IN PROGRESS" value={inProgress} foot="進行中優化案" accent />
+        <KPI label="IN PROGRESS" value={inProgress} foot="進行中優化案" />
         <KPI label="COMPLETED" value={completed} foot="已完成評審驗證" />
         <KPI label="PENDING / BLOCKED" value={pending} foot="待討論或擱置項目" />
       </div>

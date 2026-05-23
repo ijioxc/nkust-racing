@@ -154,30 +154,27 @@ function SubsystemTag({ kind, withIcon = true, size = "sm" }) {
 }
 
 // Name-based gradient palette — maps first char to Apple system color pairs
-const AVATAR_GRADIENTS = [
-  ["#5AC8FA","#007AFF"],  // teal→blue
-  ["#AF52DE","#5856D6"],  // purple→indigo
-  ["#FF9500","#FF3B30"],  // orange→red
-  ["#34C759","#5AC8FA"],  // green→teal
-  ["#FF2D55","#AF52DE"],  // pink→purple
-  ["#007AFF","#5856D6"],  // blue→indigo
-  ["#FFCC00","#FF9500"],  // yellow→orange
+// Muted, low-saturation palette — calm solid tones (no vivid gradients)
+const AVATAR_COLORS = [
+  "#7C93B3",  // slate blue
+  "#7FA39A",  // muted sage
+  "#A092B5",  // dusty lavender
+  "#B59A7E",  // warm taupe
+  "#94A0AD",  // neutral slate
 ];
 function Avatar({ name, size = 32, dark = false }) {
   // Guard: empty string → charCodeAt returns NaN (not caught by ??), so coerce.
   const c0 = name && name.length > 0 ? name.charCodeAt(0) : 0;
   const c1 = name && name.length > 1 ? name.charCodeAt(1) : 0;
-  const idx = (c0 + c1) % AVATAR_GRADIENTS.length;
-  const [from, to] = AVATAR_GRADIENTS[idx] || AVATAR_GRADIENTS[0];
+  const bg = AVATAR_COLORS[(c0 + c1) % AVATAR_COLORS.length];
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
-      background: `linear-gradient(135deg, ${from}, ${to})`,
+      background: bg,
       color: "#fff",
       display: "inline-flex", alignItems: "center", justifyContent: "center",
-      fontSize: Math.max(10, size * 0.38), fontWeight: 700,
+      fontSize: Math.max(10, size * 0.38), fontWeight: 600,
       flexShrink: 0, letterSpacing: 0,
-      boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
     }}>{name?.[0] || "?"}</div>
   );
 }
