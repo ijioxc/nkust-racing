@@ -1453,6 +1453,7 @@ function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
         ? person.workTypes.map(w => <SubsystemTag key={w} kind={w} size="sm"/>)
         : [<span key="none" className="pill muted">無指派子系統</span>]}
       meta={[
+        { label: "電話", value: person.phone || "—" },
         { label: "系所", value: person.department || "—" },
         { label: "年級", value: person.grade || "—" },
       ]}
