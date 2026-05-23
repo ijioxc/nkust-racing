@@ -11,21 +11,22 @@ function App() {
   const [page, _setPage] = React.useState("dashboard");
   const [subTab, _setSubTab] = React.useState("overview");
 
-  const setPage = (newPage) => {
+  // Wrap state change in a View Transition, swallowing the "aborted" rejection
+  // that fires when a new transition starts before the previous one settles
+  // (e.g. rapid tab clicks). Otherwise it bubbles as an unhandledrejection.
+  const withViewTransition = (apply) => {
     if (document.startViewTransition) {
-      document.startViewTransition(() => _setPage(newPage));
+      const t = document.startViewTransition(apply);
+      t.ready?.catch(() => {});
+      t.finished?.catch(() => {});
+      t.updateCallbackDone?.catch(() => {});
     } else {
-      _setPage(newPage);
+      apply();
     }
   };
 
-  const setSubTab = (newSubTab) => {
-    if (document.startViewTransition) {
-      document.startViewTransition(() => _setSubTab(newSubTab));
-    } else {
-      _setSubTab(newSubTab);
-    }
-  };
+  const setPage   = (newPage)   => withViewTransition(() => _setPage(newPage));
+  const setSubTab = (newSubTab) => withViewTransition(() => _setSubTab(newSubTab));
 
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 

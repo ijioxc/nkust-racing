@@ -164,8 +164,11 @@ const AVATAR_GRADIENTS = [
   ["#FFCC00","#FF9500"],  // yellow→orange
 ];
 function Avatar({ name, size = 32, dark = false }) {
-  const idx = ((name?.charCodeAt(0) ?? 0) + (name?.charCodeAt(1) ?? 0)) % AVATAR_GRADIENTS.length;
-  const [from, to] = AVATAR_GRADIENTS[idx];
+  // Guard: empty string → charCodeAt returns NaN (not caught by ??), so coerce.
+  const c0 = name && name.length > 0 ? name.charCodeAt(0) : 0;
+  const c1 = name && name.length > 1 ? name.charCodeAt(1) : 0;
+  const idx = (c0 + c1) % AVATAR_GRADIENTS.length;
+  const [from, to] = AVATAR_GRADIENTS[idx] || AVATAR_GRADIENTS[0];
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
