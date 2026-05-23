@@ -93,13 +93,14 @@ const INITIAL_RESOURCES = [
 
 const SUPPLIER_CATEGORIES = ["輪圈", "輪胎", "煞車", "引擎", "電裝", "其他"];
 
+// Apple system colors + adaptive fills (work in light & dark)
 const STATUS_TONES = {
-  "詢價":     { bg: "rgba(0,0,0,0.04)",       fg: "var(--faint)",  label: "詢價" },
-  "比較中":   { bg: "var(--status-mid-bg)",   fg: "var(--status-mid-fg)",  label: "比較中" },
-  "已下單":   { bg: "var(--status-high-bg)",  fg: "var(--status-high-fg)", label: "已下單" },
-  "已收到":   { bg: "rgba(42,107,56,0.10)",   fg: "#2a6b38",       label: "已收到" },
-  "贊助申請": { bg: "rgba(107,33,168,0.10)",  fg: "#6b21a8",       label: "贊助申請" },
-  "備案":     { bg: "rgba(0,0,0,0.04)",       fg: "var(--muted)",  label: "備案" },
+  "詢價":     { bg: "var(--fill-quaternary)", fg: "var(--label-secondary)", label: "詢價" },
+  "比較中":   { bg: "rgba(255,149,0,0.12)",   fg: "var(--orange)",          label: "比較中" },
+  "已下單":   { bg: "rgba(0,122,255,0.12)",   fg: "var(--blue)",            label: "已下單" },
+  "已收到":   { bg: "rgba(52,199,89,0.12)",   fg: "var(--green)",           label: "已收到" },
+  "贊助申請": { bg: "rgba(175,82,222,0.12)",  fg: "var(--purple)",          label: "贊助申請" },
+  "備案":     { bg: "var(--fill-quaternary)", fg: "var(--label-tertiary)",  label: "備案" },
 };
 
 // Blueprint multi-view + extensible parts

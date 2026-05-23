@@ -129,8 +129,9 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
       onClick={onClick}
       className={`tcard tile hoverable ${dragging ? "dragging" : ""}`}
       style={{
-        padding: 11, cursor: "pointer",
-        background: "rgba(255,255,255,0.85)",
+        padding: 12, cursor: "pointer",
+        background: "var(--bg-secondary)",
+        border: "0.5px solid var(--separator)",
         position: "relative",
         display: "flex", flexDirection: "column", gap: 7,
       }}>
@@ -139,7 +140,7 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
         alignItems: "flex-start", gap: 6,
       }}>
         <div style={{
-          fontSize: 12.5, fontWeight: 600, color: "var(--ink)",
+          fontSize: 14, fontWeight: 600, color: "var(--label-primary)",
           letterSpacing: "-0.005em", lineHeight: 1.3, flex: 1,
           display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap",
         }}>
@@ -170,24 +171,24 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
         </span>
       </div>
       <div style={{
-        fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600,
-        color: "var(--ink)", letterSpacing: 0,
+        fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 600,
+        color: "var(--label-primary)", letterSpacing: 0,
       }}>{supplier.price}</div>
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6,
         marginTop: 2,
       }}>
         <span style={{
-          display: "inline-flex", alignItems: "center", gap: 3,
-          padding: "2px 7px", borderRadius: 99,
+          display: "inline-flex", alignItems: "center", gap: 4,
+          padding: "3px 10px", borderRadius: "var(--radius-full)",
           background: tone.bg, color: tone.fg,
-          fontFamily: "var(--font-mono)", fontSize: 9, fontWeight: 700,
-          letterSpacing: "0.04em",
+          fontFamily: "var(--font-sans)", fontSize: 11, fontWeight: 600,
+          letterSpacing: "0.02em",
         }}>{tone.label}</span>
         <span className={`pill ${prioTone}`}>{supplier.priority}</span>
       </div>
       <div style={{
-        fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)",
+        fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--label-tertiary)",
         letterSpacing: "0.06em", textTransform: "uppercase",
         display: "flex", justifyContent: "space-between",
       }}>

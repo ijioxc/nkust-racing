@@ -1571,10 +1571,10 @@ function KanbanPlanCard({ plan, onDragStart, onClick }) {
       onClick={onClick}
       className="tcard tile hoverable"
       style={{
-        padding: 10,
+        padding: 12,
         cursor: "pointer",
-        background: "rgba(255, 255, 255, 0.85)",
-        border: "0.5px solid rgba(0,0,0,0.06)",
+        background: "var(--bg-secondary)",
+        border: "0.5px solid var(--separator)",
         display: "flex",
         flexDirection: "column",
         gap: 6,
@@ -1588,9 +1588,9 @@ function KanbanPlanCard({ plan, onDragStart, onClick }) {
         </span>
       </div>
       <div style={{
-        fontSize: 12.5,
-        fontWeight: 700,
-        color: "var(--ink)",
+        fontSize: 14,
+        fontWeight: 600,
+        color: "var(--label-primary)",
         lineHeight: 1.3,
         overflow: "hidden",
         textOverflow: "ellipsis",
