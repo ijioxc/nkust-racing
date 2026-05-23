@@ -215,6 +215,26 @@ function SegmentedControl({ options, value, onChange, style }) {
   );
 }
 
+// ─── View Toggle — icon-button pair for toolbar view-switching ───
+// options: [{ value, icon: SVGElement, title }]
+function ViewToggle({ options, value, onChange }) {
+  return (
+    <div className="view-toggle" role="group">
+      {options.map(opt => (
+        <button
+          key={opt.value}
+          type="button"
+          title={opt.title}
+          className={`view-toggle-btn ${opt.value === value ? "active" : ""}`}
+          onClick={() => onChange(opt.value)}
+        >
+          {opt.icon}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ─── Premium Subsystem Grid Selector ───
 function SubsystemGridSelector({ value, onChange, multiple = false }) {
   const toggle = (s) => {
@@ -292,5 +312,5 @@ function GlowingSlider({ min = 0, max = 100, step = 1, value, onChange, label = 
 Object.assign(window, {
   SectionHead, Eyebrow, Button, IconBtn, Pill, PriorityPill,
   StatusDot, ProgressBar, DisplayNumber, KPI, SubsystemTag, Avatar, ConfirmDialog,
-  SegmentedControl, SubsystemGridSelector, GlowingSlider,
+  SegmentedControl, ViewToggle, SubsystemGridSelector, GlowingSlider,
 });

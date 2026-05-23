@@ -23,9 +23,14 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
               <button key={p.id}
               onClick={() => onPageChange(p.id)}
               style={{ ...hdrStyles.pageTab,
-                color: active ? "var(--accent)" : "var(--ink)",
-                background: active ? "var(--accent-bg)" : "transparent"
-              }}>
+                color: active ? "var(--accent)" : "var(--muted)",
+                fontWeight: active ? 600 : 400,
+                background: active ? "var(--accent-bg)" : "transparent",
+                opacity: active ? 1 : 0.7,
+              }}
+              onMouseEnter={e => { if (!active) { e.currentTarget.style.color = "var(--ink)"; e.currentTarget.style.opacity = "1"; } }}
+              onMouseLeave={e => { if (!active) { e.currentTarget.style.color = "var(--muted)"; e.currentTarget.style.opacity = "0.7"; } }}
+              >
                 {p.label}
               </button>);
 
@@ -101,7 +106,7 @@ const hdrStyles = {
     fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--muted)",
     letterSpacing: "0.04em"
   },
-  pageNav: { display: "flex", alignItems: "center", flex: 1, justifyContent: "center", gap: 4 },
+  pageNav: { display: "flex", alignItems: "center", marginLeft: "auto", gap: 4 },
   pageTab: {
     padding: "7px 16px",
     background: "transparent", border: "none", borderRadius: 980,

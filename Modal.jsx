@@ -213,16 +213,40 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
 
 // ─── Plan editor ───────────────────────────────────────────
 function PlanModal({ open, onClose, onSave, onDelete, initial }) {
-  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體", layout: "landscape", tag: "討論中" };
-  const [p, setP] = React.useState(initial || blank);
-  React.useEffect(() => { setP(initial || blank); }, [initial, open]);
+  // Migrate legacy {title, kicker, body} → unified content string
+  const toContent = (pl) => {
+    if (!pl) return "";
+    if (pl.content !== undefined) return pl.content;
+    const lines = [];
+    if (pl.title)  lines.push(pl.title);
+    if (pl.kicker) lines.push(pl.kicker);
+    if (pl.body)   lines.push(pl.body);
+    return lines.join('\n');
+  };
+
+  const blank = { content: "", sub: "車體", layout: "landscape", tag: "討論中", cover: null };
+  const toState = (pl) => pl ? { ...blank, ...pl, content: toContent(pl) } : blank;
+  const [p, setP] = React.useState(() => toState(initial));
+  React.useEffect(() => { setP(toState(initial)); }, [initial, open]);
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
   const isNew = !initial;
-  const autoClose = () => { onSave(p); onClose(); };
+
+  // Derive display title from first line for Modal header
+  const firstLine = (p.content || "").split('\n')[0].trim();
+
+  const autoClose = () => {
+    // Sync legacy fields for backward compat (PlanDetailPanel, etc.)
+    const lines = (p.content || "").split('\n');
+    const title = lines[0] || "";
+    const body  = lines.slice(1).join('\n').trimStart();
+    onSave({ ...p, title, body, kicker: "" });
+    onClose();
+  };
+
   return (
     <Modal open={open} onClose={onClose} onDismiss={autoClose}
       eyebrow={isNew ? "NEW PLAN" : "EDIT PLAN"}
-      title={isNew ? "新增計畫" : p.title || "編輯計畫"} width={560}
+      title={isNew ? "新增計畫" : firstLine || "編輯計畫"} width={540}
       footer={
         <>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
@@ -236,30 +260,27 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
           )}
         </>
       }>
-      <div className="field"><label>計畫標題</label>
-        <input type="text" value={p.title} onChange={e => update("title", e.target.value)} autoFocus placeholder="例：2026 底盤管架結構輕量化設計"/>
-      </div>
-      
-      <div className="field"><label>Kicker（英文副標）</label>
-        <input type="text" value={p.kicker} onChange={e => update("kicker", e.target.value)} placeholder="DESIGN PROPOSAL"/>
+
+      {/* Unified content field: first line = big title, rest = body */}
+      <div className="field">
+        <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          計畫內容
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", opacity: 0.45, fontWeight: 400, letterSpacing: "0.04em" }}>
+            第一行 → 標題 ／ 以下 → 說明
+          </span>
+        </label>
+        <textarea
+          value={p.content}
+          onChange={e => update("content", e.target.value)}
+          autoFocus
+          rows={5}
+          placeholder={"2026 底盤管架結構輕量化設計\n\n詳細說明計畫背景與技術指標…"}
+          style={{ resize: "vertical" }}
+        />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>圖卡比例版面</label>
-          <SegmentedControl
-            options={[
-              { value: "landscape", label: "橫式 A4 (1.41:1)" },
-              { value: "portrait", label: "直式 A4 (1:1.41)" },
-            ]}
-            value={p.layout || "landscape"}
-            onChange={v => update("layout", v)}
-          />
-        </div>
-        <div className="field"><label>子系統分類</label>
-          <select value={p.sub} onChange={e => update("sub", e.target.value)} style={{ padding: "8px 12px" }}>
-            {SUBSYSTEMS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
+      <div className="field"><label>子系統分類</label>
+        <SubsystemGridSelector value={p.sub} onChange={v => update("sub", v)}/>
       </div>
 
       <div className="field"><label>進度狀態</label>
@@ -273,10 +294,6 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
           value={p.tag || "討論中"}
           onChange={v => update("tag", v)}
         />
-      </div>
-
-      <div className="field"><label>內容描述</label>
-        <textarea value={p.body} onChange={e => update("body", e.target.value)} rows={3} placeholder="請描述提案的背景、主要優化細節或技術指標..."/>
       </div>
 
       <div className="field">

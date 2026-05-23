@@ -636,7 +636,7 @@ function Inspector({ part, allParts, viewParts, views, currentViewId, selectedId
       </div>
 
       {/* Spec rows */}
-      <div style={{ padding: "14px 22px", display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ padding: "6px 22px 2px" }}>
         <SpecRow label="MATERIAL"   value={part.material}/>
         <SpecRow label="WEIGHT"     value={part.weight}/>
         <SpecRow label="REGULATION" value={part.regulation}/>
@@ -646,11 +646,16 @@ function Inspector({ part, allParts, viewParts, views, currentViewId, selectedId
 
       {/* Notes */}
       {part.note && (
-        <div style={{ padding: "0 22px 16px" }}>
-          <div className="eyebrow" style={{ marginBottom: 6 }}>NOTES</div>
+        <div style={{ padding: "10px 22px 16px" }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: 8.5, fontWeight: 700,
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            color: "var(--muted)", marginBottom: 6,
+          }}>NOTES</div>
           <p style={{
-            fontSize: 13, color: "var(--faint)", lineHeight: 1.6,
-            textWrap: "pretty",
+            fontSize: 13, color: "var(--ink)", lineHeight: 1.65,
+            margin: 0, textWrap: "pretty", WebkitTextWrap: "pretty",
+            opacity: 0.72,
           }}>{part.note}</p>
         </div>
       )}
@@ -679,7 +684,10 @@ function PartLibrary({ search, setSearch, grouped, totalCount, selectedId,
         padding: "12px 22px 8px",
         display: "flex", flexDirection: "column", gap: 8,
         borderBottom: "0.5px solid var(--rule)",
-        background: "rgba(255,255,255,0.4)",
+        background: "var(--card-fill)",
+        backdropFilter: "var(--card-blur)",
+        WebkitBackdropFilter: "var(--card-blur)",
+        position: "sticky", top: 0, zIndex: 2,
       }}>
         <div style={{
           display: "flex", justifyContent: "space-between",
@@ -817,15 +825,21 @@ function PartLibrary({ search, setSearch, grouped, totalCount, selectedId,
 function SpecRow({ label, value }) {
   return (
     <div style={{
-      display: "grid", gridTemplateColumns: "100px 1fr", gap: 12,
+      display: "grid", gridTemplateColumns: "90px 1fr", gap: 10,
       alignItems: "baseline",
+      padding: "7px 0",
+      borderBottom: "0.5px solid var(--rule)",
     }}>
-      <div className="eyebrow">{label}</div>
+      <div style={{
+        fontFamily: "var(--font-mono)", fontSize: 8.5, fontWeight: 700,
+        letterSpacing: "0.1em", textTransform: "uppercase",
+        color: "var(--muted)",
+      }}>{label}</div>
       <div style={{
         fontFamily: "var(--font-mono)", fontSize: 12,
         color: value ? "var(--ink)" : "var(--muted)",
-        fontWeight: 500, letterSpacing: 0,
-      }}>{value || "—"}</div>
+        fontWeight: 600, letterSpacing: "-0.01em",
+      }}>{value || <span style={{ opacity: 0.3 }}>—</span>}</div>
     </div>
   );
 }
