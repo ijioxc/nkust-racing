@@ -91,10 +91,13 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
         onClose={() => setPlanModal({ open: false, initial: null })}
         onSave={savePlan} onDelete={deletePlan}/>
 
-      <PlanDetailPanel open={planDetail.open} plan={planDetail.target}
-        onClose={() => setPlanDetail({ open: false, target: null })}
-        onEdit={(p) => { setPlanDetail({ open: false, target: null }); setPlanModal({ open: true, initial: p }); }}
-        onDelete={(p) => { setPlanDetail({ open: false, target: null }); setConfirm({ kind: "plan", target: p }); }}/>
+      {planDetail.open && planDetail.target && (
+        <PlanPreview plan={planDetail.target} plans={plans}
+          onClose={() => setPlanDetail({ open: false, target: null })}
+          onEdit={(p) => { setPlanDetail({ open: false, target: null }); setPlanModal({ open: true, initial: p }); }}
+          onDelete={(p) => { setPlanDetail({ open: false, target: null }); setConfirm({ kind: "plan", target: p }); }}
+          onTagChange={(id, tag) => setPlans(prev => prev.map(p => p.id === id ? { ...p, tag } : p))}/>
+      )}
 
       <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)}
         title="確定刪除這筆資料？"
@@ -832,9 +835,9 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
       )}
     </div>
 
-    {/* Lightbox — renders outside main div so it can be fixed-positioned */}
+    {/* 放大預覽 — 統一 DetailPreview，畫廊含上下張切換 */}
     {lightboxId && lbPlan && (
-      <PlanLightbox
+      <PlanPreview
         plan={lbPlan} plans={plans}
         onClose={closeLightbox}
         onPrev={lbPrev} onNext={lbNext}
@@ -932,229 +935,67 @@ function PlanThumb({ plan, draggable, dragging, dragOver, onDragStart, onDragOve
   );
 }
 
-// ─── PlanLightbox — full-screen viewer with inline body + ⋯ action bubble ───
-function PlanLightbox({ plan, plans, onClose, onPrev, onNext, onEdit, onDelete, onTagChange }) {
-  const color = SUBSYSTEM_COLOR[plan.sub] || "var(--accent)";
+// ─── PlanPreview — 統一計畫預覽（建於共用 DetailPreview）───
+function PlanPreview({ plan, plans, onClose, onPrev, onNext, onEdit, onDelete, onTagChange }) {
+  if (!plan) return null;
+  const color = SUBSYSTEM_COLOR[plan.sub] || "var(--blue)";
   const tagColor = PLAN_TAG_COLORS[plan.tag] || null;
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const body = planBody(plan);
+  const idx = plans ? plans.findIndex(p => p.id === plan.id) : -1;
 
-  // Keyboard nav
-  React.useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "Escape") { if (menuOpen) setMenuOpen(false); else onClose(); }
-      if (e.key === "ArrowLeft")  { setMenuOpen(false); onPrev(); }
-      if (e.key === "ArrowRight") { setMenuOpen(false); onNext(); }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose, onPrev, onNext, menuOpen]);
+  const tagBadge = plan.tag && tagColor ? (
+    <span style={{
+      fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
+      padding: "3px 10px", borderRadius: "var(--radius-full)",
+      background: plan.cover ? "rgba(0,0,0,0.45)" : tagColor + "1f",
+      color: plan.cover ? "#fff" : tagColor,
+      backdropFilter: plan.cover ? "blur(8px)" : undefined,
+    }}>{plan.tag}</span>
+  ) : null;
 
   return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 500,
-      background: "rgba(0,0,0,0.88)",
-      backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-    }} onClick={() => menuOpen ? setMenuOpen(false) : onClose()}>
-
-      {/* Close */}
-      <div style={{ position: "absolute", top: 20, right: 20, zIndex: 10 }}>
-        <IconBtn icon="x" onClick={onClose} title="關閉 (Esc)"
-          style={{ background: "rgba(255,255,255,0.12)", color: "#fff" }}/>
-      </div>
-
-      {/* Prev / Next arrows */}
-      {plans.length > 1 && <>
-        <button onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onPrev(); }} style={{
-          position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)",
-          width: 44, height: 44, borderRadius: "50%", border: "none",
-          background: "rgba(255,255,255,0.12)", color: "#fff", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          backdropFilter: "blur(8px)", zIndex: 10,
-        }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <button onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onNext(); }} style={{
-          position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)",
-          width: 44, height: 44, borderRadius: "50%", border: "none",
-          background: "rgba(255,255,255,0.12)", color: "#fff", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          backdropFilter: "blur(8px)", zIndex: 10,
-        }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+    <DetailPreview
+      onClose={onClose}
+      onPrev={onPrev} onNext={onNext}
+      counter={idx >= 0 && plans.length > 1 ? `${idx + 1} / ${plans.length}` : undefined}
+      width={560}
+      hero={{
+        cover: plan.cover,
+        color: `color-mix(in srgb, ${color} 16%, var(--bg-secondary))`,
+        icon: <SubsystemIcon kind={plan.sub} size={30} color={color}/>,
+        height: 220,
+      }}
+      badges={<><SubsystemTag kind={plan.sub} size="sm"/>{tagBadge}</>}
+      title={planTitle(plan)}
+      body={planBody(plan)}
+      footer={<>
+        {onDelete && <Button variant="danger" icon="trash" onClick={() => onDelete(plan)}>刪除</Button>}
+        {onEdit && <Button variant="primary" icon="edit" onClick={() => onEdit(plan)}>編輯計畫</Button>}
       </>}
-
-      {/* Main card */}
-      <div onClick={(e) => e.stopPropagation()} style={{
-        maxWidth: "min(780px, 90vw)", width: "100%",
-        display: "flex", flexDirection: "column",
-        borderRadius: 18, overflow: "hidden",
-        boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
-      }}>
-        {/* Cover image */}
-        <div style={{
-          width: "100%", aspectRatio: "16 / 9",
-          background: plan.cover
-            ? `url('${plan.cover}') center/cover`
-            : `linear-gradient(135deg, ${color}cc, ${color}44)`,
-          position: "relative",
-        }}>
-          {!plan.cover && (
-            <div style={{
-              position: "absolute", inset: 0, display: "flex",
-              alignItems: "center", justifyContent: "center",
-              color: "rgba(255,255,255,0.14)", fontFamily: "var(--font-mono)",
-              fontSize: 13, fontWeight: 800, letterSpacing: "0.15em",
-            }}>{plan.sub.toUpperCase()} SPECIFICATION</div>
-          )}
-        </div>
-
-        {/* Info strip */}
-        <div style={{ padding: "18px 20px 22px", background: "rgba(18,18,20,0.97)" }}>
-
-          {/* Top row: tags + nav hint + ⋯ button */}
-          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
-            <SubsystemTag kind={plan.sub} size="sm"/>
-            {plan.tag && tagColor && (
-              <span style={{
-                padding: "3px 9px", borderRadius: 20,
-                background: tagColor + "28", color: tagColor,
-                fontSize: 10, fontWeight: 700, fontFamily: "var(--font-mono)",
-                border: `0.5px solid ${tagColor}55`,
-              }}>{plan.tag}</span>
-            )}
-            <span style={{
-              color: "rgba(255,255,255,0.22)", fontSize: 10,
-              fontFamily: "var(--font-mono)", letterSpacing: "0.06em", marginLeft: "auto",
-            }}>← → 切換</span>
-
-            {/* ⋯ Action bubble trigger */}
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setMenuOpen(v => !v); }}
-                title="更多操作"
-                style={{
-                  width: 32, height: 32, borderRadius: 10, border: "none",
-                  background: menuOpen ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.10)",
-                  color: "#fff", cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={e => !menuOpen && (e.currentTarget.style.background = "rgba(255,255,255,0.16)")}
-                onMouseLeave={e => !menuOpen && (e.currentTarget.style.background = "rgba(255,255,255,0.10)")}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>
-                </svg>
-              </button>
-
-              {/* ─── Bubble Menu ─── */}
-              {menuOpen && (
-                <div
-                  onClick={e => e.stopPropagation()}
+    >
+      {onTagChange && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em",
+            textTransform: "uppercase", color: "var(--label-tertiary)", marginBottom: 8 }}>狀態</div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {PLAN_TAGS.map(tag => {
+              const tc = PLAN_TAG_COLORS[tag];
+              const active = plan.tag === tag;
+              return (
+                <button key={tag} onClick={() => onTagChange(plan.id, tag)}
                   style={{
-                    position: "absolute", bottom: "calc(100% + 10px)", right: 0,
-                    background: "rgba(22,22,26,0.97)",
-                    backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
-                    border: "0.5px solid rgba(255,255,255,0.11)",
-                    borderRadius: 18, padding: "14px 12px",
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.65), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
-                    minWidth: 210, display: "flex", flexDirection: "column", gap: 4, zIndex: 20,
-                  }}
-                >
-                  {/* Status section */}
-                  <div style={{
-                    fontSize: 8.5, color: "rgba(255,255,255,0.28)",
-                    fontFamily: "var(--font-mono)", letterSpacing: "0.12em",
-                    textTransform: "uppercase", marginBottom: 6, paddingLeft: 4,
-                  }}>狀態</div>
-                  <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 8 }}>
-                    {PLAN_TAGS.map(tag => {
-                      const tc = PLAN_TAG_COLORS[tag];
-                      const active = plan.tag === tag;
-                      return (
-                        <button key={tag}
-                          onClick={() => { onTagChange(plan.id, tag); setMenuOpen(false); }}
-                          style={{
-                            padding: "5px 12px", borderRadius: 20, cursor: "pointer",
-                            border: active ? "none" : "0.5px solid rgba(255,255,255,0.14)",
-                            background: active ? tc : "rgba(255,255,255,0.06)",
-                            color: active ? "#fff" : "rgba(255,255,255,0.6)",
-                            fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)",
-                            transition: "all 0.15s",
-                          }}
-                          onMouseEnter={e => !active && (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}
-                          onMouseLeave={e => !active && (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
-                        >{tag}</button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Divider */}
-                  <div style={{ height: 0.5, background: "rgba(255,255,255,0.08)", margin: "2px 0 6px" }}/>
-
-                  {/* Actions */}
-                  {[
-                    { label: "編輯計畫", color: "#fff", hoverBg: "rgba(255,255,255,0.07)",
-                      icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>,
-                      onClick: () => { onEdit(); setMenuOpen(false); },
-                    },
-                    { label: "刪除計畫", color: "rgb(255,90,90)", hoverBg: "rgba(255,80,80,0.12)",
-                      icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>,
-                      onClick: () => { onDelete(); setMenuOpen(false); },
-                    },
-                  ].map(action => (
-                    <button key={action.label}
-                      onClick={action.onClick}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 10,
-                        padding: "9px 10px", borderRadius: 10, border: "none",
-                        background: "transparent", color: action.color,
-                        fontSize: 12.5, fontWeight: 500, cursor: "pointer",
-                        textAlign: "left", width: "100%", fontFamily: "inherit",
-                        transition: "background 0.15s",
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = action.hoverBg}
-                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                    >
-                      {action.icon}
-                      {action.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                    padding: "5px 12px", borderRadius: "var(--radius-full)", cursor: "pointer",
+                    border: active ? "none" : "0.5px solid var(--separator)",
+                    background: active ? tc : "transparent",
+                    color: active ? "#fff" : "var(--label-secondary)",
+                    fontSize: 12, fontWeight: 600, fontFamily: "var(--font-sans)",
+                    transition: "all .15s",
+                  }}>{tag}</button>
+              );
+            })}
           </div>
-
-          {/* Title */}
-          <div style={{
-            color: "#fff", fontSize: 18, fontWeight: 700,
-            letterSpacing: "-0.018em", lineHeight: 1.3,
-            marginBottom: body ? 10 : 0,
-          }}>{planTitle(plan)}</div>
-
-          {/* Full body text */}
-          {body && (
-            <div style={{
-              color: "rgba(255,255,255,0.58)", fontSize: 13, lineHeight: 1.65,
-              whiteSpace: "pre-wrap", textWrap: "pretty", WebkitTextWrap: "pretty",
-            }}>{body}</div>
-          )}
         </div>
-      </div>
-
-      {/* Page counter */}
-      <div style={{
-        position: "absolute", bottom: 22,
-        color: "rgba(255,255,255,0.3)", fontSize: 10,
-        fontFamily: "var(--font-mono)", letterSpacing: "0.08em",
-      }}>
-        {plans.findIndex(p => p.id === plan.id) + 1} / {plans.length}
-      </div>
-    </div>
+      )}
+    </DetailPreview>
   );
 }
 
@@ -1682,177 +1523,43 @@ Object.assign(window, { PlansView, PlanCard, KanbanPlanCard, PlanDetailPanel });
 // ═══════════════════════════════════════════════════════════
 // ─── Person Profile Popup (名片) ───────────────────────────────
 function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const menuRef = React.useRef(null);
-
-  // Close menu on outside click
-  React.useEffect(() => {
-    if (!menuOpen) return;
-    const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [menuOpen]);
-
-  // ESC to close
-  React.useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "Escape") {
-        if (menuOpen) setMenuOpen(false);
-        else onClose();
-      }
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [menuOpen, onClose]);
-
   if (!person) return null;
-  const posColor = SUBSYSTEM_COLOR[person.workTypes?.[0]] || "var(--ink)";
+  const posColor = SUBSYSTEM_COLOR[person.workTypes?.[0]] || "var(--blue)";
+  const hasTags = person.workTypes?.length > 0;
 
   return (
-    <div className="modal-back" onClick={onClose}
-      style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}>
-      <div className="modal-card" onClick={e => e.stopPropagation()}
-        style={{ maxWidth: 380, padding: 0, overflow: "hidden", borderRadius: 20 }}>
-
-        {/* Top banner */}
-        <div style={{
-          height: 80,
-          background: `linear-gradient(135deg, ${posColor}22 0%, ${posColor}08 100%)`,
-          borderBottom: `0.5px solid ${posColor}22`,
-          position: "relative",
-        }}>
-          {/* ⋯ bubble menu trigger */}
-          <div style={{ position: "absolute", top: 12, right: 12 }} ref={menuRef}>
-            <button
-              onClick={() => setMenuOpen(v => !v)}
-              style={{
-                width: 32, height: 32, borderRadius: "50%",
-                background: "rgba(255,255,255,0.85)",
-                backdropFilter: "blur(8px)",
-                border: "0.5px solid rgba(0,0,0,0.08)",
-                cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 16, color: "var(--ink)", fontWeight: 700,
-                letterSpacing: "0.08em", lineHeight: 1,
-                boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
-                transition: "background .15s",
-              }}
-              title="更多操作"
-            >···</button>
-
-            {/* Bubble menu */}
-            {menuOpen && (
-              <div style={{
-                position: "absolute", top: 38, right: 0, zIndex: 200,
-                background: "rgba(30,30,32,0.92)",
-                backdropFilter: "saturate(180%) blur(20px)",
-                WebkitBackdropFilter: "saturate(180%) blur(20px)",
-                borderRadius: 14,
-                padding: "6px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.28), 0 1px 0 rgba(255,255,255,0.06) inset",
-                minWidth: 140,
-                display: "flex", flexDirection: "column", gap: 2,
-              }}>
-                <button onClick={() => { setMenuOpen(false); onEdit(person); }}
-                  style={bubbleItemStyle}>
-                  <UIIcon kind="edit" size={12}/> 編輯名片
-                </button>
-                <div style={{ height: "0.5px", background: "rgba(255,255,255,0.10)", margin: "2px 0" }}/>
-                <button onClick={() => { setMenuOpen(false); onDelete(person); onClose(); }}
-                  style={{ ...bubbleItemStyle, color: "#ff6b6b" }}>
-                  <UIIcon kind="trash" size={12}/> 移除成員
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Avatar — overlaps banner */}
-        <div style={{ position: "relative", marginTop: -40, paddingLeft: 28 }}>
-          <div style={{
-            width: 72, height: 72, borderRadius: "50%",
-            background: "var(--ink)", color: "#fff",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 28, fontWeight: 700,
-            border: "3px solid var(--surface)",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.16)",
-            letterSpacing: 0,
-          }}>{person.name?.[0] || "?"}</div>
-        </div>
-
-        {/* Card body */}
-        <div style={{ padding: "12px 28px 28px" }}>
-          {/* Name + position */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-            <div style={{
-              fontFamily: "var(--display-family)",
-              fontSize: 24, fontWeight: 700, color: "var(--ink)",
-              letterSpacing: "-0.025em", lineHeight: 1.1,
-            }}>{person.name}</div>
-            <span style={{
-              fontSize: 11, fontWeight: 600,
-              color: posColor,
-              background: posColor + "18",
-              borderRadius: 6, padding: "2px 8px",
-              letterSpacing: "0.02em",
-            }}>{person.position}</span>
-          </div>
-
-          {/* Email */}
-          {person.email && (
-            <div style={{
-              fontFamily: "var(--font-mono)", fontSize: 11.5,
-              color: "var(--muted)", marginTop: 6,
-              letterSpacing: "-0.01em",
-            }}>{person.email}</div>
-          )}
-
-          {/* Divider */}
-          <div style={{ height: "0.5px", background: "var(--rule)", margin: "14px 0" }}/>
-
-          {/* Meta grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px" }}>
-            {[
-              { label: "系所", value: person.department },
-              { label: "年級", value: person.grade },
-            ].map(({ label, value }) => value ? (
-              <div key={label}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 8.5, fontWeight: 700,
-                  letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 3 }}>{label}</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600,
-                  color: "var(--ink)", letterSpacing: "-0.01em" }}>{value}</div>
-              </div>
-            ) : null)}
-          </div>
-
-          {/* Subsystem tags */}
-          {person.workTypes?.length > 0 && (
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 16 }}>
-              {person.workTypes.map(w => <SubsystemTag key={w} kind={w} size="sm"/>)}
-            </div>
-          )}
-          {(!person.workTypes || person.workTypes.length === 0) && (
-            <div style={{ marginTop: 16 }}>
-              <span className="pill muted">無指派子系統</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <DetailPreview
+      onClose={onClose}
+      width={420}
+      hero={{
+        color: `color-mix(in srgb, ${posColor} 14%, var(--bg-secondary))`,
+        node: <Avatar name={person.name} size={84}/>,
+        height: 150,
+      }}
+      badges={
+        <span style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
+          padding: "3px 10px", borderRadius: "var(--radius-full)",
+          background: "var(--bg-secondary)", color: posColor,
+          backdropFilter: "blur(8px)",
+        }}>{person.position}</span>
+      }
+      title={person.name}
+      subtitle={person.email}
+      tags={hasTags
+        ? person.workTypes.map(w => <SubsystemTag key={w} kind={w} size="sm"/>)
+        : [<span key="none" className="pill muted">無指派子系統</span>]}
+      meta={[
+        { label: "系所", value: person.department || "—" },
+        { label: "年級", value: person.grade || "—" },
+      ]}
+      footer={<>
+        <Button variant="danger" icon="trash" onClick={() => { onDelete(person); onClose(); }}>移除</Button>
+        <Button variant="primary" icon="edit" onClick={() => onEdit(person)}>編輯名片</Button>
+      </>}
+    />
   );
 }
-
-const bubbleItemStyle = {
-  display: "flex", alignItems: "center", gap: 8,
-  padding: "8px 12px", borderRadius: 8,
-  background: "transparent", border: "none",
-  color: "rgba(255,255,255,0.88)", cursor: "pointer",
-  fontSize: 13, fontWeight: 500, textAlign: "left",
-  transition: "background .12s",
-  width: "100%",
-};
 
 // ─── PeopleView ────────────────────────────────────────────────
 function PeopleView({ people, editPerson, newPerson, onDelete }) {

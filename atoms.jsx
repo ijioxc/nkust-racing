@@ -313,8 +313,180 @@ function GlowingSlider({ min = 0, max = 100, step = 1, value, onChange, label = 
   );
 }
 
+// ─────────────────────────────────────────────────────────────
+//  DetailPreview — 共用「放大預覽」骨架（讀模式詳情）
+//  以資源預覽為基礎泛化，六個區塊共用。輕量、token-driven、深淺自適應。
+//
+//  props:
+//   onClose                 關閉
+//   onPrev / onNext         （可選）上一張/下一張 → 啟用畫廊側箭頭 + 鍵盤 ←/→
+//   counter                 （可選）"3 / 12" 頁碼字串
+//   hero: {
+//     cover,                圖片網址（有則顯示圖 + 漸層遮罩）
+//     color,                無圖時的色塊主色（預設 --fill-secondary）
+//     monogram,             無圖時的字母（圓角方塊）
+//     icon,                 無圖時的圖示節點（取代 monogram）
+//     height,               hero 高度（預設 180）
+//     ringValue,            （可選）顯示環形進度數值（0-100），用於任務
+//   }
+//   badges                  hero 左下角的 badge 節點（型別/狀態/優先度）
+//   title, subtitle, body   主標 / 副標 / 內文
+//   tags                    標籤列節點（如 SubsystemTag）
+//   meta: [{label, value, href}]   屬性行（HIG inset separator）
+//   children                自訂插槽（如計畫的狀態切換）
+//   footer                  底部動作節點（編輯/刪除/開連結）
+//   width                   預設 480
+// ─────────────────────────────────────────────────────────────
+function RingProgress({ value = 0, size = 64, stroke = 6, color = "var(--blue)" }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const v = Math.max(0, Math.min(100, value));
+  return (
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--fill-tertiary)" strokeWidth={stroke}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+          strokeDasharray={c} strokeDashoffset={c * (1 - v/100)} strokeLinecap="round"
+          style={{ transition: "stroke-dashoffset .6s cubic-bezier(0.4,0,0.2,1)" }}/>
+      </svg>
+      <div style={{
+        position: "absolute", inset: 0, display: "flex", alignItems: "center",
+        justifyContent: "center", fontSize: size*0.26, fontWeight: 700,
+        color: "var(--label-primary)", fontFeatureSettings: "'tnum'",
+      }}>{v}<span style={{ fontSize: size*0.15, fontWeight: 600, opacity: 0.5 }}>%</span></div>
+    </div>
+  );
+}
+
+function DetailPreview({
+  onClose, onPrev, onNext, counter,
+  hero = {}, badges, title, subtitle, body, tags, meta = [], children, footer,
+  width = 480,
+}) {
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose?.();
+      if (e.key === "ArrowLeft")  onPrev?.();
+      if (e.key === "ArrowRight") onNext?.();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose, onPrev, onNext]);
+
+  const { cover, color = "var(--fill-secondary)", monogram, icon, node, height = 180, ringValue } = hero;
+  const heroColor = typeof color === "string" ? color : "var(--fill-secondary)";
+
+  const arrow = (dir, fn) => (
+    <button onClick={(e) => { e.stopPropagation(); fn(); }} title={dir === "prev" ? "上一個 (←)" : "下一個 (→)"}
+      style={{
+        position: "absolute", top: "50%", [dir === "prev" ? "left" : "right"]: -56,
+        transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%",
+        border: "none", background: "rgba(255,255,255,0.14)", color: "#fff", cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+      }}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+        <polyline points={dir === "prev" ? "15 18 9 12 15 6" : "9 18 15 12 9 6"}/>
+      </svg>
+    </button>
+  );
+
+  return (
+    <div className="modal-back" style={{ zIndex: 600, padding: 24 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", width: "100%", maxWidth: width }}>
+        {onPrev && arrow("prev", onPrev)}
+        {onNext && arrow("next", onNext)}
+
+        <div style={{
+          width: "100%", background: "var(--bg-secondary)",
+          border: "0.5px solid var(--separator)", borderRadius: "var(--radius-2xl)",
+          overflow: "hidden", boxShadow: "var(--shadow-modal)",
+          animation: "modal-pop .42s var(--ease-spring, cubic-bezier(0.32,0.72,0,1))",
+        }}>
+          {/* HERO */}
+          <div style={{
+            height, position: "relative",
+            background: cover ? `url('${cover}') center/cover` : heroColor,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            {!cover && node}
+            {!cover && !node && ringValue !== undefined && <RingProgress value={ringValue}/>}
+            {!cover && !node && ringValue === undefined && (icon ? (
+              <div style={{
+                width: 72, height: 72, borderRadius: "var(--radius-lg)",
+                background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>{icon}</div>
+            ) : monogram ? (
+              <div style={{
+                width: 72, height: 72, borderRadius: "var(--radius-lg)",
+                background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 30, fontWeight: 800, color: heroColor.startsWith("var") ? "var(--label-primary)" : heroColor,
+              }}>{monogram}</div>
+            ) : null)}
+            {cover && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.45), transparent 55%)" }}/>}
+
+            {/* close */}
+            <button onClick={onClose} title="關閉 (Esc)" style={{
+              position: "absolute", top: 12, right: 12, width: 30, height: 30,
+              borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.40)", color: "#fff",
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", zIndex: 2,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            {badges && (
+              <div style={{ position: "absolute", bottom: 12, left: 16, display: "flex", gap: 6, alignItems: "center", zIndex: 2 }}>
+                {badges}
+              </div>
+            )}
+          </div>
+
+          {/* BODY */}
+          <div style={{ padding: "18px 22px 8px" }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--label-primary)", margin: 0, lineHeight: 1.25 }}>{title}</h2>
+            {subtitle && <div style={{ fontSize: 13, color: "var(--label-secondary)", marginTop: 4 }}>{subtitle}</div>}
+            {body && <p style={{ fontSize: 15, color: "var(--label-secondary)", lineHeight: 1.6, marginTop: 10, whiteSpace: "pre-wrap", textWrap: "pretty" }}>{body}</p>}
+            {tags && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 14 }}>{tags}</div>}
+
+            {meta.length > 0 && (
+              <div style={{ marginTop: 16, display: "flex", flexDirection: "column" }}>
+                {meta.map(({ label, value, href }) => (
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: "0.5px solid var(--separator)", gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--label-tertiary)", flexShrink: 0 }}>{label}</span>
+                    {href ? (
+                      <a href={href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 15, fontWeight: 500, color: "var(--blue)", display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>
+                        {value} <UIIcon kind="external" size={12}/>
+                      </a>
+                    ) : (
+                      <span style={{ fontSize: 15, fontWeight: 500, color: "var(--label-primary)", textAlign: "right" }}>{value}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {children}
+          </div>
+
+          {footer && (
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 22px 20px" }}>{footer}</div>
+          )}
+        </div>
+
+        {counter && (
+          <div style={{ position: "absolute", bottom: -28, left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.55)", fontSize: 11, fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }}>{counter}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 Object.assign(window, {
   SectionHead, Eyebrow, Button, IconBtn, Pill, PriorityPill,
   StatusDot, ProgressBar, DisplayNumber, KPI, SubsystemTag, Avatar, ConfirmDialog,
   SegmentedControl, ViewToggle, SubsystemGridSelector, GlowingSlider,
+  DetailPreview, RingProgress,
 });
