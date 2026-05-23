@@ -854,18 +854,22 @@ function PartModal({ open, onClose, onSave, onDelete, initial, currentViewId, vi
     setP(prev => ({ ...prev, x: Math.round(x), y: Math.round(y) }));
   };
 
+  const autoClose = () => { onSave(p); onClose(); };
   return (
-    <Modal open={open} onClose={onClose} width={640}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose} width={640}
       eyebrow={isNew ? "NEW PART" : "EDIT PART"}
       title={isNew ? "新增零件標記" : p.label || "編輯零件"}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(p); onClose(); }}
-              style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(p); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(p); onClose(); }}>儲存</Button>
         </>
       }>
       {/* ─── Live preview ─── */}
@@ -1004,18 +1008,22 @@ function ViewModal({ open, onClose, onSave, onDelete, initial, canDelete }) {
   React.useEffect(() => { setV(initial || blank); }, [initial, open]);
   const u = (k, val) => setV(prev => ({ ...prev, [k]: val }));
   const isNew = !initial?.id;
+  const autoClose = () => { onSave(v); onClose(); };
   return (
-    <Modal open={open} onClose={onClose} width={480}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose} width={480}
       eyebrow={isNew ? "NEW VIEW" : "EDIT VIEW"}
       title={isNew ? "新增車輛視圖" : v.label || "編輯視圖"}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && canDelete && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(v); onClose(); }}
-              style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(v); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(v); onClose(); }}>儲存</Button>
         </>
       }>
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12 }}>

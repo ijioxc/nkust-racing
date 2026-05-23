@@ -1,15 +1,18 @@
 // Modal.jsx — modal scaffolding + Task/Person/Plan edit modals
 
-function Modal({ open, onClose, title, eyebrow, children, footer, width = 520 }) {
+// onDismiss = auto-save handler for X / backdrop / ESC
+// onClose   = explicit cancel (discard)
+function Modal({ open, onClose, onDismiss, title, eyebrow, children, footer, width = 520 }) {
+  const handleDismiss = onDismiss || onClose;
   React.useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose();
+    const onKey = (e) => e.key === "Escape" && handleDismiss();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, handleDismiss]);
   if (!open) return null;
   return (
-    <div className="modal-back" onClick={onClose}>
+    <div className="modal-back" onClick={handleDismiss}>
       <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: width }}>
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -19,14 +22,14 @@ function Modal({ open, onClose, title, eyebrow, children, footer, width = 520 })
             {eyebrow && <div className="eyebrow" style={{ marginBottom: 4 }}>{eyebrow}</div>}
             <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>{title}</div>
           </div>
-          <IconBtn icon="x" onClick={onClose} title="關閉"/>
+          <IconBtn icon="x" onClick={handleDismiss} title="關閉（自動儲存）"/>
         </div>
         <div style={{ padding: "8px 22px 16px", display: "flex", flexDirection: "column", gap: 14 }}>
           {children}
         </div>
         {footer && (
           <div style={{
-            display: "flex", justifyContent: "flex-end", gap: 8,
+            display: "flex", flexDirection: "column", gap: 0,
             padding: "12px 22px 20px",
             borderTop: "0.5px solid var(--rule)",
           }}>{footer}</div>
@@ -48,17 +51,22 @@ function TaskModal({ open, onClose, onSave, onDelete, initial }) {
   const update = (k, v) => setT(prev => ({ ...prev, [k]: v }));
   const isNew = !initial;
 
+  const autoClose = () => { onSave(t); onClose(); };
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose}
       eyebrow={isNew ? "NEW TASK" : "EDIT TASK"}
       title={isNew ? "新增工作" : t.title || "編輯工作"}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && onDelete && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(t); onClose(); }} style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(t); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(t); onClose(); }}>儲存</Button>
         </>
       }>
       <div className="field">
@@ -147,17 +155,22 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
   const isNew = !initial;
 
+  const autoClose = () => { onSave(p); onClose(); };
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose}
       eyebrow={isNew ? "NEW MEMBER" : "EDIT MEMBER"}
       title={isNew ? "新增成員" : p.name || "編輯成員"}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && onDelete && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(p); onClose(); }} style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(p); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(p); onClose(); }}>儲存</Button>
         </>
       }>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -205,17 +218,22 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
   React.useEffect(() => { setP(initial || blank); }, [initial, open]);
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
   const isNew = !initial;
+  const autoClose = () => { onSave(p); onClose(); };
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose}
       eyebrow={isNew ? "NEW PLAN" : "EDIT PLAN"}
       title={isNew ? "新增計畫" : p.title || "編輯計畫"} width={560}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && onDelete && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(p); onClose(); }} style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(p); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(p); onClose(); }}>儲存</Button>
         </>
       }>
       <div className="field"><label>計畫標題</label>

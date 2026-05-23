@@ -205,18 +205,22 @@ function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
   React.useEffect(() => { setS(initial || blank); }, [initial, open]);
   const u = (k, v) => setS(prev => ({ ...prev, [k]: v }));
   const isNew = !initial?.id;
+  const autoClose = () => { onSave(s); onClose(); };
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose}
       eyebrow={isNew ? "NEW SUPPLIER ITEM" : "EDIT SUPPLIER ITEM"}
       title={isNew ? "新增零件項目" : s.name || "編輯零件"}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(s); onClose(); }}
-              style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(s); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(s); onClose(); }}>儲存</Button>
         </>
       }>
       <div className="field"><label>項目名稱</label>
@@ -741,18 +745,22 @@ function ResourceModal({ open, onClose, onSave, onDelete, initial }) {
   React.useEffect(() => { setR(initial || blank); }, [initial, open]);
   const u = (k, v) => setR(prev => ({ ...prev, [k]: v }));
   const isNew = !initial?.id;
+  const autoClose = () => { onSave(r); onClose(); };
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal open={open} onClose={onClose} onDismiss={autoClose}
       eyebrow={isNew ? "NEW RESOURCE" : "EDIT RESOURCE"}
       title={isNew ? "新增資源" : r.name || "編輯資源"}
       footer={
         <>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>取消</Button>
+            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+          </div>
           {!isNew && (
-            <Button variant="danger" icon="trash" onClick={() => { onDelete(r); onClose(); }}
-              style={{ marginRight: "auto" }}>刪除</Button>
+            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+              <Button variant="danger" icon="trash" onClick={() => { onDelete(r); onClose(); }}>刪除</Button>
+            </div>
           )}
-          <Button variant="ghost" onClick={onClose}>取消</Button>
-          <Button variant="primary" icon="check" onClick={() => { onSave(r); onClose(); }}>儲存</Button>
         </>
       }>
       <div className="field"><label>資源名稱</label>
