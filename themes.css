@@ -56,76 +56,80 @@
   --hover-lift: -2px;
 }
 
-/* ───── DARK MODE — auto-follows prefers-color-scheme ───── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page-bg: #000000;
-    --page-gradient:
-      radial-gradient(45% 36% at 0% 0%,    rgba(255,100,40,0.20)  0%, transparent 70%),
-      radial-gradient(42% 36% at 100% 0%,  rgba(10,132,255,0.18)  0%, transparent 70%),
-      radial-gradient(50% 42% at 0% 100%,  rgba(255,69,58,0.14)   0%, transparent 70%),
-      radial-gradient(45% 38% at 100% 100%,rgba(100,210,255,0.14) 0%, transparent 70%),
-      radial-gradient(40% 35% at 50% 100%, rgba(255,214,10,0.09)  0%, transparent 75%);
+/* ───── DARK MODE — toggled via [data-appearance="dark"] ───── */
+[data-appearance="dark"] {
+  --page-bg: #000000;
+  --page-gradient:
+    radial-gradient(45% 36% at 0% 0%,    rgba(255,100,40,0.20)  0%, transparent 70%),
+    radial-gradient(42% 36% at 100% 0%,  rgba(10,132,255,0.18)  0%, transparent 70%),
+    radial-gradient(50% 42% at 0% 100%,  rgba(255,69,58,0.14)   0%, transparent 70%),
+    radial-gradient(45% 38% at 100% 100%,rgba(100,210,255,0.14) 0%, transparent 70%),
+    radial-gradient(40% 35% at 50% 100%, rgba(255,214,10,0.09)  0%, transparent 75%);
 
-    /* Dark glass — frosted dark surface (Liquid Glass dark variant) */
-    --card-fill:         rgba(28,28,30,0.78);
-    --card-border:       0.5px solid rgba(255,255,255,0.10);
-    --card-highlight:    inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -0.5px 0 rgba(0,0,0,0.20);
-    --card-shadow:       0 1px 3px rgba(0,0,0,0.20), 0 12px 32px rgba(0,0,0,0.35);
-    --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.30), 0 20px 48px rgba(0,0,0,0.50);
+  /* Dark glass — frosted dark surface (Liquid Glass dark variant) */
+  --card-fill:         rgba(28,28,30,0.78);
+  --card-border:       0.5px solid rgba(255,255,255,0.10);
+  --card-highlight:    inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -0.5px 0 rgba(0,0,0,0.20);
+  --card-shadow:       0 1px 3px rgba(0,0,0,0.20), 0 12px 32px rgba(0,0,0,0.35);
+  --card-shadow-hover: 0 2px 6px rgba(0,0,0,0.30), 0 20px 48px rgba(0,0,0,0.50);
 
-    /* Accent glass dark */
-    --card-fill-accent:   rgba(10,132,255,0.70);
-    --card-border-accent: 0.5px solid rgba(255,255,255,0.20);
-    --card-highlight-accent: inset 0 1px 0 rgba(255,255,255,0.18);
-  }
+  /* Accent glass dark */
+  --card-fill-accent:   rgba(10,132,255,0.70);
+  --card-border-accent: 0.5px solid rgba(255,255,255,0.20);
+  --card-highlight-accent: inset 0 1px 0 rgba(255,255,255,0.18);
+}
 
-  /* Segmented control dark */
-  .segmented-control {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.05);
-  }
-  .segmented-item.active {
-    background: rgba(255,255,255,0.12) !important;
-    color: #ffffff !important;
-    border-color: rgba(255,255,255,0.08) !important;
-    box-shadow:
-      0 1px 2px rgba(0,0,0,0.30),
-      0 4px 12px rgba(0,0,0,0.20),
-      inset 0 1px 0 rgba(255,255,255,0.12) !important;
-  }
+/* Segmented control dark */
+[data-appearance="dark"] .segmented-control {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.05);
+}
+[data-appearance="dark"] .segmented-item.active {
+  background: rgba(255,255,255,0.12) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.30),
+    0 4px 12px rgba(0,0,0,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.12) !important;
+}
 
-  /* Buttons dark */
-  .btn {
-    background: rgba(255,255,255,0.08);
-    color: #ffffff;
-  }
-  .btn:hover { background: rgba(255,255,255,0.13); }
-  .btn.ghost:hover { background: rgba(255,255,255,0.08); }
+/* Buttons dark */
+[data-appearance="dark"] .btn {
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+}
+[data-appearance="dark"] .btn:hover { background: rgba(255,255,255,0.13); }
+[data-appearance="dark"] .btn.ghost:hover { background: rgba(255,255,255,0.08); }
+[data-appearance="dark"] .btn.primary { color: #fff; }
 
-  /* Modal dark */
-  .modal-card {
-    background: rgba(28,28,30,0.96);
-    border: 0.5px solid rgba(255,255,255,0.10);
-  }
+/* Modal dark */
+[data-appearance="dark"] .modal-card {
+  background: rgba(28,28,30,0.96);
+  border: 0.5px solid rgba(255,255,255,0.10);
+}
 
-  /* Slide-over dark */
-  .slide-over-panel {
-    background: rgba(28,28,30,0.96);
-    border-left-color: rgba(255,255,255,0.08);
-  }
+/* Slide-over dark */
+[data-appearance="dark"] .slide-over-panel {
+  background: rgba(28,28,30,0.96);
+  border-left-color: rgba(255,255,255,0.08);
+}
 
-  /* Form inputs dark */
-  .field input[type="text"], .field input[type="email"], .field input[type="number"],
-  .field select, .field textarea {
-    background: rgba(255,255,255,0.05);
-    color: #ffffff;
-    border-bottom-color: var(--separator-opaque);
-  }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    background: rgba(10,132,255,0.10);
-    border-bottom-color: var(--blue);
-  }
+/* Form inputs dark */
+[data-appearance="dark"] .field input[type="text"],
+[data-appearance="dark"] .field input[type="email"],
+[data-appearance="dark"] .field input[type="number"],
+[data-appearance="dark"] .field select,
+[data-appearance="dark"] .field textarea {
+  background: rgba(255,255,255,0.05);
+  color: #ffffff;
+  border-bottom-color: var(--separator-opaque);
+}
+[data-appearance="dark"] .field input:focus,
+[data-appearance="dark"] .field select:focus,
+[data-appearance="dark"] .field textarea:focus {
+  background: rgba(10,132,255,0.10);
+  border-bottom-color: var(--blue);
 }
 
 /* ───── FLAT theme: functional, less blur, sharper corners ───── */

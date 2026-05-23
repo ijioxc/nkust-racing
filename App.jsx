@@ -30,6 +30,27 @@ function App() {
 
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
+  // Appearance: "auto" | "light" | "dark" — persisted, resolves auto via system
+  const [appearance, setAppearance] = React.useState(() => {
+    try { return localStorage.getItem("appearance") || "auto"; } catch { return "auto"; }
+  });
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      const resolved = appearance === "auto"
+        ? (mq.matches ? "dark" : "light")
+        : appearance;
+      root.setAttribute("data-appearance", resolved);
+    };
+    apply();
+    try { localStorage.setItem("appearance", appearance); } catch {}
+    if (appearance === "auto") {
+      mq.addEventListener("change", apply);
+      return () => mq.removeEventListener("change", apply);
+    }
+  }, [appearance]);
+
   // Live data state — synced to Firebase RTDB, live across devices/users
   const [tasks,     setTasks]     = useRtdbState("tasks",     INITIAL_TASKS);
   const [people,    setPeople]    = useRtdbState("people",    INITIAL_PEOPLE);
@@ -63,7 +84,8 @@ function App() {
       <Header
         page={page} onPageChange={setPage}
         subTab={subTab} onSubTabChange={setSubTab}
-        dashTabs={dashTabs}/>
+        dashTabs={dashTabs}
+        appearance={appearance} onAppearanceChange={setAppearance}/>
 
       <main style={{
         maxWidth: 1440, margin: "0 auto",

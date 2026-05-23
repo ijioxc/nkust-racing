@@ -1,6 +1,13 @@
 // Header.jsx — top-level page nav (Dashboard / Blueprint / Essay) + sub-tabs
 
-function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
+function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearance = "auto", onAppearanceChange }) {
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  React.useEffect(() => {
+    if (!settingsOpen) return;
+    const close = () => setSettingsOpen(false);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [settingsOpen]);
   return (
     <div style={hdrStyles.bar}>
       <header style={{ ...hdrStyles.inner, fontFamily: "-apple-system" }}>
@@ -39,6 +46,47 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
         <div style={hdrStyles.actions}>
           <button style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
           <button style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
+
+          {/* Settings — appearance toggle */}
+          <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
+            <button style={{ ...hdrStyles.hdrBtn, color: settingsOpen ? "var(--blue)" : "var(--label-secondary)", background: settingsOpen ? "var(--fill-tertiary)" : "transparent" }}
+              title="設定" onClick={() => setSettingsOpen(v => !v)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </button>
+
+            {settingsOpen && (
+              <div style={hdrStyles.settingsPanel}>
+                <div style={hdrStyles.settingsLabel}>外觀 · APPEARANCE</div>
+                <div style={hdrStyles.appearanceRow}>
+                  {[
+                    { id: "light", label: "淺色", icon: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4", circle: true },
+                    { id: "dark",  label: "深色", moon: true },
+                    { id: "auto",  label: "自動", auto: true },
+                  ].map(opt => {
+                    const active = appearance === opt.id;
+                    return (
+                      <button key={opt.id} onClick={() => onAppearanceChange?.(opt.id)}
+                        style={{ ...hdrStyles.appearanceBtn,
+                          background: active ? "var(--blue)" : "var(--fill-tertiary)",
+                          color: active ? "#fff" : "var(--label-secondary)",
+                        }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          {opt.circle && <><circle cx="12" cy="12" r="4"/><path d={opt.icon}/></>}
+                          {opt.moon && <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>}
+                          {opt.auto && <><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></>}
+                        </svg>
+                        <span style={{ fontSize: 12, fontWeight: 600 }}>{opt.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           <Avatar name="陳" size={26} dark />
         </div>
       </header>
@@ -73,11 +121,11 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
 const hdrStyles = {
   bar: {
     position: "sticky", top: 0, zIndex: 100,
-    background: "rgba(255,255,255,0.62)",
+    background: "var(--header-bg)",
     backdropFilter: "saturate(180%) blur(28px)",
     WebkitBackdropFilter: "saturate(180%) blur(28px)",
-    borderBottom: "0.5px solid rgba(0,0,0,0.06)",
-    boxShadow: "0 1px 0 rgba(0,0,0,0.03)"
+    borderBottom: "0.5px solid var(--header-border)",
+    boxShadow: "var(--header-shadow)"
   },
   inner: {
     display: "flex", alignItems: "center", height: 52,
@@ -123,6 +171,29 @@ const hdrStyles = {
     display: "flex", alignItems: "center", justifyContent: "center",
     transition: "background .15s, transform .1s",
     marginInline: -6,                 /* compensate extra touch area */
+  },
+  settingsPanel: {
+    position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 200,
+    background: "var(--bg-secondary)",
+    border: "0.5px solid var(--separator)",
+    borderRadius: "var(--radius-lg)",
+    boxShadow: "var(--shadow-3)",
+    padding: 12, minWidth: 220,
+    backdropFilter: "blur(40px) saturate(180%)",
+    WebkitBackdropFilter: "blur(40px) saturate(180%)",
+    animation: "modal-pop .25s var(--ease-out)",
+  },
+  settingsLabel: {
+    fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
+    textTransform: "uppercase", color: "var(--label-tertiary)",
+    marginBottom: 8, paddingInline: 2,
+  },
+  appearanceRow: { display: "flex", gap: 6 },
+  appearanceBtn: {
+    flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+    gap: 6, padding: "10px 6px", border: "none",
+    borderRadius: "var(--radius-sm)", cursor: "pointer",
+    fontFamily: "inherit", transition: "background .15s, color .15s",
   },
   subBar: {
     background: "transparent"

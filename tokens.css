@@ -52,6 +52,11 @@
   --shadow-4: 0 16px 40px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.06);
   --shadow-modal: 0 32px 80px rgba(13,10,8,0.22);
 
+  /* ── Header / toolbar chrome (adapts in dark) ── */
+  --header-bg:     rgba(255,255,255,0.72);
+  --header-border: rgba(0,0,0,0.08);
+  --header-shadow: 0 1px 0 rgba(0,0,0,0.03);
+
   /* ── 同心圓角 (Concentric Radius) ── */
   --radius-xs:   6px;
   --radius-sm:   10px;
@@ -166,55 +171,59 @@
   --num-features: 'tnum' 1, 'ss01' 1, 'cv11' 1;
 }
 
-/* ── Dark Mode ── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary:       #000000;
-    --bg-secondary:     #1C1C1E;
-    --bg-tertiary:      #2C2C2E;
-    --bg-grouped:       #000000;
+/* ── Dark Mode — toggled via :root[data-appearance="dark"]
+   (App.jsx resolves "auto" against prefers-color-scheme and sets a concrete value) ── */
+:root[data-appearance="dark"] {
+  --bg-primary:       #000000;
+  --bg-secondary:     #1C1C1E;
+  --bg-tertiary:      #2C2C2E;
+  --bg-grouped:       #000000;
 
-    --label-primary:    #FFFFFF;
-    --label-secondary:  rgba(235,235,245,0.60);
-    --label-tertiary:   rgba(235,235,245,0.30);
-    --label-quaternary: rgba(235,235,245,0.18);
+  --label-primary:    #FFFFFF;
+  --label-secondary:  rgba(235,235,245,0.60);
+  --label-tertiary:   rgba(235,235,245,0.30);
+  --label-quaternary: rgba(235,235,245,0.18);
 
-    --separator:        rgba(84,84,88,0.65);
-    --separator-opaque: #38383A;
+  --separator:        rgba(84,84,88,0.65);
+  --separator-opaque: #38383A;
 
-    --blue:    #0A84FF;
-    --green:   #30D158;
-    --orange:  #FF9F0A;
-    --red:     #FF453A;
-    --yellow:  #FFD60A;
-    --purple:  #BF5AF2;
-    --teal:    #64D2FF;
-    --indigo:  #5E5CE6;
-    --pink:    #FF375F;
+  --blue:    #0A84FF;
+  --green:   #30D158;
+  --orange:  #FF9F0A;
+  --red:     #FF453A;
+  --yellow:  #FFD60A;
+  --purple:  #BF5AF2;
+  --teal:    #64D2FF;
+  --indigo:  #5E5CE6;
+  --pink:    #FF375F;
 
-    --fill-primary:    rgba(118,118,128,0.36);
-    --fill-secondary:  rgba(118,118,128,0.32);
-    --fill-tertiary:   rgba(118,118,128,0.24);
-    --fill-quaternary: rgba(118,118,128,0.18);
+  --fill-primary:    rgba(118,118,128,0.36);
+  --fill-secondary:  rgba(118,118,128,0.32);
+  --fill-tertiary:   rgba(118,118,128,0.24);
+  --fill-quaternary: rgba(118,118,128,0.18);
 
-    --accent-bg:  rgba(10,132,255,0.12);
-    --accent-mid: rgba(10,132,255,0.22);
+  --accent-bg:  rgba(10,132,255,0.12);
+  --accent-mid: rgba(10,132,255,0.22);
 
-    --status-high-bg: rgba(255,69,58,0.15);
-    --status-mid-bg:  rgba(255,159,10,0.15);
-    --status-low-bg:  rgba(48,209,88,0.15);
+  --status-high-bg: rgba(255,69,58,0.15);
+  --status-mid-bg:  rgba(255,159,10,0.15);
+  --status-low-bg:  rgba(48,209,88,0.15);
 
-    --glass-fill:        color-mix(in srgb, var(--bg-secondary) 72%, transparent);
-    --glass-fill-strong: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
-    --glass-fill-soft:   color-mix(in srgb, var(--bg-secondary) 60%, transparent);
-    --glass-border:      0.5px solid color-mix(in srgb, var(--label-primary) 12%, transparent);
-    --glass-highlight:   inset 0 1px 0 rgba(255,255,255,0.08);
+  --glass-fill:        color-mix(in srgb, var(--bg-secondary) 72%, transparent);
+  --glass-fill-strong: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
+  --glass-fill-soft:   color-mix(in srgb, var(--bg-secondary) 60%, transparent);
+  --glass-border:      0.5px solid color-mix(in srgb, var(--label-primary) 12%, transparent);
+  --glass-highlight:   inset 0 1px 0 rgba(255,255,255,0.08);
 
-    --shadow-1: 0 1px 2px rgba(0,0,0,0.20), 0 1px 3px rgba(0,0,0,0.15);
-    --shadow-2: 0 2px 8px rgba(0,0,0,0.30), 0 1px 3px rgba(0,0,0,0.15);
-    --shadow-3: 0 8px 24px rgba(0,0,0,0.40), 0 2px 6px rgba(0,0,0,0.15);
-    --shadow-4: 0 16px 40px rgba(0,0,0,0.50), 0 4px 10px rgba(0,0,0,0.20);
-  }
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.20), 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.30), 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-3: 0 8px 24px rgba(0,0,0,0.40), 0 2px 6px rgba(0,0,0,0.15);
+  --shadow-4: 0 16px 40px rgba(0,0,0,0.50), 0 4px 10px rgba(0,0,0,0.20);
+
+  /* Header chrome — dark frosted */
+  --header-bg:     rgba(28,28,30,0.72);
+  --header-border: rgba(255,255,255,0.10);
+  --header-shadow: 0 1px 0 rgba(0,0,0,0.30);
 }
 
 /* ============================================================
