@@ -122,14 +122,6 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      {/* HERO: focus task + KPI row — 1.6fr + 3×1fr */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr", gap: "var(--gap-card)" }}>
-        <FocusCard task={focused} onClick={() => focused && openTask(focused)}/>
-        <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`} foot="工作中"/>
-        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`}       foot="準時" accent/>
-        <KPI label="DONE"    value={donePct} unit="%"                   foot="本季完成率"/>
-      </div>
-
       {/* Mini bento preview */}
       <div>
         <SectionHead title="本週 Bento · This Week" hint={`${tasks.length} TASKS`}/>
