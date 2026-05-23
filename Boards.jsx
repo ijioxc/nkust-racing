@@ -8,7 +8,7 @@ function PartsView({ suppliers, setSuppliers }) {
   const [preview, setPreview] = React.useState(null);  // supplier being previewed
   const [confirm, setConfirm] = React.useState(null);
   const [drag, setDrag] = React.useState(null);     // dragged supplier id
-  const [overCat, setOverCat] = React.useState(null); // target column cat
+  const [overSub, setOverSub] = React.useState(null); // target column sub
 
   const save = (s) => setSuppliers(prev => {
     if (s.id) return prev.map(x => x.id === s.id ? { ...x, ...s } : x);
@@ -17,13 +17,13 @@ function PartsView({ suppliers, setSuppliers }) {
   const remove = (s) => setSuppliers(prev => prev.filter(x => x.id !== s.id));
 
   const onDragStart = (id) => () => setDrag(id);
-  const onDragEnd = () => { setDrag(null); setOverCat(null); };
-  const onDragOver = (cat) => (e) => { e.preventDefault(); setOverCat(cat); };
-  const onDrop = (cat) => (e) => {
+  const onDragEnd = () => { setDrag(null); setOverSub(null); };
+  const onDragOver = (sub) => (e) => { e.preventDefault(); setOverSub(sub); };
+  const onDrop = (sub) => (e) => {
     e.preventDefault();
     if (!drag) return;
-    setSuppliers(prev => prev.map(x => x.id === drag ? { ...x, cat } : x));
-    setDrag(null); setOverCat(null);
+    setSuppliers(prev => prev.map(x => x.id === drag ? { ...x, sub } : x));
+    setDrag(null); setOverSub(null);
   };
 
   // Aggregate stats
@@ -41,22 +41,27 @@ function PartsView({ suppliers, setSuppliers }) {
         <KPI label="SPONSOR"   value={sponsor} foot="贊助申請中"/>
       </div>
 
-      <SectionHead title="零件供應商 · Suppliers" hint={`${total} ITEMS · KANBAN BY CATEGORY`}
+      <SectionHead title="零件供應商 · Suppliers" hint={`${total} ITEMS · KANBAN BY SYSTEM`}
         action={<Button variant="primary" icon="plus"
           onClick={() => setEditing({ open: true, initial: null })}>新增項目</Button>}/>
 
       <div style={{
         display: "grid",
-        gridTemplateColumns: `repeat(${SUPPLIER_CATEGORIES.length}, 1fr)`,
+        gridTemplateColumns: `repeat(${SUBSYSTEMS.length}, 1fr)`,
         gap: 10, alignItems: "start",
       }}>
-        {SUPPLIER_CATEGORIES.map(cat => {
-          const items = suppliers.filter(s => s.cat === cat);
-          const isOver = overCat === cat;
+        {SUBSYSTEMS.map(sub => {
+          const items = suppliers
+            .filter(s => s.sub === sub)
+            .sort((a, b) => {
+              const pWeight = { HIGH: 3, MID: 2, LOW: 1 };
+              return (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0);
+            });
+          const isOver = overSub === sub;
           return (
-            <div key={cat}
-              onDragOver={onDragOver(cat)}
-              onDrop={onDrop(cat)}
+            <div key={sub}
+              onDragOver={onDragOver(sub)}
+              onDrop={onDrop(sub)}
               className={`tcard ${isOver ? "drag-over" : ""}`}
               style={{
                 padding: 12, display: "flex", flexDirection: "column", gap: 8,
@@ -72,8 +77,8 @@ function PartsView({ suppliers, setSuppliers }) {
                 borderBottom: "0.5px solid var(--rule)",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <SubsystemIcon kind={items[0]?.sub || "其他"} size={12} color={SUBSYSTEM_COLOR[items[0]?.sub || "其他"]}/>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{cat}</span>
+                  <SubsystemIcon kind={sub} size={12} color={SUBSYSTEM_COLOR[sub]}/>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{sub}</span>
                 </div>
                 <span className="eyebrow">{items.length}</span>
               </div>
@@ -94,7 +99,7 @@ function PartsView({ suppliers, setSuppliers }) {
                   border: "1px dashed var(--rule)", borderRadius: 8,
                 }}>EMPTY</div>
               )}
-              <button onClick={() => setEditing({ open: true, initial: { cat, sub: "其他", priority: "MID", status: "詢價" } })}
+              <button onClick={() => setEditing({ open: true, initial: { sub, status: "詢價" } })}
                 style={{
                   padding: "8px 10px", borderRadius: 8,
                   background: "transparent", border: "0.5px dashed var(--rule)",
@@ -154,26 +159,6 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
           display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap",
         }}>
           {supplier.name}
-          {supplier.url && (
-            <a
-              href={supplier.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                display: "inline-flex",
-                color: "var(--accent)",
-                opacity: 0.6,
-                transition: "opacity 0.2s, transform 0.2s",
-                padding: "2px 4px",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.transform = "scale(1.15)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.6; e.currentTarget.style.transform = "scale(1)"; }}
-              title="前往官方網站"
-            >
-              <UIIcon kind="external" size={11} />
-            </a>
-          )}
         </div>
         <span className="drag-handle" style={{ flexShrink: 0, marginTop: 1 }}>
           <UIIcon kind="grip" size={12}/>
@@ -185,29 +170,37 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
       }}>{supplier.price}</div>
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6,
-        marginTop: 2,
+        marginTop: 2, height: 20, // Provide some fixed height so it doesn't collapse if empty
       }}>
-        <span style={{
-          display: "inline-flex", alignItems: "center", gap: 4,
-          padding: "3px 10px", borderRadius: "var(--radius-full)",
-          background: tone.bg, color: tone.fg,
-          fontFamily: "var(--font-sans)", fontSize: 11, fontWeight: 600,
-          letterSpacing: "0.02em",
-        }}>{tone.label}</span>
-        <span className={`pill ${prioTone}`}>{supplier.priority}</span>
-      </div>
-      <div style={{
-        fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--label-tertiary)",
-        letterSpacing: "0.06em", textTransform: "uppercase",
-        display: "flex", justifyContent: "space-between",
-      }}>
-        <span>FROM · {supplier.origin}</span>
+        <div title={tone.label} style={{
+          width: 8, height: 8, borderRadius: "50%", background: tone.fg,
+          flexShrink: 0
+        }} />
+        {supplier.url && (
+          <a
+            href={supplier.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: "inline-flex",
+              color: "var(--label-secondary)",
+              transition: "color 0.2s",
+              padding: "2px 4px",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--ink)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--label-secondary)"; }}
+            title="前往官方網站"
+          >
+            <UIIcon kind="external" size={12} />
+          </a>
+        )}
       </div>
     </div>
   );
 }
 
-// ─── SupplierPreview — 放大預覽（建於共用 DetailPreview）───
+// ─── SupplierPreview — 放大預覽（建於共用 GlassModal）───
 function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
   if (!supplier) return null;
   const tone = STATUS_TONES[supplier.status] || STATUS_TONES["詢價"];
@@ -215,14 +208,18 @@ function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
   const color = SUBSYSTEM_COLOR[supplier.sub] || "var(--blue)";
 
   return (
-    <DetailPreview
+    <GlassModal
       onClose={onClose}
-      width={440}
-      hero={{
-        color: `color-mix(in srgb, ${color} 14%, var(--bg-secondary))`,
-        icon: <SubsystemIcon kind={supplier.sub} size={30} color={color}/>,
-        height: 150,
-      }}
+      color={color}
+      node={
+        <div style={{
+          position: "relative", width: 120, height: 120, borderRadius: 24,
+          background: `color-mix(in srgb, ${color} 20%, transparent)`,
+          display: "flex", alignItems: "center", justifyContent: "center"
+        }}>
+          <SubsystemIcon kind={supplier.sub} size={64} color={color}/>
+        </div>
+      }
       badges={<>
         <span style={{
           display: "inline-flex", alignItems: "center",
@@ -231,23 +228,21 @@ function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
           fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
           backdropFilter: "blur(8px)",
         }}>{tone.label}</span>
-        <span className={`pill ${prioTone}`}>{supplier.priority}</span>
       </>}
       title={supplier.name}
       subtitle={supplier.cat ? `${supplier.cat} · ${supplier.sub}` : supplier.sub}
       meta={[
         { label: "估算價格", value: supplier.price || "—" },
         { label: "採購狀態", value: tone.label },
-        { label: "產地", value: supplier.origin || "—" },
         ...(supplier.url ? [{ label: "官網", value: getDomain(supplier.url), href: supplier.url }] : []),
       ]}
-      footer={<>
-        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+      actions={<>
+        <IconBtn danger icon="trash" style={{ marginRight: "auto" }} onClick={onDelete} title="刪除" />
         {supplier.url && (
-          <Button variant="ghost" icon="external"
-            onClick={() => window.open(supplier.url, "_blank", "noopener")}>開啟連結</Button>
+          <IconBtn icon="external"
+            onClick={() => window.open(supplier.url, "_blank", "noopener")} title="開啟連結" />
         )}
-        <Button variant="primary" icon="edit" onClick={onEdit}>編輯</Button>
+        <IconBtn icon="edit" onClick={onEdit} title="編輯" />
       </>}
     />
   );
@@ -255,23 +250,31 @@ function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
 
 // ─── Supplier Schema & Modal Wrapper ────────────────────────
 const SUPPLIER_SCHEMA = [
-  { key: "name", label: "項目名稱", type: "text", placeholder: "例： OZ Racing 方程式輪圈", autoFocus: true },
-  { key: "sub", label: "子系統分類", type: "subsystem" },
-  { key: "cat", label: "零件類別", type: "select", options: ["輪圈", "輪胎", "煞車", "引擎", "電裝", "其他"] },
-  { key: "origin", label: "產地", type: "text", placeholder: "例：義大利" },
-  { key: "price", label: "估算價格", type: "text", placeholder: "$0 / set" },
-  { key: "status", label: "採購狀態", type: "select", options: ["詢價", "比較中", "已下單", "已收到", "贊助申請", "備案"] },
-  { key: "url", label: "網頁連結（選填）", type: "text", placeholder: "https://..." },
-  { key: "priority", label: "採購優先度", type: "segmented", options: [
-    { value: "HIGH", label: "高 · HIGH" },
-    { value: "MID", label: "中 · MID" },
-    { value: "LOW", label: "低 · LOW" },
+  { key: "name", label: "名稱", type: "text", placeholder: "例： OZ Racing 方程式輪圈", autoFocus: true },
+  { key: "sub", label: "系統", type: "segmented", options: [
+    { value: "車體", label: "車體" },
+    { value: "引擎", label: "引擎" },
+    { value: "懸吊", label: "懸吊" },
+    { value: "煞車", label: "煞車" },
+    { value: "電裝", label: "電裝" },
+    { value: "空力", label: "空力" },
+    { value: "其他", label: "其他" }
   ]},
+  { key: "status", label: "採購", type: "segmented", options: [
+    { value: "詢價", label: "詢價" },
+    { value: "比較中", label: "比較中" },
+    { value: "已下單", label: "已下單" },
+    { value: "已收到", label: "已收到" },
+    { value: "贊助申請", label: "贊助申請" },
+    { value: "備案", label: "備案" }
+  ]},
+  { key: "price", label: "價格", type: "text", placeholder: "$0 / set" },
+  { key: "url", label: "連結", type: "text", placeholder: "https://..." },
 ];
 
 function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
-  const blank = { name: "", price: "", cat: "輪圈", sub: "車體",
-                  priority: "MID", status: "詢價", origin: "", url: "" };
+  const blank = { name: "", price: "", sub: "車體",
+                  status: "詢價", url: "" };
   return (
     <DynamicEditorModal
       open={open}
@@ -583,16 +586,11 @@ function ResourcePreview({ item, onClose, onEdit, onDelete }) {
   const prioLabel = item.priority === "HIGH" ? "高 · HIGH" : item.priority === "MID" ? "中 · MID" : "低 · LOW";
 
   return (
-    <DetailPreview
+    <GlassModal
       onClose={onClose}
-      width={480}
-      hero={{
-        cover: item.cover,
-        color: theme.tint,
-        fg: theme.color,
-        monogram,
-        height: 180,
-      }}
+      color={theme.color}
+      cover={item.cover}
+      monogram={item.cover ? null : monogram}
       badges={<>
         <span style={{
           fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
@@ -607,19 +605,19 @@ function ResourcePreview({ item, onClose, onEdit, onDelete }) {
         }}>{prioLabel}</span>
       </>}
       title={item.name}
-      body={item.note}
+      subtitle={item.note}
       meta={[
         { label: "機構 / 作者", value: item.org || "—" },
         { label: "日期 / 類型", value: item.date || "—" },
         ...(item.url ? [{ label: "連結", value: getDomain(item.url), href: item.url }] : []),
       ]}
-      footer={<>
-        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+      actions={<>
+        <IconBtn danger icon="trash" style={{ marginRight: "auto" }} onClick={onDelete} title="刪除" />
         {item.url && (
-          <Button variant="ghost" icon="external"
-            onClick={() => window.open(item.url, "_blank", "noopener")}>開啟連結</Button>
+          <IconBtn icon="external"
+            onClick={() => window.open(item.url, "_blank", "noopener")} title="開啟連結" />
         )}
-        <Button variant="primary" icon="edit" onClick={onEdit}>編輯</Button>
+        <IconBtn icon="edit" onClick={onEdit} title="編輯" />
       </>}
     />
   );

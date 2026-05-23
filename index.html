@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="tokens.css?v=32">
 <link rel="stylesheet" href="themes.css?v=32">
 <style>
+  html { scrollbar-gutter: stable; }
   html, body { margin: 0; }
   body {
     background: var(--page-bg);
@@ -46,7 +47,10 @@
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "yjs": "https://cdn.jsdelivr.net/npm/yjs@13.6.14/+esm",
+    "y-indexeddb": "https://cdn.jsdelivr.net/npm/y-indexeddb@9.0.12/+esm",
+    "y-webrtc": "https://cdn.jsdelivr.net/npm/y-webrtc@10.3.0/+esm"
   }
 }
 </script>
@@ -69,18 +73,18 @@
   }
 </script>
 
-<script type="text/babel" src="tweaks-panel.jsx?v=32"></script>
-<script type="text/babel" src="data.js?v=32"></script>
-<script type="text/babel" src="icons.jsx?v=32"></script>
-<script type="text/babel" src="atoms.jsx?v=32"></script>
-<script type="text/babel" src="Modal.jsx?v=32"></script>
-<script type="text/babel" src="Header.jsx?v=32"></script>
-<script type="text/babel" src="Dashboard.jsx?v=32"></script>
-<script type="text/babel" src="Boards.jsx?v=32"></script>
-<script type="text/babel" src="Blueprint.jsx?v=32"></script>
-<script type="text/babel" src="EssayWidgets.jsx?v=32"></script>
-<script type="text/babel" src="Essay.jsx?v=32"></script>
-<script type="text/babel" src="App.jsx?v=32"></script>
+<script type="text/babel" src="tweaks-panel.jsx?v=39"></script>
+<script type="text/babel" src="data.js?v=39"></script>
+<script type="text/babel" src="icons.jsx?v=39"></script>
+<script type="text/babel" src="atoms.jsx?v=39"></script>
+<script type="text/babel" src="Modal.jsx?v=39"></script>
+<script type="text/babel" src="Header.jsx?v=39"></script>
+<script type="text/babel" src="Dashboard.jsx?v=39"></script>
+<script type="text/babel" src="Boards.jsx?v=39"></script>
+<script type="text/babel" src="Blueprint.jsx?v=39"></script>
+<script type="text/babel" src="EssayWidgets.jsx?v=39"></script>
+<script type="text/babel" src="Essay.jsx?v=39"></script>
+<script type="text/babel" src="App.jsx?v=39"></script>
 
 <script type="text/babel">
   const root = ReactDOM.createRoot(document.getElementById("root"));

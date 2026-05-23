@@ -101,7 +101,7 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
       )}
 
       {taskPreview && (
-        <TaskPreview task={taskPreview}
+        <BentoPreviewModal task={taskPreview}
           onClose={() => setTaskPreview(null)}
           onEdit={() => { setTaskModal({ open: true, initial: taskPreview }); setTaskPreview(null); }}
           onDelete={() => { setConfirm({ kind: "task", target: taskPreview }); setTaskPreview(null); }}/>
@@ -563,6 +563,35 @@ function BentoBoard({ tasks, onTaskClick }) {
   );
 }
 
+// ─── ActivityRing (供 BentoPreviewModal 使用) ───
+function ActivityRing({ progress, size, strokeWidth, color }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (Math.min(progress, 100) / 100) * circumference;
+  
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)", display: "block" }}>
+      <circle
+        cx={size / 2} cy={size / 2} r={radius}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        style={{ opacity: 0.1, color: color }}
+      />
+      <circle
+        cx={size / 2} cy={size / 2} r={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        style={{ transition: "stroke-dashoffset 0.8s var(--ease-out)" }}
+      />
+    </svg>
+  );
+}
+
 function BentoCard({ task, onClick }) {
   const { subsystem, title, progress, start, span, size = "1x1", state, owner } = task;
   const isFocus = state === "focus";
@@ -633,45 +662,52 @@ function BentoCard({ task, onClick }) {
   );
 }
 
-// ─── TaskPreview — 任務放大預覽（建於共用 DetailPreview，含環形進度）───
+// ─── BentoPreviewModal (簡覽) ───
 const TASK_STATE_LABEL = { focus: "本週焦點", done: "已完成", active: "進行中" };
-function TaskPreview({ task, onClose, onEdit, onDelete }) {
+
+function BentoPreviewModal({ task, onClose, onEdit, onDelete }) {
   if (!task) return null;
-  const color = SUBSYSTEM_COLOR[task.subsystem] || "var(--blue)";
-  const prioTone = task.priority === "HIGH" ? "high" : task.priority === "MID" ? "mid" : "low";
+  const color = window.SUBSYSTEM_COLOR?.[task.subsystem] || "var(--blue)";
+  const stateLabel = TASK_STATE_LABEL[task.state] || "進行中";
   const daysToEnd = (task.start || 0) + (task.span || 0) - 5;
   const schedule = daysToEnd === 0 ? "本週到期"
     : daysToEnd < 0 ? `已逾期 ${-daysToEnd} 週` : `剩 ${daysToEnd} 週`;
-  const stateLabel = TASK_STATE_LABEL[task.state] || "進行中";
 
   return (
-    <DetailPreview
+    <GlassModal
       onClose={onClose}
-      width={440}
-      hero={{
-        color: `color-mix(in srgb, ${color} 14%, var(--bg-secondary))`,
-        ringValue: task.progress || 0,
-        height: 168,
-      }}
-      badges={<>
-        <span className={`pill ${prioTone}`}>{task.priority || "—"}</span>
-        <span style={{
-          padding: "3px 10px", borderRadius: "var(--radius-full)",
-          background: "var(--bg-secondary)", color: task.state === "focus" ? "var(--blue)" : "var(--label-secondary)",
-          fontSize: 11, fontWeight: 600, backdropFilter: "blur(8px)",
-        }}>{stateLabel}</span>
-      </>}
+      color={color}
       title={task.title}
-      tags={[<SubsystemTag key="s" kind={task.subsystem} size="sm"/>]}
+      subsystem={task.subsystem}
+      node={
+        <div style={{ position: "relative", width: 140, height: 140 }}>
+          <ActivityRing progress={task.progress || 0} size={140} strokeWidth={16} color={color} />
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: 36, letterSpacing: "-0.04em",
+            color: "var(--ink)",
+          }}>
+            {task.progress || 0}%
+          </div>
+        </div>
+      }
+      badges={
+        <span style={{
+          fontSize: 14, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+          color: color,
+        }}>
+          {task.subsystem}
+        </span>
+      }
       meta={[
         { label: "負責人", value: task.owner || "—" },
-        { label: "進度", value: `${task.progress || 0}%` },
         { label: "期程", value: `W${task.start} – W${(task.start || 0) + (task.span || 0)} · ${schedule}` },
-        { label: "狀態", value: stateLabel },
+        { label: "優先度", value: task.priority || "—" },
+        { label: "狀態", value: stateLabel }
       ]}
-      footer={<>
-        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
-        <Button variant="primary" icon="edit" onClick={onEdit}>編輯任務</Button>
+      actions={<>
+        {onDelete && <IconBtn danger icon="trash" style={{ marginRight: "auto" }} onClick={() => onDelete(task)} title="刪除" />}
+        {onEdit && <IconBtn icon="edit" onClick={() => onEdit(task)} title="編輯" />}
       </>}
     />
   );
@@ -1401,20 +1437,14 @@ function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
   const hasTags = person.workTypes?.length > 0;
 
   return (
-    <DetailPreview
+    <GlassModal
       onClose={onClose}
-      width={420}
-      hero={{
-        color: `color-mix(in srgb, ${posColor} 14%, var(--bg-secondary))`,
-        node: <Avatar name={person.name} size={84}/>,
-        height: 150,
-      }}
+      color={posColor}
+      node={<Avatar name={person.name} size={120}/>}
       badges={
         <span style={{
-          fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
-          padding: "3px 10px", borderRadius: "var(--radius-full)",
-          background: "var(--bg-secondary)", color: posColor,
-          backdropFilter: "blur(8px)",
+          fontSize: 12, fontWeight: 700, letterSpacing: "0.04em",
+          color: posColor,
         }}>{person.position}</span>
       }
       title={person.name}
@@ -1426,9 +1456,9 @@ function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
         { label: "系所", value: person.department || "—" },
         { label: "年級", value: person.grade || "—" },
       ]}
-      footer={<>
-        <Button variant="danger" icon="trash" onClick={() => { onDelete(person); onClose(); }}>移除</Button>
-        <Button variant="primary" icon="edit" onClick={() => onEdit(person)}>編輯名片</Button>
+      actions={<>
+        <IconBtn danger icon="trash" style={{ marginRight: "auto" }} onClick={() => { onDelete(person); onClose(); }} title="刪除" />
+        <IconBtn icon="edit" onClick={() => onEdit(person)} title="編輯" />
       </>}
     />
   );

@@ -34,11 +34,12 @@ function Button({ children, variant = "default", icon, onClick, type, title, sty
   );
 }
 
-function IconBtn({ icon, onClick, title, size = 28, danger = false }) {
+function IconBtn({ icon, onClick, title, size = 28, danger = false, style, className }) {
   const [hover, setHover] = React.useState(false);
   return (
     <button
       type="button"
+      className={className}
       onClick={onClick}
       title={title}
       onMouseEnter={() => setHover(true)}
@@ -50,6 +51,7 @@ function IconBtn({ icon, onClick, title, size = 28, danger = false }) {
         border: 0, borderRadius: "var(--radius-sm)", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
         transition: "background .15s",
+        ...style,
       }}>
       <UIIcon kind={icon} size={Math.round(size * 0.46)} />
     </button>
@@ -199,16 +201,27 @@ function ConfirmDialog({ open, onClose, onConfirm, title, body }) {
 }
 
 // ─── Premium Segmented Control ───
-function SegmentedControl({ options, value, onChange, style }) {
+function SegmentedControl({ options, value, onChange, style, multiple }) {
   return (
     <div className="segmented-control" style={style}>
       {options.map(opt => {
-        const active = opt.value === value;
+        const active = multiple ? (value || []).includes(opt.value) : opt.value === value;
         return (
           <button
             key={opt.value}
             type="button"
-            onClick={() => onChange(opt.value)}
+            onClick={() => {
+              if (multiple) {
+                const current = value || [];
+                if (current.includes(opt.value)) {
+                  onChange(current.filter(v => v !== opt.value));
+                } else {
+                  onChange([...current, opt.value]);
+                }
+              } else {
+                onChange(opt.value);
+              }
+            }}
             className={`segmented-item ${active ? "active" : ""}`}
           >
             {opt.label}
@@ -337,23 +350,24 @@ function GlowingSlider({ min = 0, max = 100, step = 1, value, onChange, label = 
 //   footer                  底部動作節點（編輯/刪除/開連結）
 //   width                   預設 480
 // ─────────────────────────────────────────────────────────────
-function RingProgress({ value = 0, size = 64, stroke = 6, color = "var(--blue)" }) {
+function RingProgress({ value = 0, size = 120, stroke = 12, color = "var(--blue)" }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const v = Math.max(0, Math.min(100, value));
   return (
     <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--fill-tertiary)" strokeWidth={stroke}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="currentColor" strokeOpacity={0.1} strokeWidth={stroke}/>
         <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
           strokeDasharray={c} strokeDashoffset={c * (1 - v/100)} strokeLinecap="round"
           style={{ transition: "stroke-dashoffset .6s cubic-bezier(0.4,0,0.2,1)" }}/>
       </svg>
       <div style={{
         position: "absolute", inset: 0, display: "flex", alignItems: "center",
-        justifyContent: "center", fontSize: size*0.26, fontWeight: 700,
+        justifyContent: "center", fontSize: size*0.28, fontWeight: 800,
+        fontFamily: "'SF Pro Rounded', 'SF Pro Display', sans-serif",
         color: "var(--label-primary)", fontFeatureSettings: "'tnum'",
-      }}>{v}<span style={{ fontSize: size*0.15, fontWeight: 600, opacity: 0.5 }}>%</span></div>
+      }}>{v}<span style={{ fontSize: size*0.15, fontWeight: 700, opacity: 0.5 }}>%</span></div>
     </div>
   );
 }
@@ -422,31 +436,32 @@ function DetailPreview({
 
         <div ref={cardRef} style={{
           width: "100%", maxHeight: "88vh", display: "flex", flexDirection: "column",
-          /* WWDC25 sheet 材質：毛玻璃 + 細描邊 + 高光 */
-          background: "var(--glass-fill-strong)",
-          backdropFilter: "blur(30px) saturate(180%)", WebkitBackdropFilter: "blur(30px) saturate(180%)",
-          border: "0.5px solid var(--separator)", borderRadius: "var(--radius-2xl)",
-          overflow: "hidden", boxShadow: "var(--card-highlight), var(--shadow-modal)",
+          background: "var(--bg-secondary)",
+          borderRadius: "var(--radius-2xl)",
+          overflow: "hidden", boxShadow: "var(--shadow-modal)",
           animation: "detail-zoom .34s var(--ease-spring, cubic-bezier(0.32,0.72,0,1))",
         }}>
           {/* HERO（固定，不捲動） */}
           <div style={{
-            height, flexShrink: 0, position: "relative",
-            background: cover ? `url('${cover}') center/cover` : heroColor,
+            height: cover ? height : "auto", flexShrink: 0, position: "relative",
+            background: cover ? `url('${cover}') center/cover` : "transparent",
             display: "flex", alignItems: "center", justifyContent: "center",
+            paddingTop: cover ? 0 : 40, paddingBottom: cover ? 0 : 20,
           }}>
             {!cover && node}
             {!cover && !node && ringValue !== undefined && <RingProgress value={ringValue}/>}
             {!cover && !node && ringValue === undefined && (icon ? (
               <div style={{
-                width: 72, height: 72, borderRadius: "var(--radius-lg)",
-                background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
+                width: 72, height: 72, borderRadius: "20px",
+                background: "var(--fill-tertiary)",
+                backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>{icon}</div>
             ) : monogram ? (
               <div style={{
-                width: 72, height: 72, borderRadius: "var(--radius-lg)",
-                background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
+                width: 72, height: 72, borderRadius: "20px",
+                background: "var(--fill-tertiary)",
+                backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 30, fontWeight: 800, color: monoColor,
               }}>{monogram}</div>
@@ -472,18 +487,18 @@ function DetailPreview({
 
           {/* BODY（唯一捲動區，高度受 88vh 限制 → 不巢狀捲動） */}
           <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "18px 22px 8px" }} className="scroll-soft">
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--label-primary)", margin: 0, lineHeight: 1.25 }}>{title}</h2>
-            {subtitle && <div style={{ fontSize: 13, color: "var(--label-secondary)", marginTop: 4 }}>{subtitle}</div>}
+            <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--label-primary)", margin: 0, lineHeight: 1.25, fontFamily: "'SF Pro Display', sans-serif" }}>{title}</h2>
+            {subtitle && <div style={{ fontSize: 14, color: "var(--label-secondary)", marginTop: 4 }}>{subtitle}</div>}
             {body && <p style={{ fontSize: 15, color: "var(--label-secondary)", lineHeight: 1.6, marginTop: 10, whiteSpace: "pre-wrap", textWrap: "pretty" }}>{body}</p>}
             {tags && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 14 }}>{tags}</div>}
 
             {meta.length > 0 && (
-              <div style={{ marginTop: 16, display: "flex", flexDirection: "column" }}>
+              <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 16 }}>
                 {shownMeta.map(({ label, value, href }) => (
-                  <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: "0.5px solid var(--separator)", gap: 12 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--label-tertiary)", flexShrink: 0 }}>{label}</span>
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: "var(--label-secondary)", flexShrink: 0 }}>{label}</span>
                     {href ? (
-                      <a href={href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 15, fontWeight: 500, color: "var(--blue)", display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>
+                      <a href={href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 15, fontWeight: 500, color: "var(--label-primary)", display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>
                         {value} <UIIcon kind="external" size={12}/>
                       </a>
                     ) : (
@@ -495,8 +510,8 @@ function DetailPreview({
                 {meta.length > META_CAP && (
                   <button onClick={() => setMetaExpanded(v => !v)}
                     style={{
-                      marginTop: 4, padding: "10px 0", border: "none", borderTop: "0.5px solid var(--separator)",
-                      background: "transparent", color: "var(--blue)", fontSize: 13, fontWeight: 600,
+                      marginTop: 8, padding: "10px 0", border: "none",
+                      background: "transparent", color: "var(--blue)", fontSize: 14, fontWeight: 500,
                       fontFamily: "inherit", cursor: "pointer", textAlign: "left",
                     }}>
                     {metaExpanded ? "收合" : `展開更多（${meta.length - META_CAP}）`}
@@ -509,7 +524,7 @@ function DetailPreview({
           </div>
 
           {footer && (
-            <div style={{ flexShrink: 0, display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 22px 20px", borderTop: "0.5px solid var(--separator)" }}>{footer}</div>
+            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", padding: "12px 22px 20px", gap: 8 }}>{footer}</div>
           )}
         </div>
 
@@ -521,9 +536,148 @@ function DetailPreview({
   );
 }
 
+// ─── GlassModal (Unified Bento Preview Skeleton) ───
+function GlassModal({
+  onClose,
+  color = "var(--blue)",
+  cover,     // image URL
+  monogram,  // text if no cover
+  node,      // custom node (e.g. ActivityRing, Avatar)
+  badges,    // React node (Top badges)
+  title,     // string
+  subtitle,  // string
+  tags,      // React node (tags below subtitle)
+  meta = [], // Array<{ label: string, value: any, href?: string }>
+  actions    // React node (Buttons)
+}) {
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      background: "rgba(0,0,0,0.4)",
+      backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+      animation: "modal-fade .25s var(--ease-out)",
+      padding: 24,
+    }} onClick={onClose}>
+      
+      <div onClick={e => e.stopPropagation()} style={{
+        position: "relative",
+        width: "100%", maxWidth: 440, minHeight: 540,
+        background: "var(--card-fill)",
+        borderRadius: "24px",
+        boxShadow: "0 24px 64px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2)",
+        border: "0.5px solid rgba(255,255,255,0.1)",
+        overflow: "hidden",
+        display: "flex", flexDirection: "column",
+        animation: "modal-pop .35s var(--ease-out)",
+      }}>
+        
+        {/* Close Button */}
+        <button onClick={onClose} style={{
+          position: "absolute", top: 16, right: 16, width: 32, height: 32,
+          borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.1)", color: "var(--muted)",
+          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", zIndex: 10,
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        {/* Top Half: Visual Continuum */}
+        <div style={{
+          position: "relative",
+          padding: cover ? "0 0 16px 0" : "48px 32px 16px",
+          display: "flex", flexDirection: "column", alignItems: "flex-start",
+          background: cover ? "transparent" : `radial-gradient(circle at top left, ${color}15 0%, transparent 80%)`,
+        }}>
+          {cover ? (
+            <div style={{ width: "100%", height: 180, position: "relative", marginBottom: 16 }}>
+              <img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt=""/>
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--card-fill), transparent 80%)" }}/>
+              {badges && (
+                <div style={{ position: "absolute", bottom: 12, left: 16, display: "flex", gap: 6, zIndex: 2 }}>
+                  {badges}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              {monogram ? (
+                <div style={{
+                  position: "relative", width: 120, height: 120, marginBottom: 16, borderRadius: 24,
+                  background: `color-mix(in srgb, ${color} 20%, transparent)`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 48, fontWeight: 800, color: color
+                }}>
+                  {monogram}
+                </div>
+              ) : node ? (
+                <div style={{ position: "relative", marginBottom: 16 }}>{node}</div>
+              ) : null}
+
+              {badges && (
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12, zIndex: 1 }}>
+                  {badges}
+                </div>
+              )}
+            </>
+          )}
+
+          <h2 style={{
+            margin: 0, fontSize: 22, fontWeight: 600, color: "var(--ink)", textAlign: "left",
+            lineHeight: 1.3, letterSpacing: "-0.01em", zIndex: 1, padding: cover ? "0 32px" : "0",
+          }}>{title}</h2>
+          
+          {subtitle && (
+            <div style={{ marginTop: 6, fontSize: 14, color: "var(--muted)", zIndex: 1, padding: cover ? "0 32px" : "0", textAlign: "left", wordBreak: "break-all" }}>
+              {subtitle}
+            </div>
+          )}
+          
+          {tags && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12, zIndex: 1, padding: cover ? "0 32px" : "0", justifyContent: "flex-start" }}>
+              {tags}
+            </div>
+          )}
+        </div>
+
+        {/* Bottom Half: Layered Disclosure (Value on Left, Label on Right) */}
+        {meta.length > 0 && (
+          <div style={{ padding: "8px 32px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+            {meta.map((m, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+                <span style={{ fontSize: 16, fontWeight: 500, color: "var(--ink)", textAlign: "left", flex: 1, wordBreak: "break-word" }}>
+                  {m.href ? <a href={m.href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)", textDecoration: "none" }}>{m.value}</a> : m.value}
+                </span>
+                <span style={{ fontSize: 14, color: "var(--muted)", letterSpacing: "0.02em", flexShrink: 0 }}>{m.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Actions */}
+        {actions && (
+          <div style={{
+            padding: "0 32px 32px", marginTop: "auto",
+            display: "flex", justifyContent: "flex-end", gap: 12,
+          }}>
+            {actions}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 Object.assign(window, {
   SectionHead, Eyebrow, Button, IconBtn, Pill, PriorityPill,
   StatusDot, ProgressBar, DisplayNumber, KPI, SubsystemTag, Avatar, ConfirmDialog,
   SegmentedControl, ViewToggle, SubsystemGridSelector, GlowingSlider,
-  DetailPreview, RingProgress,
+  DetailPreview, RingProgress, GlassModal,
 });
