@@ -1,5 +1,23 @@
 // Header.jsx — top-level page nav (Dashboard / Blueprint / Essay) + sub-tabs
 
+// Neutral placeholder avatar for the not-signed-in state
+function GuestAvatar({ size = 28 }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: "50%",
+      background: "var(--fill-secondary)",
+      color: "var(--label-secondary)",
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      flexShrink: 0,
+    }}>
+      <svg width={Math.round(size * 0.56)} height={Math.round(size * 0.56)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
+      </svg>
+    </div>
+  );
+}
+
 function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearance = "auto", onAppearanceChange }) {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const menuWrapRef = React.useRef(null);
@@ -57,23 +75,27 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           <button style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
           <button style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
 
-          {/* Avatar — doubles as the account / settings menu trigger */}
+          {/* Avatar — doubles as the account / settings menu trigger (guest state) */}
           <div ref={menuWrapRef} style={{ position: "relative" }}>
             <button style={{ ...hdrStyles.avatarBtn, boxShadow: settingsOpen ? "0 0 0 2px var(--blue)" : "none" }}
               title="帳號與設定" onClick={() => setSettingsOpen(v => !v)}>
-              <Avatar name="陳" size={28} />
+              <GuestAvatar size={28} />
             </button>
 
             {settingsOpen && (
               <div style={hdrStyles.menu}>
-                {/* Account header */}
-                <div style={hdrStyles.menuProfile}>
-                  <Avatar name="陳" size={38} />
-                  <div style={{ minWidth: 0 }}>
-                    <div style={hdrStyles.menuName}>陳偉成</div>
-                    <div style={hdrStyles.menuRole}>隊長 · 高科大賽車隊</div>
+                {/* Account header — not signed in */}
+                <button style={{ ...hdrStyles.menuProfile, width: "100%", border: "none", background: "transparent", cursor: "pointer", textAlign: "left" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--fill-tertiary)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  title="登入">
+                  <GuestAvatar size={38} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={hdrStyles.menuName}>未登入</div>
+                    <div style={hdrStyles.menuRole}>點此登入以同步資料</div>
                   </div>
-                </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--label-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
 
                 <div style={hdrStyles.menuDivider}/>
 
