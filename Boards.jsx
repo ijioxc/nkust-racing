@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 function PartsView({ suppliers, setSuppliers }) {
   const [editing, setEditing] = React.useState({ open: false, initial: null });
+  const [preview, setPreview] = React.useState(null);  // supplier being previewed
   const [confirm, setConfirm] = React.useState(null);
   const [drag, setDrag] = React.useState(null);     // dragged supplier id
   const [overCat, setOverCat] = React.useState(null); // target column cat
@@ -82,7 +83,7 @@ function PartsView({ suppliers, setSuppliers }) {
                   dragging={drag === s.id}
                   onDragStart={onDragStart(s.id)}
                   onDragEnd={onDragEnd}
-                  onClick={() => setEditing({ open: true, initial: s })}
+                  onClick={() => setPreview(s)}
                   onDelete={() => setConfirm(s)}/>
               ))}
               {items.length === 0 && (
@@ -105,6 +106,14 @@ function PartsView({ suppliers, setSuppliers }) {
           );
         })}
       </div>
+
+      {/* 放大預覽 — 點供應商卡先預覽，再決定編輯/刪除/開連結 */}
+      {preview && (
+        <SupplierPreview supplier={preview}
+          onClose={() => setPreview(null)}
+          onEdit={() => { setEditing({ open: true, initial: preview }); setPreview(null); }}
+          onDelete={() => { setConfirm(preview); setPreview(null); }}/>
+      )}
 
       <SupplierModal open={editing.open} initial={editing.initial}
         onClose={() => setEditing({ open: false, initial: null })}
@@ -195,6 +204,52 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
         <span>FROM · {supplier.origin}</span>
       </div>
     </div>
+  );
+}
+
+// ─── SupplierPreview — 放大預覽（建於共用 DetailPreview）───
+function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
+  if (!supplier) return null;
+  const tone = STATUS_TONES[supplier.status] || STATUS_TONES["詢價"];
+  const prioTone = supplier.priority === "HIGH" ? "high" : supplier.priority === "MID" ? "mid" : "low";
+  const color = SUBSYSTEM_COLOR[supplier.sub] || "var(--blue)";
+
+  return (
+    <DetailPreview
+      onClose={onClose}
+      width={440}
+      hero={{
+        color: `color-mix(in srgb, ${color} 14%, var(--bg-secondary))`,
+        icon: <SubsystemIcon kind={supplier.sub} size={30} color={color}/>,
+        height: 150,
+      }}
+      badges={<>
+        <span style={{
+          display: "inline-flex", alignItems: "center",
+          padding: "3px 10px", borderRadius: "var(--radius-full)",
+          background: "var(--bg-secondary)", color: tone.fg,
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
+          backdropFilter: "blur(8px)",
+        }}>{tone.label}</span>
+        <span className={`pill ${prioTone}`}>{supplier.priority}</span>
+      </>}
+      title={supplier.name}
+      subtitle={supplier.cat ? `${supplier.cat} · ${supplier.sub}` : supplier.sub}
+      meta={[
+        { label: "估算價格", value: supplier.price || "—" },
+        { label: "採購狀態", value: tone.label },
+        { label: "產地", value: supplier.origin || "—" },
+        ...(supplier.url ? [{ label: "官網", value: getDomain(supplier.url), href: supplier.url }] : []),
+      ]}
+      footer={<>
+        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+        {supplier.url && (
+          <Button variant="ghost" icon="external"
+            onClick={() => window.open(supplier.url, "_blank", "noopener")}>開啟連結</Button>
+        )}
+        <Button variant="primary" icon="edit" onClick={onEdit}>編輯</Button>
+      </>}
+    />
   );
 }
 
@@ -753,4 +808,4 @@ function ResourceModal({ open, onClose, onSave, onDelete, initial }) {
   );
 }
 
-Object.assign(window, { PartsView, ResourcesView, SupplierCard, ResourceCard, ResourcePreview });
+Object.assign(window, { PartsView, ResourcesView, SupplierCard, SupplierPreview, ResourceCard, ResourcePreview });

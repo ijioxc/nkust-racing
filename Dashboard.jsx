@@ -27,6 +27,7 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
   const [personModal, setPersonModal] = React.useState({ open: false, initial: null });
   const [planModal, setPlanModal]   = React.useState({ open: false, initial: null });
   const [planDetail, setPlanDetail] = React.useState({ open: false, target: null });
+  const [taskPreview, setTaskPreview] = React.useState(null);
   const [confirm, setConfirm] = React.useState(null);
 
   // Common edit-list helpers
@@ -52,12 +53,12 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
     <>
       {tab === "overview" && (
         <OverviewView tasks={tasks} people={people} plans={plans}
-          openTask={(t) => setTaskModal({ open: true, initial: t })}
+          openTask={(t) => setTaskPreview(t)}
           openPlan={(p) => setPlanDetail({ open: true, target: p })}/>
       )}
       {tab === "worklog" && (
         <WorklogView tasks={tasks}
-          openTask={(t) => setTaskModal({ open: true, initial: t })}
+          openTask={(t) => setTaskPreview(t)}
           newTask={() => setTaskModal({ open: true, initial: null })}
           onDelete={(t) => setConfirm({ kind: "task", target: t })}/>
       )}
@@ -97,6 +98,13 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
           onEdit={(p) => { setPlanDetail({ open: false, target: null }); setPlanModal({ open: true, initial: p }); }}
           onDelete={(p) => { setPlanDetail({ open: false, target: null }); setConfirm({ kind: "plan", target: p }); }}
           onTagChange={(id, tag) => setPlans(prev => prev.map(p => p.id === id ? { ...p, tag } : p))}/>
+      )}
+
+      {taskPreview && (
+        <TaskPreview task={taskPreview}
+          onClose={() => setTaskPreview(null)}
+          onEdit={() => { setTaskModal({ open: true, initial: taskPreview }); setTaskPreview(null); }}
+          onDelete={() => { setConfirm({ kind: "task", target: taskPreview }); setTaskPreview(null); }}/>
       )}
 
       <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)}
@@ -622,6 +630,50 @@ function BentoCard({ task, onClick }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// ─── TaskPreview — 任務放大預覽（建於共用 DetailPreview，含環形進度）───
+const TASK_STATE_LABEL = { focus: "本週焦點", done: "已完成", active: "進行中" };
+function TaskPreview({ task, onClose, onEdit, onDelete }) {
+  if (!task) return null;
+  const color = SUBSYSTEM_COLOR[task.subsystem] || "var(--blue)";
+  const prioTone = task.priority === "HIGH" ? "high" : task.priority === "MID" ? "mid" : "low";
+  const daysToEnd = (task.start || 0) + (task.span || 0) - 5;
+  const schedule = daysToEnd === 0 ? "本週到期"
+    : daysToEnd < 0 ? `已逾期 ${-daysToEnd} 週` : `剩 ${daysToEnd} 週`;
+  const stateLabel = TASK_STATE_LABEL[task.state] || "進行中";
+
+  return (
+    <DetailPreview
+      onClose={onClose}
+      width={440}
+      hero={{
+        color: `color-mix(in srgb, ${color} 14%, var(--bg-secondary))`,
+        ringValue: task.progress || 0,
+        height: 168,
+      }}
+      badges={<>
+        <span className={`pill ${prioTone}`}>{task.priority || "—"}</span>
+        <span style={{
+          padding: "3px 10px", borderRadius: "var(--radius-full)",
+          background: "var(--bg-secondary)", color: task.state === "focus" ? "var(--blue)" : "var(--label-secondary)",
+          fontSize: 11, fontWeight: 600, backdropFilter: "blur(8px)",
+        }}>{stateLabel}</span>
+      </>}
+      title={task.title}
+      tags={[<SubsystemTag key="s" kind={task.subsystem} size="sm"/>]}
+      meta={[
+        { label: "負責人", value: task.owner || "—" },
+        { label: "進度", value: `${task.progress || 0}%` },
+        { label: "期程", value: `W${task.start} – W${(task.start || 0) + (task.span || 0)} · ${schedule}` },
+        { label: "狀態", value: stateLabel },
+      ]}
+      footer={<>
+        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+        <Button variant="primary" icon="edit" onClick={onEdit}>編輯任務</Button>
+      </>}
+    />
   );
 }
 
