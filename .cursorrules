@@ -1,36 +1,125 @@
 # NKUST Racing — Codebase Specific UI/UX Guardrails (Apple HIG & WWDC25 Distilled)
 
+> 本文件是本專案的設計指引（Design Guideline）。所有 UI/UX 改動都應遵循。
+> 參考來源：Apple Human Interface Guidelines、WWDC 2025 "Liquid Glass"、
+> The Menu Bar、WidgetKit Strategy、Info.plist、WebKit for AppKit/UIKit。
+> 原則先於像素：先看本指引的語意規則，再決定數值。
+
+## 0. 黃金準則 (Cardinal Rules)
+1. **一律用 token，禁止寫死顏色**：所有顏色走 `tokens.css` 的 CSS 變數，
+   絕不在 JSX inline style 寫死 `#fff` / `rgba(255,255,255,…)` / `#000` 當背景或文字色。
+   （歷史 bug：看板卡寫死白底 → 深色模式變低對比洗白卡。）
+2. **焦點色要節制**：藍色 accent 只給「真正的焦點」，不是裝飾（見 §3）。
+3. **深色模式必須跟隨**：任何新元件都要在淺色＋深色下都驗證過才算完成。
+4. **改 CSS／JSX 後務必 bump `index.html` 的 `?v=` 版本號**，否則 Service Worker
+   會餵舊檔（JSX 為 Network-First，CSS/HTML 為 Stale-While-Revalidate）。
+
 ## 1. 專案架構感知 (Codebase Structure)
-- **核心架構**：純 React + Babel 瀏覽器端直接編譯渲染。所有狀態儲存在 `crdt-store.js` / `localStorage`，UI 樣式整合於 `tokens.css` 與 `themes.css`。
+- **核心架構**：純 React (UMD) + esbuild-wasm 瀏覽器端即時編譯。狀態存於
+  Firebase RTDB（`firebase-store.jsx`）/ `crdt-store.js` / `localStorage`。
+  樣式集中於 `tokens.css`（設計變數＋型別）與 `themes.css`（元件＋主題＋深色）。
 - **視圖模組**：
-  - `Dashboard.jsx` (工作台)：使用 Bento 及 Kanban 結構，卡片為 `.tcard` (有 large/tile 變體)。
-  - `Blueprint.jsx` & `Blueprint3D.js` (車體圖解)：Three.js 3D 畫布與側邊規格欄。
-  - `Essay.jsx` (技術手冊)：以 Serif 字體 (`var(--font-serif)`) 為主的閱讀排版。
+  - `Dashboard.jsx` (工作台)：Bento（`BentoBoard` 8 欄網格）＋ Kanban。卡片用 `.tcard`（large/tile 變體）。
+  - `Boards.jsx`：零件 Kanban（`SupplierCard`）＋ 資源庫（`ResourceCard` / `ResourcePreview`）。
+  - `Blueprint.jsx` & `Blueprint3D.js` (車體圖解)：Three.js 3D 畫布＋側邊規格欄。
+  - `Essay.jsx` (技術手冊)：Serif (`var(--font-serif)`) 閱讀排版。
+  - `Header.jsx`：頂部工具列＋分頁列＋帳號選單。
+  - `atoms.jsx`：共用元件（Button / Pill / KPI / Avatar / ProgressBar / SubsystemTag…）。
 
-## 2. 佈局與同心圓角 (Layout & Geometry Rules)
-- **同心比例 (Concentric Curves)**：嚴格遵循「外圓角 - 內縮 padding = 內圓角」幾何公式。
-  - 計算公式：`border-radius: calc(var(--radius-card) - var(--card-pad));`。
-  - 遇到卡片內有 padding 的子元素（如 Image、Bento 內部 Grid、或是 Input）時強制計算套用，避免寫死 px 導致角度夾擠。
-- **自適應類別 (Size Classes)**：
-  - 電腦版 (Regular)：區域間距用 `--gap-zone` (28px)，卡片 padding 用 `--card-pad` (22px)。
-  - 手機版 (Compact, <768px)：自動收縮邊距（`--hdr-pad: 16px`, `--s-8: 16px`），Header 字體縮至 `11.5px` 防止換行。
+## 2. 設計變數與色彩系統 (Design Tokens)
+- **背景層級**：`--bg-primary`（頁底）< `--bg-secondary`（卡片/工具列）< `--bg-tertiary`（輸入框）。
+  卡片必須比頁底亮一階才能「浮起」。
+- **文字層級**（靠權重與層級分階，不是靠多種顏色）：
+  `--label-primary`（主）/ `--label-secondary`（次）/ `--label-tertiary`（輔）/ `--label-quaternary`。
+- **填充色**：hover/選取背景用 `--fill-tertiary` / `--fill-quaternary`，不要用 `rgba(0,0,0,.04)`（深色失效）。
+- **系統色**：`--blue/green/orange/red/yellow/purple/teal/indigo/pink`，深色模式自動換成對應的亮版。
+- **分隔線**：`--separator`（半透明，縮排分隔）/ `--separator-opaque`。
+- **語意對映**：HIGH→`--red`、MID→`--orange`、LOW→`--green`；逾期→red、進行中→blue、完成→green。
 
-## 3. 圖標與一致性 (Icons & Visual Weights)
-- **統一線稿粗細 (Stroke Weight)**：一律調用 `icons.jsx` 中的圖標。
-  - `UIIcon` 一律使用 Lucide 風格，強制設定向量線條 `strokeWidth={1.5}`，使其與 Noto Sans 等系統字型有相同的視覺重量。
-  - 自系統標籤（車體、懸吊、電裝等）必須調用專屬的 `SubsystemIcon`，規格為 `viewBox="0 0 24 24"` 並繼承外層 color。
+## 3. 焦點色節制 (Accent Discipline) — 重要
+- 焦點藍（`--blue` / `tcard-accent` / 整張藍底）**只用於**：
+  1. Bento「焦點任務」hero 卡（每頁至多一張）。
+  2. 主要動作按鈕（`.btn.primary`，如「新增」）。
+  3. 選中狀態（分頁底線、SegmentedControl active、選單勾選）。
+- **禁止**把 KPI 統計卡、一般資訊卡整張塗成 accent —— 統計數字（尤其可能為 0）不是焦點。
+  KPI 一律用中性 `widget-tile`。
 
-## 4. 微件與快速操作 (Widgets & Quick Actions)
-- **資訊一目了然 (Glanceability)**：Bento 卡片只渲染「單一關鍵指標」或「當前最核心任務」，禁止在 Bento 卡片內塞入多列複雜數據。
-- **快速跳轉 (Deep Linking)**：團隊名片或 Bento 卡片應具備 Direct Navigation 導向，點擊即可深度跳轉至特定的子系統視圖或彈出詳情。
+## 4. 佈局與同心圓角 (Layout & Geometry)
+- **同心比例**：外圓角 − 內縮 padding = 內圓角；`border-radius: calc(var(--radius-card) - var(--card-pad));`。
+  卡片內含 padding 的子元素（圖片、內部 Grid、Input）強制套用，禁止寫死 px。
+- **圓角階梯**：`--radius-sm 10` / `--radius-md 13` / `--radius-lg 16` / `--radius-xl 20`（卡片預設）/ `--radius-2xl 28`（sheet）/ `--radius-full`（膠囊）。
+- **間距走 8pt 系統**：`--space-*`；區域間距 `--gap-zone`、卡片 padding `--card-pad`。
+- **自適應 (Size Classes)**：
+  - 電腦 (Regular)：`--gap-zone 28` / `--card-pad 22`。
+  - 手機 (Compact <768px)：邊距自動收縮（`--hdr-pad 16`），Header 字體縮至 11.5px 防換行。
 
-## 5. 選單、彈出按鈕與選單列 (Menus, Pop-up Buttons, Menu Bar)
-- **選單分流 (Menus & Pull-downs)**：
-  - **氣泡操作選單**：使用 `···` 氣泡彈窗（如 `PersonProfilePopup` 右上角），提供複數操作。材質必須為深色高模糊毛玻璃，以保證與白色卡片背景的對比度。
-  - **互斥狀態按鈕 (Pop-up Buttons)**：在表單中，強制使用 `SegmentedControl` 元件，展示當前被激活的唯一狀態，避免使用舊式長下拉式 select。
-- **全域工具選單列 (Menu Bar)**：
-  - 專案 Header 充當選單列，搜尋（search）與匯出（download）等功能一律靠右聚合（`flex-shrink: 0`），保持左側 Logo 的清爽感。
+## 5. 微件與一目了然 (Widgets & Glanceability) — 參考 WidgetKit Strategy
+- **資訊密度依尺寸而定**（Bento `1x1 / 2x1 / 2x2 / 3x2`）：
+  - 小卡 (1x1)：單一指標（百分比 + 標題）。
+  - 寬/大卡：可加進度條、負責人、期限，但仍以「一眼可懂」為上限，禁止塞多列複雜數據。
+- **Bento 比例**：`BentoBoard` 用 **8 欄**網格（非 6 欄）+ `--bento-row-h ~104px`，
+  讓大卡接近方形（目標長寬比 ≤ ~2:1），避免又寬又扁。
+- **可掃視**：標題用 600 字重、數值用 tabular `--num-features`、輔助資訊降為 `--label-tertiary`。
+- **深度跳轉**：卡片點擊即導向（Bento→任務詳情、名片→個人彈窗、資源圖卡→放大預覽）。
 
-## 6. 展示模態 (Presentation & Modality)
-- **Centered Dialog (彈窗)**：適用於需要快速抉擇、建立新內容的任務（如 `TaskModal`、`PersonModal`、`PlanDetailPopup`）。背部遮罩使用 `backdrop-filter: blur(6px)` 徹底聚焦視線。
-- **Slide-over Sheet (側邊欄)**：適用於需要參照左側視圖的詳情閱讀（如 `PlanDetailPanel` 側滑面板）。背部遮罩不應全失焦，保留大面積的 parent 網格參考。
+## 6. 圖標與視覺重量 (Icons)
+- 一律調用 `icons.jsx`。`UIIcon` 用 Lucide 風格，`strokeWidth={1.5}`，與字型視覺重量一致。
+- 子系統標籤（車體/懸吊/電裝…）用專屬 `SubsystemIcon`（`viewBox="0 0 24 24"`，繼承外層 color）。
+- 圖標按鈕觸控目標 ≥ 44pt（視覺可小，靠 padding/min-size 補足）。
+
+## 7. 頭貼與識別色 (Avatars)
+- 頭貼用 `atoms.jsx` 的 `Avatar`：**低飽和純色**調色盤（板岩藍/sage/lavender/taupe/slate），
+  依名字 hash 選色。禁止用高飽和漸層（過於搶眼、與焦點色打架）。
+- 空字串/未知名字要安全 fallback（避免 `charCodeAt` 回 NaN → 索引爆炸）。
+- 未登入狀態用中性 `GuestAvatar`（人形圖示，灰圓）。
+
+## 8. 標籤與膠囊 (Badges & Pills)
+- 狀態/優先度一律用 `.pill`（或同規格）：**11px sans、padding 3px 10px、`--radius-full`、左側圓點**。
+  禁止 9px mono 舊式 badge。
+- 子系統標籤用 `SubsystemTag`（膠囊、11px、`色 + 18% 透明底`）。
+- 顏色走語意對映（§2）：高紅/中橘/低綠；狀態色用系統色 12% 透明底。
+
+## 9. 選單、彈出按鈕、選單列 (Menus, Pop-ups, Menu Bar) — 參考 The Menu Bar / SwiftUI Menu
+- **帳號/設定選單**（`Header.jsx`，由右上頭貼觸發）：
+  - 結構：個人檔案標頭 → 分隔線 → 分組（如「外觀」）→ 選單列。
+  - 選單列 = leading icon + label + 目前選擇右側 **勾選 ✓**（互斥選項用勾選，不是塗整列藍）。
+  - 點外部 / Esc 關閉；用 `ref + mousedown`（非 window click + stopPropagation，React18 時序不可靠）。
+- **氣泡操作選單**：`···` 彈窗提供複數操作；深色高模糊毛玻璃以保證對比。
+- **互斥狀態**：表單一律用 `SegmentedControl`，展示唯一 active；禁用舊式長下拉 select。
+- **工具列（充當 Menu Bar）**：搜尋/匯出靠右聚合（`flex-shrink:0`），左側 Logo 保持清爽。
+  Header 背景用 `--header-bg/border/shadow` token（深淺自適應），禁止寫死白底。
+
+## 10. 展示模態 (Presentation & Modality)
+- **Centered Dialog**：快速抉擇/新建（`TaskModal`/`PersonModal`/`ResourcePreview`）。
+  遮罩 `backdrop-filter: blur` 徹底聚焦；spring 彈入動畫（`modal-pop`）。
+- **Slide-over Sheet**：需參照背景的詳情閱讀（`PlanDetailPanel`）。遮罩不全失焦，保留 parent 參考。
+- **點圖卡先預覽、再編輯**：圖卡（資源/計畫）點擊先開放大預覽，編輯/刪除/開連結從預覽進入，
+  避免一點就進編輯表單。
+- **WWDC25 Liquid Glass**：浮層用毛玻璃 + 細描邊 + 高光，靠材質與層級表達層次，而非粗重邊框。
+
+## 11. 深色模式 (Dark Mode)
+- 由 `:root[data-appearance="dark"]` 驅動（非純 `@media`），讓使用者可手動切換（淺色/深色/自動）。
+- `App.jsx` 解析 `auto`（讀 `prefers-color-scheme` 並監聽變化），寫入 `localStorage`。
+- `index.html` 有 pre-paint inline script 在首次繪製前設好 `data-appearance`，避免 FOUC。
+- 深色用「柔和分層灰」（頁底 `#141417`、卡片 elevated 灰），**不是純黑**；文字用柔白 `#F5F5F7`。
+- 任何深色覆寫寫在 `[data-appearance="dark"] …` 選擇器，元件背景一律用 token。
+
+## 12. 平台與動效 (Web Platform & Motion) — 參考 WebKit / Info.plist
+- **View Transitions API**：頁面/分頁切換用 `document.startViewTransition`，並 `catch` 中斷的
+  `ready/finished/updateCallbackDone` rejection（快速切換會 abort，否則冒泡成 unhandledrejection）。
+- **動效曲線**：互動 0.15s ease；卡片 hover 0.2s；Modal spring `--ease-spring` 0.4s；
+  進度條 `--ease-progress` 0.6s；點擊回饋 `scale(0.95)`。尊重 `prefers-reduced-motion`（關閉轉場）。
+- **PWA 中繼資料（對應 Info.plist 角色）**：`manifest.json` 管理 app 名稱/圖示/主題色；
+  `sw.js` 管理快取策略（JSX Network-First、GLB/WASM Cache-First、其餘 Stale-While-Revalidate）。
+- **WebKit 注意**：`backdrop-filter` 一律補 `-webkit-` 前綴；安全區避免被瀏海/圓角裁切。
+
+## 13. 無障礙 (Accessibility)
+- 觸控目標 ≥ 44pt；正文 ≥ 15px、最小 11px；對比度 ≥ WCAG AA（文字 4.5:1、UI 3:1）。
+- `:focus-visible` 顯示 2px `--blue` ring（offset 2px）；圖標按鈕加 `aria-label`/`title`。
+- 顏色不可作為唯一語意載體（狀態同時用文字/圖示）。
+
+## 14. 驗證流程 (Verification — 每次改動後)
+1. esbuild 過編譯（`cat X.jsx | npx esbuild --loader=jsx …`）。
+2. 本機起 server，瀏覽器**淺色＋深色都看過**、console 無錯誤。
+3. bump `index.html` `?v=`。
+4. 安全規範：登入授權、付款、檔案下載、權限變更等須由使用者本人操作，不代為執行。
