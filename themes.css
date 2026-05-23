@@ -489,13 +489,14 @@
   overflow: hidden;
 }
 .blueprint-draft-grid::after {
-  content: "DRAFT GRID SPEC";
+  content: "NO COVER · DRAFT";
   position: absolute;
   bottom: 8px;
-  left: 8px;
+  right: 10px;
   font-family: var(--font-mono);
   font-size: 7px;
-  color: rgba(255,255,255,0.2);
-  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.18);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 

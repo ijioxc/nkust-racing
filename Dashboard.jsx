@@ -95,7 +95,7 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
 // ═══════════════════════════════════════════════════════════
 //  OVERVIEW
 // ═══════════════════════════════════════════════════════════
-function OverviewView({ tasks, people, plans, openTask }) {
+function OverviewView({ tasks, people, plans, openTask, openPlan }) {
   const active   = tasks.filter(t => t.state !== "done").length;
   const onTime   = tasks.filter(t => t.state !== "done" && t.progress >= 40).length;
   const overdue  = tasks.filter(t => t.state !== "done" && t.progress < 40 && t.start + t.span < 8).length;
@@ -129,7 +129,7 @@ function OverviewView({ tasks, people, plans, openTask }) {
         gap: "var(--gap-card)",
       }}>
         <WeeklyFocusCard/>
-        <PlansSnapshot plans={plans}/>
+        <PlansSnapshot plans={plans} onOpen={openPlan}/>
         <PartsSnapshot/>
         <RacesSnapshot/>
       </div>
@@ -171,15 +171,22 @@ function WeeklyFocusCard() {
   );
 }
 
-function PlansSnapshot({ plans }) {
+function PlansSnapshot({ plans, onOpen }) {
   return (
     <div className="tcard large" style={{ padding: "var(--card-pad)", minWidth: 0 }}>
       <SectionHead title="設計提案" hint={`${plans.length} PLANS`}/>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {plans.slice(0, 4).map(p => (
-          <div key={p.id} style={{
-            display: "flex", alignItems: "center", gap: 10, padding: "4px 0",
-          }}>
+          <div key={p.id}
+            onClick={() => onOpen?.(p)}
+            style={{
+              display: "flex", alignItems: "center", gap: 10, padding: "6px 8px",
+              borderRadius: 8, cursor: onOpen ? "pointer" : "default",
+              transition: "background .15s",
+            }}
+            onMouseEnter={e => onOpen && (e.currentTarget.style.background = "rgba(0,0,0,0.04)")}
+            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+          >
             <div style={{
               width: 36, height: 36, borderRadius: 8, flexShrink: 0,
               background: p.cover
@@ -1010,7 +1017,7 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
           color: "rgba(255,255,255,0.65)",
           marginTop: 4,
           lineHeight: 1.45,
-          textWrap: "pretty",
+          textWrap: "pretty", WebkitTextWrap: "pretty",
           display: "-webkit-box",
           WebkitLineClamp: layout === "portrait" ? 3 : 2,
           WebkitBoxOrient: "vertical",
@@ -1168,17 +1175,21 @@ function PlanDetailPanel({ open, plan, onClose, onEdit, onDelete }) {
           <div style={{ borderTop: "0.5px solid var(--rule)", paddingTop: 16 }}>
             <div style={{
               fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--ink)",
-              lineHeight: 1.6, whiteSpace: "pre-wrap", textWrap: "pretty"
+              lineHeight: 1.6, whiteSpace: "pre-wrap", textWrap: "pretty", WebkitTextWrap: "pretty"
             }}>
               {plan.body || "無詳細內容描述。"}
             </div>
           </div>
         </div>
         
-        <div className="slide-over-footer">
-          <Button variant="danger" icon="trash" onClick={() => onDelete(plan)} style={{ marginRight: "auto" }}>刪除</Button>
-          <Button variant="ghost" onClick={onClose}>關閉</Button>
-          <Button variant="primary" icon="edit" onClick={() => onEdit(plan)}>編輯計畫</Button>
+        <div className="slide-over-footer" style={{ flexDirection: "column", gap: 0 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button variant="ghost" onClick={onClose}>關閉</Button>
+            <Button variant="primary" icon="edit" onClick={() => onEdit(plan)}>編輯計畫</Button>
+          </div>
+          <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
+            <Button variant="danger" icon="trash" onClick={() => onDelete(plan)}>刪除</Button>
+          </div>
         </div>
       </div>
     </>

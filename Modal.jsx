@@ -213,7 +213,7 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
 
 // ─── Plan editor ───────────────────────────────────────────
 function PlanModal({ open, onClose, onSave, onDelete, initial }) {
-  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體", layout: "landscape" };
+  const blank = { title: "", kicker: "", body: "", cover: null, sub: "車體", layout: "landscape", tag: "討論中" };
   const [p, setP] = React.useState(initial || blank);
   React.useEffect(() => { setP(initial || blank); }, [initial, open]);
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
@@ -260,6 +260,19 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
             {SUBSYSTEMS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
+      </div>
+
+      <div className="field"><label>進度狀態</label>
+        <SegmentedControl
+          options={[
+            { value: "討論中", label: "討論中" },
+            { value: "進行中", label: "進行中" },
+            { value: "已完成", label: "已完成" },
+            { value: "擱置",   label: "擱置" },
+          ]}
+          value={p.tag || "討論中"}
+          onChange={v => update("tag", v)}
+        />
       </div>
 
       <div className="field"><label>內容描述</label>
