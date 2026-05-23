@@ -358,11 +358,29 @@ function RingProgress({ value = 0, size = 64, stroke = 6, color = "var(--blue)" 
   );
 }
 
+// Track the last pointer-down position so previews can zoom from the click origin.
+let __lastPointer = null;
+if (typeof window !== "undefined" && !window.__previewPointerHooked) {
+  window.__previewPointerHooked = true;
+  window.addEventListener("pointerdown", (e) => {
+    __lastPointer = { x: e.clientX, y: e.clientY };
+  }, true);
+}
+
 function DetailPreview({
   onClose, onPrev, onNext, counter,
   hero = {}, badges, title, subtitle, body, tags, meta = [], children, footer,
   width = 480,
 }) {
+  // zoom-from-source: set transform-origin to where the user clicked
+  const cardRef = React.useRef(null);
+  React.useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!el || !__lastPointer) return;
+    const r = el.getBoundingClientRect();
+    el.style.transformOrigin = `${__lastPointer.x - r.left}px ${__lastPointer.y - r.top}px`;
+  }, []);
+
   React.useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose?.();
@@ -397,11 +415,11 @@ function DetailPreview({
         {onPrev && arrow("prev", onPrev)}
         {onNext && arrow("next", onNext)}
 
-        <div style={{
+        <div ref={cardRef} style={{
           width: "100%", background: "var(--bg-secondary)",
           border: "0.5px solid var(--separator)", borderRadius: "var(--radius-2xl)",
           overflow: "hidden", boxShadow: "var(--shadow-modal)",
-          animation: "modal-pop .42s var(--ease-spring, cubic-bezier(0.32,0.72,0,1))",
+          animation: "detail-zoom .34s var(--ease-spring, cubic-bezier(0.32,0.72,0,1))",
         }}>
           {/* HERO */}
           <div style={{

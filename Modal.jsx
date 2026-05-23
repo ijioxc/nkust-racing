@@ -20,7 +20,7 @@ function Modal({ open, onClose, onDismiss, title, eyebrow, children, footer, wid
         }}>
           <div>
             {eyebrow && <div className="eyebrow" style={{ marginBottom: 4 }}>{eyebrow}</div>}
-            <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>{title}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--label-primary)" }}>{title}</div>
           </div>
           <IconBtn icon="x" onClick={handleDismiss} title="關閉（自動儲存）"/>
         </div>
@@ -172,9 +172,9 @@ function DynamicEditorModal({ open, onClose, onSave, onDelete, initial, schema, 
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "rgba(0,0,0,0.015)",
-              border: "1px dashed var(--rule)",
-              borderRadius: 14,
+              background: "var(--fill-quaternary)",
+              border: "1px dashed var(--separator)",
+              borderRadius: "var(--radius-lg)",
               padding: 16,
               position: "relative",
               overflow: "hidden",

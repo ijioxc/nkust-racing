@@ -399,6 +399,14 @@
   }
 }
 
+/* Zoom-from-source — DetailPreview grows from the clicked card's position.
+   transform-origin is set inline (JS) to the click point relative to the card. */
+@keyframes detail-zoom {
+  0%   { opacity: 0; transform: scale(0.80); }
+  60%  { opacity: 1; transform: scale(1.01); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 /* Drag handle */
 .drag-handle {
   cursor: grab;
