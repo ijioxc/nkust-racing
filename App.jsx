@@ -8,8 +8,25 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 function App() {
-  const [page, setPage] = React.useState("dashboard");
-  const [subTab, setSubTab] = React.useState("overview");
+  const [page, _setPage] = React.useState("dashboard");
+  const [subTab, _setSubTab] = React.useState("overview");
+
+  const setPage = (newPage) => {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => _setPage(newPage));
+    } else {
+      _setPage(newPage);
+    }
+  };
+
+  const setSubTab = (newSubTab) => {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => _setSubTab(newSubTab));
+    } else {
+      _setSubTab(newSubTab);
+    }
+  };
+
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   // Live data state — synced to Firebase RTDB, live across devices/users

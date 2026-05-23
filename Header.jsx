@@ -23,13 +23,13 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
               <button key={p.id}
               onClick={() => onPageChange(p.id)}
               style={{ ...hdrStyles.pageTab,
-                color: active ? "var(--accent)" : "var(--muted)",
-                fontWeight: active ? 600 : 400,
-                background: active ? "var(--accent-bg)" : "transparent",
-                opacity: active ? 1 : 0.7,
+                color: active ? "var(--blue)" : "var(--label-secondary)",
+                fontWeight: active ? 600 : 500,
+                background: active ? "var(--fill-tertiary)" : "transparent",
+                opacity: 1,
               }}
-              onMouseEnter={e => { if (!active) { e.currentTarget.style.color = "var(--ink)"; e.currentTarget.style.opacity = "1"; } }}
-              onMouseLeave={e => { if (!active) { e.currentTarget.style.color = "var(--muted)"; e.currentTarget.style.opacity = "0.7"; } }}
+              onMouseEnter={e => { if (!active) { e.currentTarget.style.background = "var(--fill-quaternary)"; e.currentTarget.style.color = "var(--label-primary)"; } }}
+              onMouseLeave={e => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--label-secondary)"; } }}
               >
                 {p.label}
               </button>);
@@ -50,9 +50,9 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs }) {
             <button key={t.id} onClick={() => onSubTabChange(t.id)}
             style={{
               ...hdrStyles.subTab,
-              color: subTab === t.id ? "var(--ink)" : "var(--faint)",
+              color: subTab === t.id ? "var(--label-primary)" : "var(--label-secondary)",
               fontWeight: subTab === t.id ? 600 : 400,
-              borderBottomColor: subTab === t.id ? "var(--ink)" : "transparent"
+              borderBottomColor: subTab === t.id ? "var(--blue)" : "transparent"
             }}>
                   <UIIcon kind={t.icon} size={13} />
                   {t.label}
@@ -81,7 +81,7 @@ const hdrStyles = {
   },
   inner: {
     display: "flex", alignItems: "center", height: 52,
-    maxWidth: 1440, margin: "0 auto", padding: "0 40px", gap: 0
+    maxWidth: 1440, margin: "0 auto", padding: "0 var(--hdr-pad, 40px)", gap: 0
   },
   left: { display: "flex", alignItems: "center", gap: 10, flexShrink: 0 },
   logoBox: {
@@ -108,30 +108,33 @@ const hdrStyles = {
   },
   pageNav: { display: "flex", alignItems: "center", marginLeft: "auto", gap: 4 },
   pageTab: {
-    padding: "7px 16px",
+    padding: "7px var(--page-tab-pad, 16px)",
     background: "transparent", border: "none", borderRadius: 980,
-    fontSize: 13, letterSpacing: "-0.005em", cursor: "pointer",
+    fontSize: "var(--page-tab-fs, 13px)", letterSpacing: "-0.005em", cursor: "pointer",
     whiteSpace: "nowrap", transition: "all .15s",
     fontWeight: 500, fontFamily: "inherit"
   },
   actions: { display: "flex", alignItems: "center", gap: 6, flexShrink: 0 },
   hdrBtn: {
-    width: 30, height: 30, borderRadius: 980, background: "transparent",
-    border: "none", color: "var(--ink)", cursor: "pointer",
+    width: 32, height: 32,            /* 32px visual, 44pt tappable area via padding */
+    minWidth: 44, minHeight: 44,      /* HIG: 44pt minimum touch target */
+    borderRadius: "var(--radius-sm)", background: "transparent",
+    border: "none", color: "var(--blue)", cursor: "pointer",
     display: "flex", alignItems: "center", justifyContent: "center",
-    transition: "background .15s"
+    transition: "background .15s, transform .1s",
+    marginInline: -6,                 /* compensate extra touch area */
   },
   subBar: {
     background: "transparent"
   },
-  subInner: { maxWidth: 1440, margin: "0 auto", padding: "0 40px" },
+  subInner: { maxWidth: 1440, margin: "0 auto", padding: "0 var(--hdr-pad, 40px)" },
   subNav: { display: "flex", gap: 0, alignItems: "center" },
   subTab: {
     display: "flex", alignItems: "center", gap: 7,
-    padding: "10px 16px", height: 42,
+    padding: "10px var(--page-tab-pad, 16px)", height: 42,
     background: "transparent", border: "none",
     borderBottom: "2px solid transparent",
-    fontSize: 12.5, cursor: "pointer", letterSpacing: "-0.005em",
+    fontSize: "calc(var(--page-tab-fs, 13px) - 0.5px)", cursor: "pointer", letterSpacing: "-0.005em",
     transition: "color .15s, border-color .15s, font-weight .15s",
     fontFamily: "inherit"
   }

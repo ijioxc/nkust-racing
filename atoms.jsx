@@ -45,9 +45,9 @@ function IconBtn({ icon, onClick, title, size = 28, danger = false }) {
       onMouseLeave={() => setHover(false)}
       style={{
         width: size, height: size,
-        background: hover ? (danger ? "rgba(184,48,37,0.10)" : "rgba(0,0,0,0.06)") : "transparent",
-        color: danger ? "#b83025" : "var(--ink)",
-        border: 0, borderRadius: 980, cursor: "pointer",
+        background: hover ? (danger ? "rgba(255,59,48,0.10)" : "var(--fill-tertiary)") : "transparent",
+        color: danger ? "var(--red)" : "var(--label-secondary)",
+        border: 0, borderRadius: "var(--radius-sm)", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
         transition: "background .15s",
       }}>
@@ -74,16 +74,22 @@ function StatusDot({ state }) {
   return <span style={{ width: 7, height: 7, borderRadius: 99, background: c, display: "inline-block" }}/>;
 }
 
-function ProgressBar({ value, height = 2, accent = false, dark = false }) {
-  const fill = dark ? "#fff" : (accent ? "var(--accent)" : "var(--ink)");
-  const track = dark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.08)";
+function ProgressBar({ value, height = 4, accent = false, dark = false, overdue = false }) {
+  // Apple HIG semantic colors: overdue=red, <50%=orange, 50-99%=blue, 100%=green
+  const fill = dark ? "#fff"
+    : overdue      ? "var(--red)"
+    : value >= 100 ? "var(--green)"
+    : value >= 50  ? "var(--blue)"
+    : "var(--orange)";
+  const track = dark ? "rgba(255,255,255,0.22)" : "var(--fill-tertiary)";
   return (
     <div style={{
       height, borderRadius: 99, background: track, overflow: "hidden",
     }}>
       <div style={{
-        width: `${value}%`, height: "100%", borderRadius: 99,
-        background: fill, transition: "width .8s var(--ease-out)",
+        width: `${Math.min(value ?? 0, 100)}%`, height: "100%", borderRadius: 99,
+        background: fill,
+        transition: "width 0.6s cubic-bezier(0.4,0,0.2,1)",
       }}/>
     </div>
   );
@@ -112,47 +118,34 @@ function DisplayNumber({ value, unit, size = 48, weight = 700, color, style }) {
 
 function KPI({ label, value, unit, foot, accent = false, hint }) {
   return (
-    <div className="tcard tile hoverable" style={{
-      flex: 1, minWidth: 0, padding: "var(--tile-pad)",
-      background: accent ? "var(--accent)" : "var(--card-fill)",
-      borderColor: accent ? "var(--accent)" : undefined,
-      color: accent ? "#fff" : "var(--ink)",
-    }}>
-      <div className="eyebrow" style={{
-        color: accent ? "rgba(255,255,255,0.75)" : "var(--muted)",
-      }}>{label}</div>
-      <div style={{ marginTop: 12 }}>
-        <DisplayNumber value={value} unit={unit} size={44}
-          color={accent ? "#fff" : "var(--ink)"} />
+    <div className={`widget-tile${accent ? " accent" : ""}`} style={{ flex: 1, minWidth: 0 }}>
+      {/* EYEBROW — 11px sans uppercase, HIG widget pattern */}
+      <div className="widget-eyebrow">{label}</div>
+      {/* VALUE — 34px tabular bold */}
+      <div className="widget-value">
+        {value}{unit && <small style={{ fontSize: "0.45em", fontWeight: 600, marginLeft: 4, opacity: 0.6 }}>{unit}</small>}
       </div>
-      {foot && (
-        <div style={{
-          fontFamily: "var(--font-mono)", fontSize: 9,
-          letterSpacing: "0.06em", marginTop: 8,
-          color: accent ? "rgba(255,255,255,0.7)" : "var(--muted)",
-        }}>{foot}</div>
-      )}
-      {hint && !foot && (
-        <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 6 }}>{hint}</div>
-      )}
+      {foot && <div className="widget-foot">{foot}</div>}
+      {hint && !foot && <div className="widget-foot">{hint}</div>}
     </div>
   );
 }
 
 function SubsystemTag({ kind, withIcon = true, size = "sm" }) {
-  const color = SUBSYSTEM_COLOR[kind] || "#444";
+  const color = SUBSYSTEM_COLOR[kind] || "var(--label-secondary)";
   const small = size === "sm";
   return (
     <span style={{
-      display: "inline-flex", alignItems: "center", gap: 5,
-      padding: small ? "3px 8px" : "4px 10px",
-      background: color + "14",
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: small ? "3px 10px" : "4px 12px",
+      background: color + "18",
       color: color,
-      borderRadius: small ? 6 : 8,
-      fontSize: small ? 10 : 11,
+      borderRadius: 9999,   /* capsule — WWDC 2025 iOS/iPadOS control style */
+      fontSize: small ? 11 : 12,
       fontWeight: 600,
-      letterSpacing: 0,
-      lineHeight: 1.2,
+      letterSpacing: "0.02em",
+      lineHeight: 1.4,
+      whiteSpace: "nowrap",
     }}>
       {withIcon && <SubsystemIcon kind={kind} size={small ? 10 : 12} color={color}/>}
       {kind}
@@ -160,17 +153,28 @@ function SubsystemTag({ kind, withIcon = true, size = "sm" }) {
   );
 }
 
-function Avatar({ name, size = 32, dark = true }) {
-  const c = dark
-    ? { bg: "var(--ink)", fg: "#fff" }
-    : { bg: "var(--surface-2)", fg: "var(--ink)" };
+// Name-based gradient palette — maps first char to Apple system color pairs
+const AVATAR_GRADIENTS = [
+  ["#5AC8FA","#007AFF"],  // teal→blue
+  ["#AF52DE","#5856D6"],  // purple→indigo
+  ["#FF9500","#FF3B30"],  // orange→red
+  ["#34C759","#5AC8FA"],  // green→teal
+  ["#FF2D55","#AF52DE"],  // pink→purple
+  ["#007AFF","#5856D6"],  // blue→indigo
+  ["#FFCC00","#FF9500"],  // yellow→orange
+];
+function Avatar({ name, size = 32, dark = false }) {
+  const idx = ((name?.charCodeAt(0) ?? 0) + (name?.charCodeAt(1) ?? 0)) % AVATAR_GRADIENTS.length;
+  const [from, to] = AVATAR_GRADIENTS[idx];
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
-      background: c.bg, color: c.fg,
+      background: `linear-gradient(135deg, ${from}, ${to})`,
+      color: "#fff",
       display: "inline-flex", alignItems: "center", justifyContent: "center",
-      fontSize: Math.max(10, size * 0.38), fontWeight: 600,
+      fontSize: Math.max(10, size * 0.38), fontWeight: 700,
       flexShrink: 0, letterSpacing: 0,
+      boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
     }}>{name?.[0] || "?"}</div>
   );
 }

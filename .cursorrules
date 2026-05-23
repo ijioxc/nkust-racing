@@ -1,0 +1,36 @@
+# NKUST Racing — Codebase Specific UI/UX Guardrails (Apple HIG & WWDC25 Distilled)
+
+## 1. 專案架構感知 (Codebase Structure)
+- **核心架構**：純 React + Babel 瀏覽器端直接編譯渲染。所有狀態儲存在 `crdt-store.js` / `localStorage`，UI 樣式整合於 `tokens.css` 與 `themes.css`。
+- **視圖模組**：
+  - `Dashboard.jsx` (工作台)：使用 Bento 及 Kanban 結構，卡片為 `.tcard` (有 large/tile 變體)。
+  - `Blueprint.jsx` & `Blueprint3D.js` (車體圖解)：Three.js 3D 畫布與側邊規格欄。
+  - `Essay.jsx` (技術手冊)：以 Serif 字體 (`var(--font-serif)`) 為主的閱讀排版。
+
+## 2. 佈局與同心圓角 (Layout & Geometry Rules)
+- **同心比例 (Concentric Curves)**：嚴格遵循「外圓角 - 內縮 padding = 內圓角」幾何公式。
+  - 計算公式：`border-radius: calc(var(--radius-card) - var(--card-pad));`。
+  - 遇到卡片內有 padding 的子元素（如 Image、Bento 內部 Grid、或是 Input）時強制計算套用，避免寫死 px 導致角度夾擠。
+- **自適應類別 (Size Classes)**：
+  - 電腦版 (Regular)：區域間距用 `--gap-zone` (28px)，卡片 padding 用 `--card-pad` (22px)。
+  - 手機版 (Compact, <768px)：自動收縮邊距（`--hdr-pad: 16px`, `--s-8: 16px`），Header 字體縮至 `11.5px` 防止換行。
+
+## 3. 圖標與一致性 (Icons & Visual Weights)
+- **統一線稿粗細 (Stroke Weight)**：一律調用 `icons.jsx` 中的圖標。
+  - `UIIcon` 一律使用 Lucide 風格，強制設定向量線條 `strokeWidth={1.5}`，使其與 Noto Sans 等系統字型有相同的視覺重量。
+  - 自系統標籤（車體、懸吊、電裝等）必須調用專屬的 `SubsystemIcon`，規格為 `viewBox="0 0 24 24"` 並繼承外層 color。
+
+## 4. 微件與快速操作 (Widgets & Quick Actions)
+- **資訊一目了然 (Glanceability)**：Bento 卡片只渲染「單一關鍵指標」或「當前最核心任務」，禁止在 Bento 卡片內塞入多列複雜數據。
+- **快速跳轉 (Deep Linking)**：團隊名片或 Bento 卡片應具備 Direct Navigation 導向，點擊即可深度跳轉至特定的子系統視圖或彈出詳情。
+
+## 5. 選單、彈出按鈕與選單列 (Menus, Pop-up Buttons, Menu Bar)
+- **選單分流 (Menus & Pull-downs)**：
+  - **氣泡操作選單**：使用 `···` 氣泡彈窗（如 `PersonProfilePopup` 右上角），提供複數操作。材質必須為深色高模糊毛玻璃，以保證與白色卡片背景的對比度。
+  - **互斥狀態按鈕 (Pop-up Buttons)**：在表單中，強制使用 `SegmentedControl` 元件，展示當前被激活的唯一狀態，避免使用舊式長下拉式 select。
+- **全域工具選單列 (Menu Bar)**：
+  - 專案 Header 充當選單列，搜尋（search）與匯出（download）等功能一律靠右聚合（`flex-shrink: 0`），保持左側 Logo 的清爽感。
+
+## 6. 展示模態 (Presentation & Modality)
+- **Centered Dialog (彈窗)**：適用於需要快速抉擇、建立新內容的任務（如 `TaskModal`、`PersonModal`、`PlanDetailPopup`）。背部遮罩使用 `backdrop-filter: blur(6px)` 徹底聚焦視線。
+- **Slide-over Sheet (側邊欄)**：適用於需要參照左側視圖的詳情閱讀（如 `PlanDetailPanel` 側滑面板）。背部遮罩不應全失焦，保留大面積的 parent 網格參考。

@@ -1183,7 +1183,7 @@ function PlanDetailPopup({ plan, onClose, onEdit, onDelete }) {
         border: "0.5px solid rgba(0,0,0,0.08)",
         borderRadius: 20, overflow: "hidden",
         boxShadow: "0 32px 80px rgba(0,0,0,0.2)",
-        animation: "modal-pop .3s var(--ease-out)",
+        animation: "modal-pop .45s var(--ease-out)",
       }}>
         {/* Cover */}
         {plan.cover ? (
@@ -1261,13 +1261,13 @@ function PlanDetailPopup({ plan, onClose, onEdit, onDelete }) {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: "12px 22px 18px", borderTop: "0.5px solid var(--rule)", marginTop: 12, display: "flex", flexDirection: "column", gap: 0 }}>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+        <div style={{ padding: "12px 22px 18px", borderTop: "0.5px solid var(--rule)", marginTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
             <Button variant="ghost" onClick={onClose}>關閉</Button>
             <Button variant="primary" icon="edit" onClick={onEdit}>編輯計畫</Button>
-          </div>
-          <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
-            <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
           </div>
         </div>
       </div>
@@ -1661,13 +1661,13 @@ function PlanDetailPanel({ open, plan, onClose, onEdit, onDelete }) {
           </div>
         </div>
         
-        <div className="slide-over-footer" style={{ flexDirection: "column", gap: 0 }}>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+        <div className="slide-over-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <Button variant="danger" icon="trash" onClick={() => onDelete(plan)}>刪除</Button>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
             <Button variant="ghost" onClick={onClose}>關閉</Button>
             <Button variant="primary" icon="edit" onClick={() => onEdit(plan)}>編輯計畫</Button>
-          </div>
-          <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
-            <Button variant="danger" icon="trash" onClick={() => onDelete(plan)}>刪除</Button>
           </div>
         </div>
       </div>
@@ -1937,4 +1937,4 @@ function PersonCard({ person, onClick }) {
   );
 }
 
-Object.assign(window, { Dashboard });
+Object.assign(window, { Dashboard, BentoCard, PersonCard });

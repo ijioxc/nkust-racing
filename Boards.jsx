@@ -197,75 +197,45 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
   );
 }
 
-// ─── Supplier modal ────────────────────────────────────────
+// ─── Supplier Schema & Modal Wrapper ────────────────────────
+const SUPPLIER_SCHEMA = [
+  { key: "name", label: "項目名稱", type: "text", placeholder: "例： OZ Racing 方程式輪圈", autoFocus: true },
+  { key: "sub", label: "子系統分類", type: "subsystem" },
+  { key: "cat", label: "零件類別", type: "select", options: ["輪圈", "輪胎", "煞車", "引擎", "電裝", "其他"] },
+  { key: "origin", label: "產地", type: "text", placeholder: "例：義大利" },
+  { key: "price", label: "估算價格", type: "text", placeholder: "$0 / set" },
+  { key: "status", label: "採購狀態", type: "select", options: ["詢價", "比較中", "已下單", "已收到", "贊助申請", "備案"] },
+  { key: "url", label: "網頁連結（選填）", type: "text", placeholder: "https://..." },
+  { key: "priority", label: "採購優先度", type: "segmented", options: [
+    { value: "HIGH", label: "高 · HIGH" },
+    { value: "MID", label: "中 · MID" },
+    { value: "LOW", label: "低 · LOW" },
+  ]},
+];
+
 function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
   const blank = { name: "", price: "", cat: "輪圈", sub: "車體",
                   priority: "MID", status: "詢價", origin: "", url: "" };
-  const [s, setS] = React.useState(initial || blank);
-  React.useEffect(() => { setS(initial || blank); }, [initial, open]);
-  const u = (k, v) => setS(prev => ({ ...prev, [k]: v }));
-  const isNew = !initial?.id;
-  const autoClose = () => { onSave(s); onClose(); };
   return (
-    <Modal open={open} onClose={onClose} onDismiss={autoClose}
-      eyebrow={isNew ? "NEW SUPPLIER ITEM" : "EDIT SUPPLIER ITEM"}
-      title={isNew ? "新增零件項目" : s.name || "編輯零件"}
-      footer={
-        <>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <Button variant="ghost" onClick={onClose}>取消</Button>
-            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+    <DynamicEditorModal
+      open={open}
+      onClose={onClose}
+      onSave={onSave}
+      onDelete={onDelete}
+      initial={initial || blank}
+      schema={SUPPLIER_SCHEMA}
+      eyebrow={!initial?.id ? "NEW SUPPLIER ITEM" : "EDIT SUPPLIER ITEM"}
+      titleKey="name"
+      renderPreview={(data) => {
+        const SupplierCard = window.SupplierCard;
+        if (!SupplierCard) return null;
+        return (
+          <div style={{ width: "100%", transform: "scale(0.95)", transformOrigin: "center" }}>
+            <SupplierCard supplier={data} onClick={() => {}} />
           </div>
-          {!isNew && (
-            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
-              <Button variant="danger" icon="trash" onClick={() => { onDelete(s); onClose(); }}>刪除</Button>
-            </div>
-          )}
-        </>
-      }>
-      <div className="field"><label>項目名稱</label>
-        <input type="text" value={s.name} onChange={e => u("name", e.target.value)} autoFocus placeholder="例： OZ Racing 方程式輪圈"/>
-      </div>
-      
-      <div className="field"><label>子系統分類</label>
-        <SubsystemGridSelector value={s.sub} onChange={v => u("sub", v)}/>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>零件類別</label>
-          <select value={s.cat} onChange={e => u("cat", e.target.value)}>
-            {SUPPLIER_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div className="field"><label>產地</label>
-          <input type="text" value={s.origin} onChange={e => u("origin", e.target.value)} placeholder="例：義大利"/>
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>估算價格</label>
-          <input type="text" value={s.price} onChange={e => u("price", e.target.value)} placeholder="$0 / set"/>
-        </div>
-        <div className="field"><label>採購狀態</label>
-          <select value={s.status} onChange={e => u("status", e.target.value)}>
-            {Object.keys(STATUS_TONES).map(k => <option key={k} value={k}>{k}</option>)}
-          </select>
-        </div>
-      </div>
-      <div className="field"><label>網頁連結（選填）</label>
-        <input type="text" value={s.url || ""} onChange={e => u("url", e.target.value)} placeholder="https://..."/>
-      </div>
-      <div className="field"><label>採購優先度</label>
-        <SegmentedControl
-          options={[
-            { value: "HIGH", label: "高 · HIGH" },
-            { value: "MID", label: "中 · MID" },
-            { value: "LOW", label: "低 · LOW" },
-          ]}
-          value={s.priority}
-          onChange={v => u("priority", v)}
-        />
-      </div>
-    </Modal>
+        );
+      }}
+    />
   );
 }
 
@@ -276,6 +246,7 @@ function ResourcesView({ resources, setResources }) {
   const [filter, setFilter] = React.useState("all");
   const [viewMode, setViewMode] = React.useState("card");
   const [editing, setEditing] = React.useState({ open: false, initial: null });
+  const [preview, setPreview] = React.useState(null);  // resource being previewed
   const [confirm, setConfirm] = React.useState(null);
   const [search, setSearch] = React.useState("");
 
@@ -384,7 +355,7 @@ function ResourcesView({ resources, setResources }) {
                 <div className="tcard large" style={{ padding: 8 }}>
                   {items.map((r, i) => (
                     <ResourceRow key={r.id} item={r} index={i + 1}
-                      onClick={() => setEditing({ open: true, initial: r })}
+                      onClick={() => setPreview(r)}
                       onDelete={() => setConfirm(r)}/>
                   ))}
                 </div>
@@ -397,8 +368,7 @@ function ResourcesView({ resources, setResources }) {
                 }}>
                   {items.map((r) => (
                     <ResourceCard key={r.id} item={r}
-                      onClick={() => setEditing({ open: true, initial: r })}
-                      onDelete={() => setConfirm(r)}/>
+                      onClick={() => setPreview(r)}/>
                   ))}
                 </div>
               )}
@@ -406,6 +376,15 @@ function ResourcesView({ resources, setResources }) {
           );
         })}
       </div>
+
+      {/* 放大預覽 — 點圖卡先進此預覽，再決定編輯/刪除/開連結 */}
+      {preview && (
+        <ResourcePreview
+          item={preview}
+          onClose={() => setPreview(null)}
+          onEdit={() => { setEditing({ open: true, initial: preview }); setPreview(null); }}
+          onDelete={() => { setConfirm(preview); setPreview(null); }}/>
+      )}
 
       <ResourceModal open={editing.open} initial={editing.initial}
         onClose={() => setEditing({ open: false, initial: null })}
@@ -436,245 +415,234 @@ const getMonogram = (item) => {
   return (item.org || item.name || "?")[0].toUpperCase();
 };
 
-function ResourceCard({ item, onClick, onDelete }) {
-  const domain = getDomain(item.url);
+// Apple HIG group accent colors (Apple system palette)
+const RESOURCE_GROUP_THEME = {
+  races:    { color: "var(--red)",   tint: "rgba(255,59,48,0.10)",  label: "RACE"  },
+  tools:    { color: "var(--blue)",  tint: "rgba(0,122,255,0.10)",  label: "TOOL"  },
+  learning: { color: "var(--green)", tint: "rgba(52,199,89,0.10)",  label: "LEARN" },
+};
+
+function ResourceCard({ item, onClick }) {
   const monogram = getMonogram(item);
-  const tone = STATUS_TONES[item.priority] || { bg: "rgba(0,0,0,0.04)", fg: "var(--muted)" };
   const prioTone = item.priority === "HIGH" ? "high" : item.priority === "MID" ? "mid" : "low";
+  const theme = RESOURCE_GROUP_THEME[item.group] || RESOURCE_GROUP_THEME.learning;
+  const typeLabel = item.group === "races" ? "RACE"
+    : item.group === "tools" ? "TOOL"
+    : (item.date === "Book" || item.date === "PDF" || item.date === "Web") ? item.date.toUpperCase()
+    : "LEARN";
 
   return (
     <div
       onClick={onClick}
       className="tcard large hoverable"
       style={{
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        height: 200,
-        position: "relative",
+        display: "flex", flexDirection: "column",
+        overflow: "hidden", height: 248, cursor: "pointer",
         background: "var(--card-fill)",
+        backdropFilter: "var(--card-blur)", WebkitBackdropFilter: "var(--card-blur)",
         border: "var(--card-border)",
-        boxShadow: "var(--card-shadow)",
-        cursor: "pointer",
-        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px) scale(1.01)";
-        const img = e.currentTarget.querySelector(".mock-content");
-        if (img) img.style.transform = "scale(1.05)";
-        const hdr = e.currentTarget.querySelector(".mock-window-header");
-        if (hdr) hdr.style.borderBottomColor = "rgba(0, 113, 227, 0.2)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "none";
-        const img = e.currentTarget.querySelector(".mock-content");
-        if (img) img.style.transform = "none";
-        const hdr = e.currentTarget.querySelector(".mock-window-header");
-        if (hdr) hdr.style.borderBottomColor = "var(--rule)";
+        boxShadow: "var(--card-highlight), var(--card-shadow)",
       }}
     >
-      {/* Browser Header (macOS Style) */}
-      <div
-        className="mock-window-header"
-        style={{
-          height: 28,
-          background: "rgba(0,0,0,0.025)",
-          borderBottom: "0.5px solid var(--rule)",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 10px",
-          position: "relative",
-          zIndex: 2,
-          transition: "border-color 0.3s",
-        }}
-      >
-        {/* Address Bar */}
-        <div
-          style={{
-            flex: 1,
-            margin: "0 54px",
-            background: "#fff",
-            height: 18,
-            borderRadius: 4,
-            border: "0.5px solid rgba(0,0,0,0.06)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 4,
-            fontSize: 9,
-            color: "var(--muted)",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "0.02em",
-          }}
-        >
-          {item.url ? (
-            <>
-              <svg width="7" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#27c93f" }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>
-                {domain}
-              </span>
-            </>
-          ) : (
-            <span style={{ color: "var(--muted)" }}>LOCAL_DOCS</span>
-          )}
-        </div>
-
-        {/* External Link (if URL exists) */}
-        {item.url && (
-          <a
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              position: "absolute",
-              right: 8,
-              width: 18,
-              height: 18,
-              borderRadius: "50%",
-              background: "rgba(0,0,0,0.04)",
-              color: "var(--ink)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "background 0.2s, color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--accent)";
-              e.currentTarget.style.color = "#fff";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(0,0,0,0.04)";
-              e.currentTarget.style.color = "var(--ink)";
-            }}
-            title="開啟連結"
-          >
-            <UIIcon kind="external" size={9} />
-          </a>
+      {/* ── HERO ZONE — cover image OR monogram tint (16:9-ish) ── */}
+      <div style={{
+        height: 116, position: "relative", flexShrink: 0,
+        background: item.cover
+          ? `url('${item.cover}') center/cover`
+          : theme.tint,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        {!item.cover && (
+          <div style={{
+            width: 52, height: 52, borderRadius: "var(--radius-md)",
+            background: "var(--bg-secondary)",
+            boxShadow: "var(--shadow-1)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "var(--font-sans)", fontSize: 22, fontWeight: 800,
+            color: theme.color,
+          }}>{monogram}</div>
         )}
+        {/* type badge — top-left, frosted */}
+        <span style={{
+          position: "absolute", top: 10, left: 10,
+          fontFamily: "var(--font-sans)", fontSize: 10, fontWeight: 700,
+          letterSpacing: "0.06em",
+          padding: "3px 8px", borderRadius: "var(--radius-full)",
+          background: item.cover ? "rgba(0,0,0,0.45)" : "var(--bg-secondary)",
+          color: item.cover ? "#fff" : theme.color,
+          backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+        }}>{typeLabel}</span>
+        {/* priority dot pill — top-right */}
+        <span className={`pill ${prioTone}`} style={{
+          position: "absolute", top: 8, right: 10,
+          background: item.cover ? "rgba(0,0,0,0.45)" : undefined,
+          color: item.cover ? "#fff" : undefined,
+          backdropFilter: item.cover ? "blur(8px)" : undefined,
+        }}>
+          {item.priority === "HIGH" ? "高" : item.priority === "MID" ? "中" : "低"}
+        </span>
       </div>
 
-      {/* Browser Body Mockup */}
-      <div
-        style={{
-          flex: 1,
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          padding: 12,
-          justifyContent: "space-between",
-          zIndex: 1,
-        }}
-      >
-        {/* Mock Graphic Content Background */}
-        <div
-          className="mock-content"
-          style={{
-            position: "absolute",
-            inset: 0,
-            overflow: "hidden",
-            pointerEvents: "none",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: 0.08,
-            zIndex: 0,
-            transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          {/* A glowing geometric layout simulation */}
-          <div style={{
-            width: "85%",
-            height: "85%",
-            border: "1px dashed var(--ink)",
-            borderRadius: 8,
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            gap: 6,
-            padding: 8,
+      {/* ── CONTENT ── */}
+      <div style={{ flex: 1, padding: 16, display: "flex", flexDirection: "column", minHeight: 0 }}>
+        <div style={{
+          fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 600,
+          color: "var(--label-primary)", letterSpacing: "-0.01em", lineHeight: 1.35,
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+          overflow: "hidden", textWrap: "pretty",
+        }}>{item.name}</div>
+
+        <div style={{
+          fontSize: 13, color: "var(--label-secondary)", lineHeight: 1.45, marginTop: 5,
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+          overflow: "hidden", textWrap: "pretty", flex: 1,
+        }}>{item.note}</div>
+
+        {/* single clean metadata line */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          marginTop: 10, fontSize: 12, color: "var(--label-tertiary)",
+        }}>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {item.org || "NKUST RACING"}
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+            {item.date && item.date !== "Book" && item.date !== "PDF" && item.date !== "Web" ? item.date : ""}
+            {item.url && <UIIcon kind="external" size={11} color="var(--blue)" />}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── ResourcePreview — centered card popup (放大預覽), spring entry ───
+function ResourcePreview({ item, onClose, onEdit, onDelete }) {
+  if (!item) return null;
+  const monogram = getMonogram(item);
+  const theme = RESOURCE_GROUP_THEME[item.group] || RESOURCE_GROUP_THEME.learning;
+  const prioTone = item.priority === "HIGH" ? "high" : item.priority === "MID" ? "mid" : "low";
+  const typeLabel = item.group === "races" ? "賽事資訊"
+    : item.group === "tools" ? "工程工具" : "學習資源";
+
+  React.useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div className="modal-back" style={{ zIndex: 600, padding: 24 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{
+        width: "100%", maxWidth: 480,
+        background: "var(--bg-secondary)",
+        border: "0.5px solid var(--separator)",
+        borderRadius: "var(--radius-2xl)", overflow: "hidden",
+        boxShadow: "var(--shadow-modal)",
+        animation: "modal-pop .45s var(--ease-out)",
+      }}>
+        {/* HERO */}
+        <div style={{
+          height: 180, position: "relative",
+          background: item.cover ? `url('${item.cover}') center/cover` : theme.tint,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {!item.cover && (
+            <div style={{
+              width: 72, height: 72, borderRadius: "var(--radius-lg)",
+              background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 30, fontWeight: 800, color: theme.color,
+            }}>{monogram}</div>
+          )}
+          {item.cover && (
+            <div style={{ position: "absolute", inset: 0,
+              background: "linear-gradient(to top, rgba(0,0,0,0.45), transparent 55%)" }}/>
+          )}
+          {/* close */}
+          <button onClick={onClose} title="關閉 (Esc)" style={{
+            position: "absolute", top: 12, right: 12,
+            width: 30, height: 30, borderRadius: "50%", border: "none",
+            background: "rgba(0,0,0,0.40)", color: "#fff", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(8px)",
           }}>
-            <div style={{ display: "flex", gap: 6, height: "40%" }}>
-              <div style={{ flex: 1, border: "0.5px solid var(--ink)", borderRadius: 4, background: "rgba(0,0,0,0.05)" }} />
-              <div style={{ width: "30%", border: "0.5px solid var(--ink)", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800 }}>{monogram}</div>
-            </div>
-            <div style={{ flex: 1, border: "0.5px solid var(--ink)", borderRadius: 4, display: "flex", flexDirection: "column", gap: 3, padding: 4 }}>
-              <div style={{ height: 3, width: "90%", background: "currentColor", borderRadius: 2 }} />
-              <div style={{ height: 3, width: "75%", background: "currentColor", borderRadius: 2 }} />
-              <div style={{ height: 3, width: "50%", background: "currentColor", borderRadius: 2 }} />
-            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          {/* badges bottom-left */}
+          <div style={{ position: "absolute", bottom: 12, left: 16, display: "flex", gap: 6, alignItems: "center" }}>
+            <span style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
+              padding: "3px 10px", borderRadius: "var(--radius-full)",
+              background: item.cover ? "rgba(0,0,0,0.45)" : "var(--bg-secondary)",
+              color: item.cover ? "#fff" : theme.color,
+              backdropFilter: "blur(8px)",
+            }}>{typeLabel}</span>
+            <span className={`pill ${prioTone}`} style={{
+              background: item.cover ? "rgba(0,0,0,0.45)" : undefined,
+              color: item.cover ? "#fff" : undefined,
+              backdropFilter: item.cover ? "blur(8px)" : undefined,
+            }}>{item.priority === "HIGH" ? "高 · HIGH" : item.priority === "MID" ? "中 · MID" : "低 · LOW"}</span>
           </div>
         </div>
 
-        {/* Real Card Content (foreground) */}
-        <div style={{ zIndex: 1, display: "flex", flexDirection: "column", gap: 4, height: "100%", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-              <span style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 8,
-                color: "var(--muted)",
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-              }}>{item.org || "NKUST RACING"}</span>
-              <span className={`pill ${prioTone}`} style={{ fontSize: 7, padding: "1px 5px" }}>
-                {item.priority === "HIGH" ? "高" : item.priority === "MID" ? "中" : "低"}
-              </span>
-            </div>
-            <div style={{
-              fontSize: 13.5,
-              fontWeight: 700,
-              color: "var(--ink)",
-              letterSpacing: "-0.01em",
-              lineHeight: 1.3,
-              marginTop: 4,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textWrap: "pretty",
-            }}>{item.name}</div>
-            <div style={{
-              fontSize: 11.5,
-              color: "var(--faint)",
-              lineHeight: 1.4,
-              marginTop: 4,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textWrap: "pretty",
-            }}>{item.note}</div>
-          </div>
+        {/* BODY */}
+        <div style={{ padding: "18px 22px 8px" }}>
+          <h2 style={{
+            fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em",
+            color: "var(--label-primary)", margin: 0, lineHeight: 1.25,
+          }}>{item.name}</h2>
+          {item.note && (
+            <p style={{
+              fontSize: 15, color: "var(--label-secondary)", lineHeight: 1.6,
+              marginTop: 10, whiteSpace: "pre-wrap", textWrap: "pretty",
+            }}>{item.note}</p>
+          )}
 
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingTop: 8,
-            borderTop: "0.5px solid var(--rule)",
-            fontFamily: "var(--font-mono)",
-            fontSize: 9,
-            color: "var(--muted)",
-          }}>
-            <span>{item.date || "NO DATE"}</span>
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              style={{
-                background: "transparent",
-                border: 0,
-                padding: 4,
-                cursor: "pointer",
-                color: "#b83025",
-                opacity: 0.5,
-                transition: "opacity 0.2s",
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
-              onMouseLeave={(e) => e.currentTarget.style.opacity = 0.5}
-            >
-              <UIIcon kind="trash" size={10} />
-            </button>
+          {/* metadata rows */}
+          <div style={{ marginTop: 16, display: "flex", flexDirection: "column" }}>
+            {[
+              ["機構 / 作者", item.org || "—"],
+              ["日期 / 類型", item.date || "—"],
+            ].map(([k, v]) => (
+              <div key={k} style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "10px 0", borderTop: "0.5px solid var(--separator)",
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em",
+                  textTransform: "uppercase", color: "var(--label-tertiary)" }}>{k}</span>
+                <span style={{ fontSize: 15, fontWeight: 500, color: "var(--label-primary)" }}>{v}</span>
+              </div>
+            ))}
+            {item.url && (
+              <div style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "10px 0", borderTop: "0.5px solid var(--separator)",
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em",
+                  textTransform: "uppercase", color: "var(--label-tertiary)" }}>連結</span>
+                <a href={item.url} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 15, fontWeight: 500, color: "var(--blue)",
+                    display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none",
+                    maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {getDomain(item.url)} <UIIcon kind="external" size={12} />
+                </a>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* FOOTER actions */}
+        <div style={{
+          display: "flex", justifyContent: "flex-end", gap: 8,
+          padding: "12px 22px 20px",
+        }}>
+          <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+          {item.url && (
+            <Button variant="ghost" icon="external"
+              onClick={() => window.open(item.url, "_blank", "noopener")}>開啟連結</Button>
+          )}
+          <Button variant="primary" icon="edit" onClick={onEdit}>編輯</Button>
         </div>
       </div>
     </div>
@@ -738,76 +706,50 @@ function EmptyState({ icon, label }) {
   );
 }
 
+// ─── Resource Schema & Modal Wrapper ────────────────────────
+const RESOURCE_SCHEMA = [
+  { key: "name", label: "資源名稱", type: "text", placeholder: "例： FSAE Online 官方技術規範", autoFocus: true },
+  { key: "group", label: "資源類別", type: "segmented", options: [
+    { value: "races", label: "賽事資訊" },
+    { value: "tools", label: "工程工具" },
+    { value: "learning", label: "學習資源" },
+  ]},
+  { key: "org", label: "機構 / 作者", type: "text", placeholder: "例： SAE International" },
+  { key: "date", label: "日期 / 類型", type: "text", placeholder: "例： 2026-08-15 或 PDF" },
+  { key: "priority", label: "重要程度 (優先度)", type: "segmented", options: [
+    { value: "HIGH", label: "高 · HIGH" },
+    { value: "MID", label: "中 · MID" },
+    { value: "LOW", label: "低 · LOW" },
+  ]},
+  { key: "note", label: "簡短說明", type: "textarea", rows: 2, placeholder: "請輸入對該資源的說明或使用指南..." },
+  { key: "url", label: "URL（網頁連結）", type: "text", placeholder: "https://..." },
+  { key: "cover", label: "封面圖網址（選填）", type: "text", placeholder: "https://… .jpg / .png — 留空則用字母圖示" },
+];
+
 function ResourceModal({ open, onClose, onSave, onDelete, initial }) {
   const blank = { group: "races", name: "", org: "", note: "",
                   priority: "MID", date: "", url: "" };
-  const [r, setR] = React.useState(initial || blank);
-  React.useEffect(() => { setR(initial || blank); }, [initial, open]);
-  const u = (k, v) => setR(prev => ({ ...prev, [k]: v }));
-  const isNew = !initial?.id;
-  const autoClose = () => { onSave(r); onClose(); };
   return (
-    <Modal open={open} onClose={onClose} onDismiss={autoClose}
-      eyebrow={isNew ? "NEW RESOURCE" : "EDIT RESOURCE"}
-      title={isNew ? "新增資源" : r.name || "編輯資源"}
-      footer={
-        <>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <Button variant="ghost" onClick={onClose}>取消</Button>
-            <Button variant="primary" icon="check" onClick={autoClose}>儲存</Button>
+    <DynamicEditorModal
+      open={open}
+      onClose={onClose}
+      onSave={onSave}
+      onDelete={onDelete}
+      initial={initial || blank}
+      schema={RESOURCE_SCHEMA}
+      eyebrow={!initial?.id ? "NEW RESOURCE" : "EDIT RESOURCE"}
+      titleKey="name"
+      renderPreview={(data) => {
+        const ResourceCard = window.ResourceCard;
+        if (!ResourceCard) return null;
+        return (
+          <div style={{ width: "100%", transform: "scale(0.95)", transformOrigin: "center" }}>
+            <ResourceCard item={data} onClick={() => {}} />
           </div>
-          {!isNew && (
-            <div style={{ borderTop: "0.5px solid var(--rule)", marginTop: 10, paddingTop: 10 }}>
-              <Button variant="danger" icon="trash" onClick={() => { onDelete(r); onClose(); }}>刪除</Button>
-            </div>
-          )}
-        </>
-      }>
-      <div className="field"><label>資源名稱</label>
-        <input type="text" value={r.name} onChange={e => u("name", e.target.value)} autoFocus placeholder="例： FSAE Online 官方技術規範"/>
-      </div>
-      
-      <div className="field"><label>資源類別</label>
-        <SegmentedControl
-          options={[
-            { value: "races", label: "賽事資訊" },
-            { value: "tools", label: "工程工具" },
-            { value: "learning", label: "學習資源" },
-          ]}
-          value={r.group}
-          onChange={v => u("group", v)}
-        />
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>機構 / 作者</label>
-          <input type="text" value={r.org} onChange={e => u("org", e.target.value)} placeholder="例： SAE International"/>
-        </div>
-        <div className="field"><label>日期 / 類型</label>
-          <input type="text" value={r.date} onChange={e => u("date", e.target.value)} placeholder="例： 2026-08-15 或 PDF"/>
-        </div>
-      </div>
-      
-      <div className="field"><label>重要程度 (優先度)</label>
-        <SegmentedControl
-          options={[
-            { value: "HIGH", label: "高 · HIGH" },
-            { value: "MID", label: "中 · MID" },
-            { value: "LOW", label: "低 · LOW" },
-          ]}
-          value={r.priority}
-          onChange={v => u("priority", v)}
-        />
-      </div>
-
-      <div className="field"><label>簡短說明</label>
-        <textarea value={r.note} onChange={e => u("note", e.target.value)} rows={2} placeholder="請輸入對該資源的說明或使用指南..."/>
-      </div>
-      <div className="field"><label>URL（網頁連結）</label>
-        <input type="text" value={r.url} onChange={e => u("url", e.target.value)} placeholder="https://..."/>
-      </div>
-    </Modal>
+        );
+      }}
+    />
   );
 }
 
-Object.assign(window, { PartsView, ResourcesView });
+Object.assign(window, { PartsView, ResourcesView, SupplierCard, ResourceCard, ResourcePreview });
