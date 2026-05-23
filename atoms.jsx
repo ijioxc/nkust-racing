@@ -372,6 +372,10 @@ function DetailPreview({
   hero = {}, badges, title, subtitle, body, tags, meta = [], children, footer,
   width = 480,
 }) {
+  const META_CAP = 5;
+  const [metaExpanded, setMetaExpanded] = React.useState(false);
+  const shownMeta = metaExpanded ? meta : meta.slice(0, META_CAP);
+
   // zoom-from-source: set transform-origin to where the user clicked
   const cardRef = React.useRef(null);
   React.useLayoutEffect(() => {
@@ -416,14 +420,17 @@ function DetailPreview({
         {onNext && arrow("next", onNext)}
 
         <div ref={cardRef} style={{
-          width: "100%", background: "var(--bg-secondary)",
+          width: "100%", maxHeight: "88vh", display: "flex", flexDirection: "column",
+          /* WWDC25 sheet 材質：毛玻璃 + 細描邊 + 高光 */
+          background: "var(--glass-fill-strong)",
+          backdropFilter: "blur(30px) saturate(180%)", WebkitBackdropFilter: "blur(30px) saturate(180%)",
           border: "0.5px solid var(--separator)", borderRadius: "var(--radius-2xl)",
-          overflow: "hidden", boxShadow: "var(--shadow-modal)",
+          overflow: "hidden", boxShadow: "var(--card-highlight), var(--shadow-modal)",
           animation: "detail-zoom .34s var(--ease-spring, cubic-bezier(0.32,0.72,0,1))",
         }}>
-          {/* HERO */}
+          {/* HERO（固定，不捲動） */}
           <div style={{
-            height, position: "relative",
+            height, flexShrink: 0, position: "relative",
             background: cover ? `url('${cover}') center/cover` : heroColor,
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
@@ -462,8 +469,8 @@ function DetailPreview({
             )}
           </div>
 
-          {/* BODY */}
-          <div style={{ padding: "18px 22px 8px" }}>
+          {/* BODY（唯一捲動區，高度受 88vh 限制 → 不巢狀捲動） */}
+          <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "18px 22px 8px" }} className="scroll-soft">
             <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--label-primary)", margin: 0, lineHeight: 1.25 }}>{title}</h2>
             {subtitle && <div style={{ fontSize: 13, color: "var(--label-secondary)", marginTop: 4 }}>{subtitle}</div>}
             {body && <p style={{ fontSize: 15, color: "var(--label-secondary)", lineHeight: 1.6, marginTop: 10, whiteSpace: "pre-wrap", textWrap: "pretty" }}>{body}</p>}
@@ -471,7 +478,7 @@ function DetailPreview({
 
             {meta.length > 0 && (
               <div style={{ marginTop: 16, display: "flex", flexDirection: "column" }}>
-                {meta.map(({ label, value, href }) => (
+                {shownMeta.map(({ label, value, href }) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: "0.5px solid var(--separator)", gap: 12 }}>
                     <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--label-tertiary)", flexShrink: 0 }}>{label}</span>
                     {href ? (
@@ -483,6 +490,17 @@ function DetailPreview({
                     )}
                   </div>
                 ))}
+                {/* 漸進揭露：超過 5 條才出現「展開更多」 */}
+                {meta.length > META_CAP && (
+                  <button onClick={() => setMetaExpanded(v => !v)}
+                    style={{
+                      marginTop: 4, padding: "10px 0", border: "none", borderTop: "0.5px solid var(--separator)",
+                      background: "transparent", color: "var(--blue)", fontSize: 13, fontWeight: 600,
+                      fontFamily: "inherit", cursor: "pointer", textAlign: "left",
+                    }}>
+                    {metaExpanded ? "收合" : `展開更多（${meta.length - META_CAP}）`}
+                  </button>
+                )}
               </div>
             )}
 
@@ -490,7 +508,7 @@ function DetailPreview({
           </div>
 
           {footer && (
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 22px 20px" }}>{footer}</div>
+            <div style={{ flexShrink: 0, display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 22px 20px", borderTop: "0.5px solid var(--separator)" }}>{footer}</div>
           )}
         </div>
 
