@@ -395,8 +395,9 @@ function DetailPreview({
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose, onPrev, onNext]);
 
-  const { cover, color = "var(--fill-secondary)", monogram, icon, node, height = 180, ringValue } = hero;
+  const { cover, color = "var(--fill-secondary)", fg, monogram, icon, node, height = 180, ringValue } = hero;
   const heroColor = typeof color === "string" ? color : "var(--fill-secondary)";
+  const monoColor = fg || (heroColor.startsWith("var") ? "var(--label-primary)" : heroColor);
 
   const arrow = (dir, fn) => (
     <button onClick={(e) => { e.stopPropagation(); fn(); }} title={dir === "prev" ? "上一個 (←)" : "下一個 (→)"}
@@ -447,7 +448,7 @@ function DetailPreview({
                 width: 72, height: 72, borderRadius: "var(--radius-lg)",
                 background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 30, fontWeight: 800, color: heroColor.startsWith("var") ? "var(--label-primary)" : heroColor,
+                fontSize: 30, fontWeight: 800, color: monoColor,
               }}>{monogram}</div>
             ) : null)}
             {cover && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.45), transparent 55%)" }}/>}

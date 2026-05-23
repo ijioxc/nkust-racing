@@ -580,128 +580,48 @@ function ResourcePreview({ item, onClose, onEdit, onDelete }) {
   const prioTone = item.priority === "HIGH" ? "high" : item.priority === "MID" ? "mid" : "low";
   const typeLabel = item.group === "races" ? "賽事資訊"
     : item.group === "tools" ? "工程工具" : "學習資源";
-
-  React.useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  const prioLabel = item.priority === "HIGH" ? "高 · HIGH" : item.priority === "MID" ? "中 · MID" : "低 · LOW";
 
   return (
-    <div className="modal-back" style={{ zIndex: 600, padding: 24 }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} style={{
-        width: "100%", maxWidth: 480,
-        background: "var(--bg-secondary)",
-        border: "0.5px solid var(--separator)",
-        borderRadius: "var(--radius-2xl)", overflow: "hidden",
-        boxShadow: "var(--shadow-modal)",
-        animation: "modal-pop .45s var(--ease-out)",
-      }}>
-        {/* HERO */}
-        <div style={{
-          height: 180, position: "relative",
-          background: item.cover ? `url('${item.cover}') center/cover` : theme.tint,
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          {!item.cover && (
-            <div style={{
-              width: 72, height: 72, borderRadius: "var(--radius-lg)",
-              background: "var(--bg-secondary)", boxShadow: "var(--shadow-2)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 30, fontWeight: 800, color: theme.color,
-            }}>{monogram}</div>
-          )}
-          {item.cover && (
-            <div style={{ position: "absolute", inset: 0,
-              background: "linear-gradient(to top, rgba(0,0,0,0.45), transparent 55%)" }}/>
-          )}
-          {/* close */}
-          <button onClick={onClose} title="關閉 (Esc)" style={{
-            position: "absolute", top: 12, right: 12,
-            width: 30, height: 30, borderRadius: "50%", border: "none",
-            background: "rgba(0,0,0,0.40)", color: "#fff", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            backdropFilter: "blur(8px)",
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-          {/* badges bottom-left */}
-          <div style={{ position: "absolute", bottom: 12, left: 16, display: "flex", gap: 6, alignItems: "center" }}>
-            <span style={{
-              fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
-              padding: "3px 10px", borderRadius: "var(--radius-full)",
-              background: item.cover ? "rgba(0,0,0,0.45)" : "var(--bg-secondary)",
-              color: item.cover ? "#fff" : theme.color,
-              backdropFilter: "blur(8px)",
-            }}>{typeLabel}</span>
-            <span className={`pill ${prioTone}`} style={{
-              background: item.cover ? "rgba(0,0,0,0.45)" : undefined,
-              color: item.cover ? "#fff" : undefined,
-              backdropFilter: item.cover ? "blur(8px)" : undefined,
-            }}>{item.priority === "HIGH" ? "高 · HIGH" : item.priority === "MID" ? "中 · MID" : "低 · LOW"}</span>
-          </div>
-        </div>
-
-        {/* BODY */}
-        <div style={{ padding: "18px 22px 8px" }}>
-          <h2 style={{
-            fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em",
-            color: "var(--label-primary)", margin: 0, lineHeight: 1.25,
-          }}>{item.name}</h2>
-          {item.note && (
-            <p style={{
-              fontSize: 15, color: "var(--label-secondary)", lineHeight: 1.6,
-              marginTop: 10, whiteSpace: "pre-wrap", textWrap: "pretty",
-            }}>{item.note}</p>
-          )}
-
-          {/* metadata rows */}
-          <div style={{ marginTop: 16, display: "flex", flexDirection: "column" }}>
-            {[
-              ["機構 / 作者", item.org || "—"],
-              ["日期 / 類型", item.date || "—"],
-            ].map(([k, v]) => (
-              <div key={k} style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "10px 0", borderTop: "0.5px solid var(--separator)",
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em",
-                  textTransform: "uppercase", color: "var(--label-tertiary)" }}>{k}</span>
-                <span style={{ fontSize: 15, fontWeight: 500, color: "var(--label-primary)" }}>{v}</span>
-              </div>
-            ))}
-            {item.url && (
-              <div style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "10px 0", borderTop: "0.5px solid var(--separator)",
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.04em",
-                  textTransform: "uppercase", color: "var(--label-tertiary)" }}>連結</span>
-                <a href={item.url} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 15, fontWeight: 500, color: "var(--blue)",
-                    display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none",
-                    maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {getDomain(item.url)} <UIIcon kind="external" size={12} />
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* FOOTER actions */}
-        <div style={{
-          display: "flex", justifyContent: "flex-end", gap: 8,
-          padding: "12px 22px 20px",
-        }}>
-          <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
-          {item.url && (
-            <Button variant="ghost" icon="external"
-              onClick={() => window.open(item.url, "_blank", "noopener")}>開啟連結</Button>
-          )}
-          <Button variant="primary" icon="edit" onClick={onEdit}>編輯</Button>
-        </div>
-      </div>
-    </div>
+    <DetailPreview
+      onClose={onClose}
+      width={480}
+      hero={{
+        cover: item.cover,
+        color: theme.tint,
+        fg: theme.color,
+        monogram,
+        height: 180,
+      }}
+      badges={<>
+        <span style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
+          padding: "3px 10px", borderRadius: "var(--radius-full)",
+          background: item.cover ? "rgba(0,0,0,0.45)" : "var(--bg-secondary)",
+          color: item.cover ? "#fff" : theme.color, backdropFilter: "blur(8px)",
+        }}>{typeLabel}</span>
+        <span className={`pill ${prioTone}`} style={{
+          background: item.cover ? "rgba(0,0,0,0.45)" : undefined,
+          color: item.cover ? "#fff" : undefined,
+          backdropFilter: item.cover ? "blur(8px)" : undefined,
+        }}>{prioLabel}</span>
+      </>}
+      title={item.name}
+      body={item.note}
+      meta={[
+        { label: "機構 / 作者", value: item.org || "—" },
+        { label: "日期 / 類型", value: item.date || "—" },
+        ...(item.url ? [{ label: "連結", value: getDomain(item.url), href: item.url }] : []),
+      ]}
+      footer={<>
+        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+        {item.url && (
+          <Button variant="ghost" icon="external"
+            onClick={() => window.open(item.url, "_blank", "noopener")}>開啟連結</Button>
+        )}
+        <Button variant="primary" icon="edit" onClick={onEdit}>編輯</Button>
+      </>}
+    />
   );
 }
 
