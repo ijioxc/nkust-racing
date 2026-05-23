@@ -542,15 +542,20 @@ function GanttRow({ task, colW, onClick, onDelete }) {
 
 // ─── Bento Board ───────────────────────────────────────────
 function BentoBoard({ tasks, onTaskClick }) {
-  // 將卡片依照尺寸權重排序，讓大方塊 (3x2, 2x2, 2x1) 優先繪製，從而自動往左上角排列
+  // 排序：本週焦點 > HIGH > MID > LOW，同優先度內再依尺寸大小排，讓重要卡片自動落在左上
   const sortedTasks = React.useMemo(() => {
-    const getWeight = (size) => {
-      if (size === "3x2") return 6;
-      if (size === "2x2") return 4;
-      if (size === "2x1") return 2;
-      return 1; // 1x1
+    const priorityW = (t) => {
+      if (t.state === "focus")    return 300;
+      if (t.priority === "HIGH")  return 200;
+      if (t.priority === "MID")   return 100;
+      return 0;
     };
-    return [...tasks].sort((a, b) => getWeight(b.size || "1x1") - getWeight(a.size || "1x1"));
+    const sizeW = (s) =>
+      s === "3x2" ? 6 : s === "2x2" ? 4 : s === "2x1" ? 2 : 1;
+    return [...tasks].sort((a, b) =>
+      (priorityW(b) + sizeW(b.size || "1x1")) -
+      (priorityW(a) + sizeW(a.size || "1x1"))
+    );
   }, [tasks]);
 
   return (
@@ -581,15 +586,27 @@ function BentoCard({ task, onClick }) {
   const daysLabel = daysToEnd === 0 ? "TODAY"
                   : daysToEnd < 0 ? `OVERDUE ${-daysToEnd}W` : `T-${daysToEnd}W`;
 
+  const isHigh = task.priority === "HIGH";
+
   return (
     <div onClick={onClick} className="tcard tile hoverable" style={{
       ...sizeStyle,
       padding: "12px 14px", cursor: "pointer", overflow: "hidden",
       display: "flex", flexDirection: "column", justifyContent: "space-between",
+      position: "relative",
       background: isFocus ? "var(--accent)" : "var(--card-fill)",
       borderColor: isFocus ? "var(--accent)" : undefined,
       opacity: isDone ? 0.66 : 1,
     }}>
+      {/* 優先度指示條：HIGH 任務頂端橘線（focus 卡背景已足夠，不重複） */}
+      {!isFocus && isHigh && (
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 3,
+          background: "var(--orange)",
+          borderRadius: "var(--radius-md) var(--radius-md) 0 0",
+        }}/>
+      )}
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
         <span className="eyebrow" style={{
           color: isFocus ? "rgba(255,255,255,0.78)" : "var(--muted)",
@@ -601,32 +618,42 @@ function BentoCard({ task, onClick }) {
         {!isLarge && (
           <span style={{
             fontFamily: "var(--display-family)",
-            fontWeight: 700, lineHeight: 1,
+            fontWeight: 800, lineHeight: 1,
             color: isFocus ? "#fff" : isDone ? "var(--muted)" : "var(--ink)",
-            fontSize: isWide ? 22 : 15,
+            fontSize: isWide ? 22 : 17,
             fontFeatureSettings: "'tnum'",
           }}>{progress}%</span>
         )}
       </div>
       <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
         {isLarge && (
-          <DisplayNumber value={progress} unit="%" size={48} color={isFocus ? "#fff" : "var(--ink)"}/>
+          <DisplayNumber value={progress} unit="%" size={isFocus ? 56 : 48} color={isFocus ? "#fff" : "var(--ink)"}/>
         )}
         <div style={{
-          fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em",
+          fontWeight: 700, lineHeight: 1.2, letterSpacing: "-0.015em",
           color: isFocus ? "#fff" : "var(--ink)",
           fontSize: isLarge ? 16 : isWide ? 14 : 13,
           display: "-webkit-box", WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>{title}</div>
-        <ProgressBar value={progress} height={2} dark={isFocus}/>
+        <ProgressBar value={progress} height={isFocus ? 3 : 2} dark={isFocus}/>
         <div style={{
-          fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.04em",
+          fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.06em",
           color: isFocus ? "rgba(255,255,255,0.78)" : "var(--muted)",
-          display: "flex", justifyContent: "space-between",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
           <span>{daysLabel}</span>
-          <span>{owner}</span>
+          {/* owner：小圓點 + 名字，更 Apple-like */}
+          {owner && (
+            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+              <span style={{
+                width: 5, height: 5, borderRadius: "50%",
+                background: isFocus ? "rgba(255,255,255,0.6)" : "var(--muted)",
+                flexShrink: 0,
+              }}/>
+              {owner}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -635,6 +662,8 @@ function BentoCard({ task, onClick }) {
 
 // ─── TaskPreview — 任務放大預覽（建於共用 DetailPreview，含環形進度）───
 const TASK_STATE_LABEL = { focus: "本週焦點", done: "已完成", active: "進行中" };
+const PRIO_LABEL = { HIGH: "高", MID: "中", LOW: "低" };
+
 function TaskPreview({ task, onClose, onEdit, onDelete }) {
   if (!task) return null;
   const color = SUBSYSTEM_COLOR[task.subsystem] || "var(--blue)";
@@ -643,6 +672,7 @@ function TaskPreview({ task, onClose, onEdit, onDelete }) {
   const schedule = daysToEnd === 0 ? "本週到期"
     : daysToEnd < 0 ? `已逾期 ${-daysToEnd} 週` : `剩 ${daysToEnd} 週`;
   const stateLabel = TASK_STATE_LABEL[task.state] || "進行中";
+  const isFocus = task.state === "focus";
 
   return (
     <DetailPreview
@@ -651,15 +681,22 @@ function TaskPreview({ task, onClose, onEdit, onDelete }) {
       hero={{
         color: `color-mix(in srgb, ${color} 14%, var(--bg-secondary))`,
         ringValue: task.progress || 0,
-        height: 168,
+        height: 176,
       }}
       badges={<>
-        <span className={`pill ${prioTone}`}>{task.priority || "—"}</span>
+        <span className={`pill ${prioTone}`}>{PRIO_LABEL[task.priority] || "—"}</span>
         <span style={{
           padding: "3px 10px", borderRadius: "var(--radius-full)",
-          background: "var(--bg-secondary)", color: task.state === "focus" ? "var(--blue)" : "var(--label-secondary)",
+          background: "var(--bg-secondary)",
+          color: isFocus ? "var(--blue)" : "var(--label-secondary)",
           fontSize: 11, fontWeight: 600, backdropFilter: "blur(8px)",
-        }}>{stateLabel}</span>
+          display: "inline-flex", alignItems: "center", gap: 5,
+        }}>
+          {isFocus && (
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--blue)", flexShrink: 0 }}/>
+          )}
+          {stateLabel}
+        </span>
       </>}
       title={task.title}
       tags={[<SubsystemTag key="s" kind={task.subsystem} size="sm"/>]}
@@ -670,7 +707,7 @@ function TaskPreview({ task, onClose, onEdit, onDelete }) {
         { label: "狀態", value: stateLabel },
       ]}
       footer={<>
-        <Button variant="danger" icon="trash" onClick={onDelete}>刪除</Button>
+        <Button variant="ghost-danger" icon="trash" onClick={onDelete}>刪除</Button>
         <Button variant="primary" icon="edit" onClick={onEdit}>編輯任務</Button>
       </>}
     />

@@ -303,6 +303,10 @@
 .btn.danger  { background: rgba(255,59,48,0.10); color: var(--red); }
 .btn.danger:hover { background: rgba(255,59,48,0.16); }
 
+/* Ghost-Danger — destructive action 降階版（適用 modal footer 左側） */
+.btn.ghost-danger { background: transparent; color: var(--red); }
+.btn.ghost-danger:hover { background: rgba(255,59,48,0.08); }
+
 .btn .icn { width: 14px; height: 14px; }
 
 /* ─── Pill / Badge — Apple HIG Capsule ─── */

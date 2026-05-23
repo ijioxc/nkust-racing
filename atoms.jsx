@@ -25,7 +25,7 @@ function Button({ children, variant = "default", icon, onClick, type, title, sty
       type={type || "button"}
       title={title}
       onClick={onClick}
-      className={`btn ${variant === "primary" ? "primary" : variant === "ghost" ? "ghost" : variant === "danger" ? "danger" : ""}`}
+      className={`btn ${variant === "primary" ? "primary" : variant === "ghost" ? "ghost" : variant === "danger" ? "danger" : variant === "ghost-danger" ? "ghost-danger" : ""}`}
       style={style}
     >
       {icon && <UIIcon kind={icon} size={12} />}
@@ -509,7 +509,7 @@ function DetailPreview({
           </div>
 
           {footer && (
-            <div style={{ flexShrink: 0, display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 22px 20px", borderTop: "0.5px solid var(--separator)" }}>{footer}</div>
+            <div style={{ flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, padding: "12px 22px 20px", borderTop: "0.5px solid var(--separator)" }}>{footer}</div>
           )}
         </div>
 
