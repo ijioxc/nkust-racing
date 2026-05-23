@@ -260,15 +260,16 @@
 }
 @keyframes modal-fade { from { opacity: 0; } to { opacity: 1; } }
 .modal-card {
-  background: rgba(255,255,255,0.94);
+  background: rgba(255,255,255,0.96);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 0.5px solid rgba(0,0,0,0.08);
+  border: 0.5px solid rgba(255,255,255,0.45);
   border-radius: var(--radius-large);
-  box-shadow: var(--shadow-modal);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15) inset, var(--shadow-modal);
   max-width: 520px; width: 100%;
   max-height: 90vh; overflow-y: auto;
   animation: modal-pop .3s var(--ease-out);
+  position: relative;
 }
 @keyframes modal-pop {
   from { opacity: 0; transform: translateY(16px) scale(0.98); }
@@ -285,3 +286,216 @@
 .drag-handle:active { cursor: grabbing; }
 .dragging { opacity: 0.5; }
 .drag-over { background: var(--accent-bg) !important; }
+
+/* ─── Premium Segmented Control ─── */
+.segmented-control {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 2.5px;
+  border-radius: 10px;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  width: 100%;
+}
+[data-theme="glass"] .segmented-control {
+  background: rgba(0, 0, 0, 0.055);
+}
+.segmented-item {
+  flex: 1;
+  text-align: center;
+  padding: 7px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--faint);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s var(--ease-out);
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-sans);
+}
+.segmented-item.active {
+  color: var(--ink);
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+[data-theme="flat"] .segmented-item.active {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+/* ─── Premium Subsystem Grid Selector ─── */
+.subsystem-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+@media (max-width: 480px) {
+  .subsystem-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.subsystem-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.025);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.22s var(--ease-out);
+}
+.subsystem-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--faint);
+  transform: translateY(-1px);
+}
+.subsystem-btn.active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* ─── Glowing Range Slider ─── */
+.range-slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  width: 100%;
+}
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.05);
+  outline: none;
+  transition: background 0.3s;
+}
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 113, 227, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s var(--ease-out);
+}
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* ─── Slide-over Detail Panel ─── */
+.slide-over-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(10, 15, 25, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out);
+}
+.slide-over-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.slide-over-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  max-width: 90vw;
+  z-index: 160;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-left: 0.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-theme="flat"] .slide-over-panel {
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.05);
+}
+[data-theme="editorial"] .slide-over-panel {
+  background: rgba(255, 254, 250, 0.94);
+}
+.slide-over-panel.open {
+  transform: translateX(0);
+}
+.slide-over-header {
+  height: 56px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 0.5px solid var(--rule);
+}
+.slide-over-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.slide-over-footer {
+  padding: 16px 24px 24px;
+  border-top: 0.5px solid var(--rule);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Drafting grid background simulator */
+.blueprint-draft-grid {
+  background: 
+    radial-gradient(circle at 100% 100%, var(--accent-mid) 0%, transparent 60%),
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(135deg, #0d1e36, #050d18);
+  background-size: 100% 100%, 20px 20px, 20px 20px, 100% 100%;
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.blueprint-draft-grid::after {
+  content: "DRAFT GRID SPEC";
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.05em;
+}
+

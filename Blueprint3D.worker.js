@@ -1,4 +1,6 @@
 // Blueprint3D.worker.js — OffscreenCanvas renderer
+self.window = self;
+
 import * as THREE from 'https://esm.sh/three@0.160.0';
 import { GLTFLoader } from 'https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js';
@@ -27,6 +29,7 @@ class DummyDOMElement {
     this.clientHeight = 600;
     this.listeners = {};
     this.style = {};
+    this.ownerDocument = this;
   }
   addEventListener(type, cb, opts) {
     if(!this.listeners[type]) this.listeners[type] = [];
@@ -48,6 +51,7 @@ class DummyDOMElement {
 }
 
 const dummyCanvas = new DummyDOMElement();
+self.document = dummyCanvas;
 
 function init(canvas, width, height, pixelRatio, glbPath) {
   dummyCanvas.clientWidth = width;

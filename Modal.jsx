@@ -65,43 +65,64 @@ function TaskModal({ open, onClose, onSave, onDelete, initial }) {
         <label>任務標題</label>
         <input type="text" value={t.title} onChange={e => update("title", e.target.value)} placeholder="例：底盤主環 TIG 焊接" autoFocus/>
       </div>
+
+      <div className="field">
+        <label>子系統</label>
+        <SubsystemGridSelector value={t.subsystem} onChange={v => update("subsystem", v)}/>
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field">
-          <label>子系統</label>
-          <select value={t.subsystem} onChange={e => update("subsystem", e.target.value)}>
-            {SUBSYSTEMS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+          <label>優先度</label>
+          <SegmentedControl
+            options={[
+              { value: "HIGH", label: "高 · HIGH" },
+              { value: "MID", label: "中 · MID" },
+              { value: "LOW", label: "低 · LOW" },
+            ]}
+            value={t.priority}
+            onChange={v => update("priority", v)}
+          />
         </div>
         <div className="field">
-          <label>優先度</label>
-          <select value={t.priority} onChange={e => update("priority", e.target.value)}>
-            <option value="HIGH">高 · HIGH</option>
-            <option value="MID">中 · MID</option>
-            <option value="LOW">低 · LOW</option>
-          </select>
+          <label>狀態</label>
+          <SegmentedControl
+            options={[
+              { value: "active", label: "進行中" },
+              { value: "focus", label: "本週焦點" },
+              { value: "done", label: "已完成" },
+            ]}
+            value={t.state}
+            onChange={v => update("state", v)}
+          />
         </div>
       </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field">
           <label>負責人</label>
           <input type="text" value={t.owner} onChange={e => update("owner", e.target.value)} placeholder="例：陳偉成"/>
         </div>
         <div className="field">
-          <label>狀態</label>
-          <select value={t.state} onChange={e => update("state", e.target.value)}>
-            <option value="active">進行中</option>
-            <option value="focus">本週焦點</option>
-            <option value="done">已完成</option>
-          </select>
+          <label>Bento 尺寸</label>
+          <SegmentedControl
+            options={[
+              { value: "1x1", label: "1×1" },
+              { value: "2x1", label: "2×1" },
+              { value: "2x2", label: "2×2" },
+              { value: "3x2", label: "3×2" },
+            ]}
+            value={t.size}
+            onChange={v => update("size", v)}
+          />
         </div>
       </div>
-      <div className="field">
-        <label>進度 — {t.progress}%</label>
-        <input type="range" min="0" max="100" step="1" value={t.progress}
-          onChange={e => update("progress", parseInt(e.target.value))}
-          style={{ accentColor: "var(--accent)" }}/>
+
+      <div className="field" style={{ marginTop: 6 }}>
+        <GlowingSlider value={t.progress} onChange={v => update("progress", v)} label="任務進度" />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field">
           <label>起始週</label>
           <input type="number" min="0" max="20" value={t.start} onChange={e => update("start", parseInt(e.target.value) || 0)}/>
@@ -109,15 +130,6 @@ function TaskModal({ open, onClose, onSave, onDelete, initial }) {
         <div className="field">
           <label>持續週</label>
           <input type="number" min="1" max="20" value={t.span} onChange={e => update("span", parseInt(e.target.value) || 1)}/>
-        </div>
-        <div className="field">
-          <label>Bento 尺寸</label>
-          <select value={t.size} onChange={e => update("size", e.target.value)}>
-            <option value="1x1">1×1</option>
-            <option value="2x1">2×1</option>
-            <option value="2x2">2×2</option>
-            <option value="3x2">3×2</option>
-          </select>
         </div>
       </div>
     </Modal>
@@ -133,12 +145,6 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
   const [p, setP] = React.useState(initial || blank);
   React.useEffect(() => { setP(initial || blank); }, [initial, open]);
   const update = (k, v) => setP(prev => ({ ...prev, [k]: v }));
-  const toggle = (s) => setP(prev => ({
-    ...prev,
-    workTypes: prev.workTypes.includes(s)
-      ? prev.workTypes.filter(x => x !== s)
-      : [...prev.workTypes, s],
-  }));
   const isNew = !initial;
 
   return (
@@ -157,7 +163,7 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field">
           <label>姓名</label>
-          <input type="text" value={p.name} onChange={e => update("name", e.target.value)} autoFocus/>
+          <input type="text" value={p.name} onChange={e => update("name", e.target.value)} autoFocus placeholder="例：黃哲宇"/>
         </div>
         <div className="field">
           <label>職位</label>
@@ -168,7 +174,7 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
       </div>
       <div className="field">
         <label>Email</label>
-        <input type="email" value={p.email} onChange={e => update("email", e.target.value)}/>
+        <input type="email" value={p.email} onChange={e => update("email", e.target.value)} placeholder="example@nkust.edu.tw"/>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field">
@@ -186,26 +192,7 @@ function PersonModal({ open, onClose, onSave, onDelete, initial }) {
       </div>
       <div className="field">
         <label>負責子系統（可複選）</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
-          {SUBSYSTEMS.map(s => {
-            const on = p.workTypes.includes(s);
-            const color = SUBSYSTEM_COLOR[s];
-            return (
-              <button key={s} type="button" onClick={() => toggle(s)} style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                padding: "5px 11px", borderRadius: 999,
-                background: on ? color + "1c" : "rgba(0,0,0,0.04)",
-                color: on ? color : "var(--muted)",
-                border: "0.5px solid " + (on ? color + "40" : "rgba(0,0,0,0.06)"),
-                fontSize: 11, fontWeight: 600, cursor: "pointer",
-                transition: "all .15s",
-              }}>
-                <SubsystemIcon kind={s} size={11} color={on ? color : "currentColor"}/>
-                {s}
-              </button>
-            );
-          })}
-        </div>
+        <SubsystemGridSelector value={p.workTypes} onChange={v => update("workTypes", v)} multiple />
       </div>
     </Modal>
   );
@@ -232,35 +219,43 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
         </>
       }>
       <div className="field"><label>計畫標題</label>
-        <input type="text" value={p.title} onChange={e => update("title", e.target.value)} autoFocus/>
+        <input type="text" value={p.title} onChange={e => update("title", e.target.value)} autoFocus placeholder="例：2026 底盤管架結構輕量化設計"/>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-        <div className="field"><label>Kicker（英文副標）</label>
-          <input type="text" value={p.kicker} onChange={e => update("kicker", e.target.value)} placeholder="DESIGN PROPOSAL"/>
+      
+      <div className="field"><label>Kicker（英文副標）</label>
+        <input type="text" value={p.kicker} onChange={e => update("kicker", e.target.value)} placeholder="DESIGN PROPOSAL"/>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div className="field"><label>圖卡比例版面</label>
+          <SegmentedControl
+            options={[
+              { value: "landscape", label: "橫式 A4 (1.41:1)" },
+              { value: "portrait", label: "直式 A4 (1:1.41)" },
+            ]}
+            value={p.layout || "landscape"}
+            onChange={v => update("layout", v)}
+          />
         </div>
-        <div className="field"><label>子系統</label>
-          <select value={p.sub} onChange={e => update("sub", e.target.value)}>
+        <div className="field"><label>子系統分類</label>
+          <select value={p.sub} onChange={e => update("sub", e.target.value)} style={{ padding: "8px 12px" }}>
             {SUBSYSTEMS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <div className="field"><label>圖卡比例版面</label>
-          <select value={p.layout || "landscape"} onChange={e => update("layout", e.target.value)}>
-            <option value="landscape">橫式 A4 比例 (1.41:1)</option>
-            <option value="portrait">直式 A4 比例 (1:1.41)</option>
-          </select>
-        </div>
       </div>
+
       <div className="field"><label>內容描述</label>
-        <textarea value={p.body} onChange={e => update("body", e.target.value)} rows={3}/>
+        <textarea value={p.body} onChange={e => update("body", e.target.value)} rows={3} placeholder="請描述提案的背景、主要優化細節或技術指標..."/>
       </div>
+
       <div className="field">
-        <label>封面圖</label>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <label>封面圖與預覽</label>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
           <input 
             type="text" 
             value={p.cover || ""} 
             onChange={e => update("cover", e.target.value || null)}
-            placeholder="輸入圖片網址、路徑，或點擊右側上傳..."
+            placeholder="輸入外部圖片網址，或點擊右側上傳..."
             style={{ flex: 1 }}
           />
           <Button 
@@ -297,12 +292,12 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
             </Button>
           )}
         </div>
-        {p.cover && (
+        
+        {p.cover ? (
           <div style={{ 
-            marginTop: 8, 
-            borderRadius: 6, 
+            borderRadius: 8, 
             overflow: "hidden", 
-            border: "1px solid var(--border)", 
+            border: "1px solid var(--rule)", 
             height: 120, 
             display: "flex", 
             alignItems: "center", 
@@ -318,6 +313,20 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
                 e.target.style.display = "none";
               }}
             />
+          </div>
+        ) : (
+          <div className="blueprint-draft-grid">
+            <div style={{ 
+              color: "rgba(255, 255, 255, 0.08)", 
+              fontSize: 16, 
+              fontWeight: 800, 
+              fontFamily: "var(--font-mono)", 
+              letterSpacing: "0.15em",
+              pointerEvents: "none",
+              userSelect: "none"
+            }}>
+              {p.sub.toUpperCase()} SPECIFICATION DRAFT
+            </div>
           </div>
         )}
       </div>

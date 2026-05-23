@@ -10,6 +10,7 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
   const [taskModal, setTaskModal]   = React.useState({ open: false, initial: null });
   const [personModal, setPersonModal] = React.useState({ open: false, initial: null });
   const [planModal, setPlanModal]   = React.useState({ open: false, initial: null });
+  const [planDetail, setPlanDetail] = React.useState({ open: false, target: null });
   const [confirm, setConfirm] = React.useState(null);
 
   // Common edit-list helpers
@@ -35,7 +36,8 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
     <>
       {tab === "overview" && (
         <OverviewView tasks={tasks} people={people} plans={plans}
-          openTask={(t) => setTaskModal({ open: true, initial: t })}/>
+          openTask={(t) => setTaskModal({ open: true, initial: t })}
+          openPlan={(p) => setPlanDetail({ open: true, target: p })}/>
       )}
       {tab === "worklog" && (
         <WorklogView tasks={tasks}
@@ -45,7 +47,7 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
       )}
       {tab === "plans" && (
         <PlansView plans={plans} setPlans={setPlans}
-          openPlan={(p) => setPlanModal({ open: true, initial: p })}
+          openPlan={(p) => setPlanDetail({ open: true, target: p })}
           newPlan={() => setPlanModal({ open: true, initial: null })}
           onDelete={(p) => setConfirm({ kind: "plan", target: p })}/>
       )}
@@ -71,6 +73,11 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
       <PlanModal open={planModal.open} initial={planModal.initial}
         onClose={() => setPlanModal({ open: false, initial: null })}
         onSave={savePlan} onDelete={deletePlan}/>
+
+      <PlanDetailPanel open={planDetail.open} plan={planDetail.target}
+        onClose={() => setPlanDetail({ open: false, target: null })}
+        onEdit={(p) => { setPlanDetail({ open: false, target: null }); setPlanModal({ open: true, initial: p }); }}
+        onDelete={(p) => { setPlanDetail({ open: false, target: null }); setConfirm({ kind: "plan", target: p }); }}/>
 
       <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)}
         title="確定刪除這筆資料？"
@@ -592,12 +599,23 @@ function BentoCard({ task, onClick }) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  PLANS — drag-reorderable image cards
+//  PLANS — drag-reorderable image cards + dual view Kanban
 // ═══════════════════════════════════════════════════════════
-function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
-  const [drag, setDrag] = React.useState(null); // dragged id
-  const [over, setOver] = React.useState(null);
+const PLAN_TAGS = ["討論中", "進行中", "已完成", "擱置"];
+const PLAN_TAG_COLORS = {
+  "討論中": "#0071e3",
+  "進行中": "#b83025",
+  "已完成": "#2a6b38",
+  "擱置": "#86868b",
+};
 
+function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
+  const [view, setView] = React.useState("blueprint"); // blueprint | kanban
+  const [drag, setDrag] = React.useState(null); // dragged id (for blueprint sorting)
+  const [over, setOver] = React.useState(null); // drag over id (for blueprint sorting)
+  const [kanbanDraggedId, setKanbanDraggedId] = React.useState(null); // dragged id (for kanban columns)
+
+  // Blueprint sorting handlers
   const onDragStart = (id) => () => setDrag(id);
   const onDragOver  = (id) => (e) => { e.preventDefault(); setOver(id); };
   const onDragEnd   = () => { setDrag(null); setOver(null); };
@@ -620,30 +638,149 @@ function PlansView({ plans, setPlans, openPlan, newPlan, onDelete }) {
     setPlans(prev => prev.map(p => p.id === id ? { ...p, scale: newScale } : p));
   };
 
+  // Kanban Column DnD
+  const onKanbanDragStart = (id) => (e) => {
+    setKanbanDraggedId(id);
+    e.dataTransfer.setData("text/plain", id);
+  };
+  
+  const onKanbanDropColumn = (targetTag) => (e) => {
+    e.preventDefault();
+    if (!kanbanDraggedId) return;
+    setPlans(prev => prev.map(p => p.id === kanbanDraggedId ? { ...p, tag: targetTag } : p));
+    setKanbanDraggedId(null);
+  };
+
+  const onKanbanDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  // KPI Calculations
+  const total = plans.length;
+  const inProgress = plans.filter(p => p.tag === "進行中").length;
+  const completed = plans.filter(p => p.tag === "已完成").length;
+  const pending = plans.filter(p => !p.tag || ["討論中", "擱置"].includes(p.tag)).length;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      <SectionHead title="設計提案 · Plans" hint={`${plans.length} CARDS · DRAG TO REORDER`}
-        action={<Button variant="primary" icon="plus" onClick={newPlan}>新增計畫</Button>}/>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "var(--gap-card)",
-        gridAutoFlow: "dense",
-      }}>
-        {plans.map(p => (
-          <PlanCard key={p.id} plan={p}
-            dragging={drag === p.id}
-            dragOver={over === p.id && drag !== p.id}
-            draggable
-            onDragStart={onDragStart(p.id)}
-            onDragOver={onDragOver(p.id)}
-            onDragEnd={onDragEnd}
-            onDrop={onDrop(p.id)}
-            onClick={() => openPlan(p)}
-            onDelete={() => onDelete(p)}
-            onScaleChange={onScaleChange}/>
-        ))}
+      {/* 頂部計劃 KPI 儀表板 */}
+      <div style={{ display: "flex", gap: "var(--gap-card)" }}>
+        <KPI label="TOTAL PROPOSALS" value={total} foot="計畫提案總數" />
+        <KPI label="IN PROGRESS" value={inProgress} foot="進行中優化案" accent />
+        <KPI label="COMPLETED" value={completed} foot="已完成評審驗證" />
+        <KPI label="PENDING / BLOCKED" value={pending} foot="待討論或擱置項目" />
       </div>
+
+      <SectionHead 
+        title={view === "blueprint" ? "設計提案 · Blueprint Board" : "工作流程看板 · Workflow Kanban"} 
+        hint={`${plans.length} PLANS · DRAG TO INTERACT`}
+        action={
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <SegmentedControl value={view} onChange={setView} options={[
+              { value: "blueprint", label: "A4 草圖網格" },
+              { value: "kanban", label: "工作流看板" },
+            ]} style={{ width: 220 }} />
+            <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
+            <Button variant="primary" icon="plus" onClick={newPlan}>新增計畫</Button>
+          </div>
+        }/>
+
+      {view === "blueprint" ? (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "var(--gap-card)",
+          gridAutoFlow: "dense",
+        }}>
+          {plans.map(p => (
+            <PlanCard key={p.id} plan={p}
+              dragging={drag === p.id}
+              dragOver={over === p.id && drag !== p.id}
+              draggable
+              onDragStart={onDragStart(p.id)}
+              onDragOver={onDragOver(p.id)}
+              onDragEnd={onDragEnd}
+              onDrop={onDrop(p.id)}
+              onClick={() => openPlan(p)}
+              onDelete={() => onDelete(p)}
+              onScaleChange={onScaleChange}/>
+          ))}
+        </div>
+      ) : (
+        /* 工作流看板 */
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 12,
+          alignItems: "start",
+          minHeight: 460,
+        }}>
+          {PLAN_TAGS.map(columnTag => {
+            const columnPlans = plans.filter(p => {
+              const currentTag = p.tag || "討論中";
+              return currentTag === columnTag;
+            });
+            const tagColor = PLAN_TAG_COLORS[columnTag];
+            return (
+              <div
+                key={columnTag}
+                onDragOver={onKanbanDragOver}
+                onDrop={onKanbanDropColumn(columnTag)}
+                className="tcard"
+                style={{
+                  padding: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  minHeight: 400,
+                  background: kanbanDraggedId ? "rgba(0, 0, 0, 0.015)" : "var(--card-fill)",
+                  border: "1px solid rgba(0,0,0,0.04)",
+                  transition: "background 0.2s ease",
+                }}
+              >
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingBottom: 8,
+                  borderBottom: `2.5px solid ${tagColor}40`,
+                  marginBottom: 4,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: tagColor }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>{columnTag}</span>
+                  </div>
+                  <span className="eyebrow" style={{ color: tagColor, fontSize: 10 }}>{columnPlans.length}</span>
+                </div>
+                
+                {columnPlans.map(p => (
+                  <KanbanPlanCard
+                    key={p.id}
+                    plan={p}
+                    onDragStart={onKanbanDragStart(p.id)}
+                    onClick={() => openPlan(p)}
+                  />
+                ))}
+                
+                {columnPlans.length === 0 && (
+                  <div style={{
+                    padding: "36px 12px",
+                    textAlign: "center",
+                    color: "var(--muted)",
+                    fontSize: 10,
+                    fontFamily: "var(--font-mono)",
+                    letterSpacing: "0.06em",
+                    border: "1px dashed var(--rule)",
+                    borderRadius: 8,
+                  }}>
+                    EMPTY
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -807,6 +944,23 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
           <UIIcon kind="grip" size={12}/>
         </span>
         <SubsystemTag kind={plan.sub}/>
+        {plan.tag && (
+          <span style={{
+            display: "inline-flex",
+            padding: "2px 7px",
+            borderRadius: 6,
+            background: PLAN_TAG_COLORS[plan.tag] + "cc",
+            color: "#ffffff",
+            fontSize: 9,
+            fontWeight: 700,
+            fontFamily: "var(--font-sans)",
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+          }}>
+            {plan.tag}
+          </span>
+        )}
       </div>
 
       {/* 3. Top-right actions */}
@@ -919,6 +1073,119 @@ function PlanCard({ plan, draggable, dragging, dragOver, onDragStart, onDragOver
     </div>
   );
 }
+
+// ─── KanbanPlanCard ───
+function KanbanPlanCard({ plan, onDragStart, onClick }) {
+  const color = SUBSYSTEM_COLOR[plan.sub] || "var(--accent)";
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onClick={onClick}
+      className="tcard tile hoverable"
+      style={{
+        padding: 10,
+        cursor: "pointer",
+        background: "rgba(255, 255, 255, 0.85)",
+        border: "0.5px solid rgba(0,0,0,0.06)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        position: "relative",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <SubsystemTag kind={plan.sub} size="sm" withIcon={true} />
+        <span className="drag-handle" style={{ opacity: 0.5 }}>
+          <UIIcon kind="grip" size={11} />
+        </span>
+      </div>
+      <div style={{
+        fontSize: 12.5,
+        fontWeight: 700,
+        color: "var(--ink)",
+        lineHeight: 1.3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}>
+        {plan.title}
+      </div>
+      <div style={{
+        fontSize: 11,
+        color: "var(--faint)",
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
+        lineHeight: 1.3,
+      }}>
+        {plan.body}
+      </div>
+    </div>
+  );
+}
+
+// ─── PlanDetailPanel (Slide-over) ───
+function PlanDetailPanel({ open, plan, onClose, onEdit, onDelete }) {
+  if (!plan) return null;
+  const color = SUBSYSTEM_COLOR[plan.sub] || "var(--accent)";
+  return (
+    <>
+      <div className={`slide-over-backdrop ${open ? "open" : ""}`} onClick={onClose} />
+      <div className={`slide-over-panel ${open ? "open" : ""}`}>
+        <div className="slide-over-header">
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <SubsystemIcon kind={plan.sub} size={14} color={color}/>
+            <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-mono)", color: color }}>{plan.sub.toUpperCase()}</span>
+          </div>
+          <IconBtn icon="x" onClick={onClose} title="關閉" />
+        </div>
+        
+        <div className="slide-over-content">
+          {plan.cover ? (
+            <div style={{
+              width: "100%", height: 180, borderRadius: 12,
+              backgroundImage: `url('${plan.cover}')`,
+              backgroundSize: "cover", backgroundPosition: "center",
+              boxShadow: "inset 0 0 40px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1)"
+            }}/>
+          ) : (
+            <div className="blueprint-draft-grid" style={{ height: 180 }}>
+              <div style={{ color: "rgba(255, 255, 255, 0.12)", fontSize: 20, fontWeight: 900, fontFamily: "var(--font-mono)", letterSpacing: "0.1em" }}>
+                {plan.sub.toUpperCase()} SPECIFICATION
+              </div>
+            </div>
+          )}
+          
+          <div>
+            <span className="eyebrow" style={{ color: color, fontSize: 10 }}>{plan.kicker || "DESIGN PROPOSAL"}</span>
+            <h2 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--ink)", marginTop: 6, lineHeight: 1.25 }}>
+              {plan.title}
+            </h2>
+          </div>
+          
+          <div style={{ borderTop: "0.5px solid var(--rule)", paddingTop: 16 }}>
+            <div style={{
+              fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--ink)",
+              lineHeight: 1.6, whiteSpace: "pre-wrap", textWrap: "pretty"
+            }}>
+              {plan.body || "無詳細內容描述。"}
+            </div>
+          </div>
+        </div>
+        
+        <div className="slide-over-footer">
+          <Button variant="danger" icon="trash" onClick={() => onDelete(plan)} style={{ marginRight: "auto" }}>刪除</Button>
+          <Button variant="ghost" onClick={onClose}>關閉</Button>
+          <Button variant="primary" icon="edit" onClick={() => onEdit(plan)}>編輯計畫</Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+Object.assign(window, { PlansView, PlanCard, KanbanPlanCard, PlanDetailPanel });
 
 // ═══════════════════════════════════════════════════════════
 //  PEOPLE

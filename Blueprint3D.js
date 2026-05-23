@@ -10,7 +10,8 @@ function init(canvas, onGroupSelect, onProgress) {
   onSelectCb = onGroupSelect;
   loadProgress = onProgress;
 
-  worker = new Worker('Blueprint3D.worker.js', { type: 'module' });
+  const workerUrl = 'Blueprint3D.worker.js?v=' + Date.now();
+  worker = new Worker(workerUrl, { type: 'module' });
   const offscreen = canvas.transferControlToOffscreen();
   
   const rect = canvas.getBoundingClientRect();

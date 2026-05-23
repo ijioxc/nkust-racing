@@ -220,44 +220,46 @@ function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
         </>
       }>
       <div className="field"><label>項目名稱</label>
-        <input type="text" value={s.name} onChange={e => u("name", e.target.value)} autoFocus/>
+        <input type="text" value={s.name} onChange={e => u("name", e.target.value)} autoFocus placeholder="例： OZ Racing 方程式輪圈"/>
       </div>
+      
+      <div className="field"><label>子系統分類</label>
+        <SubsystemGridSelector value={s.sub} onChange={v => u("sub", v)}/>
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>類別</label>
+        <div className="field"><label>零件類別</label>
           <select value={s.cat} onChange={e => u("cat", e.target.value)}>
             {SUPPLIER_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
-        <div className="field"><label>子系統</label>
-          <select value={s.sub} onChange={e => u("sub", e.target.value)}>
-            {SUBSYSTEMS.map(x => <option key={x} value={x}>{x}</option>)}
-          </select>
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>價格</label>
-          <input type="text" value={s.price} onChange={e => u("price", e.target.value)} placeholder="$0 / set"/>
-        </div>
         <div className="field"><label>產地</label>
-          <input type="text" value={s.origin} onChange={e => u("origin", e.target.value)}/>
+          <input type="text" value={s.origin} onChange={e => u("origin", e.target.value)} placeholder="例：義大利"/>
         </div>
       </div>
-      <div className="field"><label>網頁連結（選填）</label>
-        <input type="text" value={s.url || ""} onChange={e => u("url", e.target.value)} placeholder="https://..."/>
-      </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>優先度</label>
-          <select value={s.priority} onChange={e => u("priority", e.target.value)}>
-            <option value="HIGH">高 · HIGH</option>
-            <option value="MID">中 · MID</option>
-            <option value="LOW">低 · LOW</option>
-          </select>
+        <div className="field"><label>估算價格</label>
+          <input type="text" value={s.price} onChange={e => u("price", e.target.value)} placeholder="$0 / set"/>
         </div>
         <div className="field"><label>採購狀態</label>
           <select value={s.status} onChange={e => u("status", e.target.value)}>
             {Object.keys(STATUS_TONES).map(k => <option key={k} value={k}>{k}</option>)}
           </select>
         </div>
+      </div>
+      <div className="field"><label>網頁連結（選填）</label>
+        <input type="text" value={s.url || ""} onChange={e => u("url", e.target.value)} placeholder="https://..."/>
+      </div>
+      <div className="field"><label>採購優先度</label>
+        <SegmentedControl
+          options={[
+            { value: "HIGH", label: "高 · HIGH" },
+            { value: "MID", label: "中 · MID" },
+            { value: "LOW", label: "低 · LOW" },
+          ]}
+          value={s.priority}
+          onChange={v => u("priority", v)}
+        />
       </div>
     </Modal>
   );
@@ -753,38 +755,48 @@ function ResourceModal({ open, onClose, onSave, onDelete, initial }) {
           <Button variant="primary" icon="check" onClick={() => { onSave(r); onClose(); }}>儲存</Button>
         </>
       }>
-      <div className="field"><label>名稱</label>
-        <input type="text" value={r.name} onChange={e => u("name", e.target.value)} autoFocus/>
+      <div className="field"><label>資源名稱</label>
+        <input type="text" value={r.name} onChange={e => u("name", e.target.value)} autoFocus placeholder="例： FSAE Online 官方技術規範"/>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div className="field"><label>類別</label>
-          <select value={r.group} onChange={e => u("group", e.target.value)}>
-            <option value="races">賽事資訊</option>
-            <option value="tools">工程工具</option>
-            <option value="learning">學習資源</option>
-          </select>
-        </div>
-        <div className="field"><label>優先度</label>
-          <select value={r.priority} onChange={e => u("priority", e.target.value)}>
-            <option value="HIGH">高 · HIGH</option>
-            <option value="MID">中 · MID</option>
-            <option value="LOW">低 · LOW</option>
-          </select>
-        </div>
+      
+      <div className="field"><label>資源類別</label>
+        <SegmentedControl
+          options={[
+            { value: "races", label: "賽事資訊" },
+            { value: "tools", label: "工程工具" },
+            { value: "learning", label: "學習資源" },
+          ]}
+          value={r.group}
+          onChange={v => u("group", v)}
+        />
       </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div className="field"><label>機構 / 作者</label>
-          <input type="text" value={r.org} onChange={e => u("org", e.target.value)}/>
+          <input type="text" value={r.org} onChange={e => u("org", e.target.value)} placeholder="例： SAE International"/>
         </div>
         <div className="field"><label>日期 / 類型</label>
-          <input type="text" value={r.date} onChange={e => u("date", e.target.value)} placeholder="2026-08-15 或 PDF"/>
+          <input type="text" value={r.date} onChange={e => u("date", e.target.value)} placeholder="例： 2026-08-15 或 PDF"/>
         </div>
       </div>
-      <div className="field"><label>說明</label>
-        <textarea value={r.note} onChange={e => u("note", e.target.value)} rows={2}/>
+      
+      <div className="field"><label>重要程度 (優先度)</label>
+        <SegmentedControl
+          options={[
+            { value: "HIGH", label: "高 · HIGH" },
+            { value: "MID", label: "中 · MID" },
+            { value: "LOW", label: "低 · LOW" },
+          ]}
+          value={r.priority}
+          onChange={v => u("priority", v)}
+        />
       </div>
-      <div className="field"><label>URL（選填）</label>
-        <input type="text" value={r.url} onChange={e => u("url", e.target.value)}/>
+
+      <div className="field"><label>簡短說明</label>
+        <textarea value={r.note} onChange={e => u("note", e.target.value)} rows={2} placeholder="請輸入對該資源的說明或使用指南..."/>
+      </div>
+      <div className="field"><label>URL（網頁連結）</label>
+        <input type="text" value={r.url} onChange={e => u("url", e.target.value)} placeholder="https://..."/>
       </div>
     </Modal>
   );

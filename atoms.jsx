@@ -194,7 +194,103 @@ function ConfirmDialog({ open, onClose, onConfirm, title, body }) {
   );
 }
 
+// ─── Premium Segmented Control ───
+function SegmentedControl({ options, value, onChange, style }) {
+  return (
+    <div className="segmented-control" style={style}>
+      {options.map(opt => {
+        const active = opt.value === value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={`segmented-item ${active ? "active" : ""}`}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Premium Subsystem Grid Selector ───
+function SubsystemGridSelector({ value, onChange, multiple = false }) {
+  const toggle = (s) => {
+    if (multiple) {
+      const current = Array.isArray(value) ? value : [];
+      const next = current.includes(s)
+        ? current.filter(x => x !== s)
+        : [...current, s];
+      onChange(next);
+    } else {
+      onChange(s);
+    }
+  };
+
+  return (
+    <div className="subsystem-grid">
+      {SUBSYSTEMS.map(s => {
+        const active = multiple
+          ? (Array.isArray(value) && value.includes(s))
+          : value === s;
+        const color = SUBSYSTEM_COLOR[s] || "#444";
+        return (
+          <button
+            key={s}
+            type="button"
+            onClick={() => toggle(s)}
+            className={`subsystem-btn ${active ? "active" : ""}`}
+            style={{
+              background: active ? `${color}14` : undefined,
+              borderColor: active ? `${color}40` : undefined,
+              color: active ? color : undefined,
+            }}
+          >
+            <SubsystemIcon kind={s} size={12} color={active ? color : "var(--muted)"}/>
+            <span style={{ fontSize: 10 }}>{s}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Glowing Slider thumb ───
+function GlowingSlider({ min = 0, max = 100, step = 1, value, onChange, label = "進度" }) {
+  return (
+    <div className="slider-container" style={{ width: "100%" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+        <label style={{
+          fontFamily: "var(--font-mono)", fontSize: 9, fontWeight: 700,
+          letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--muted)"
+        }}>{label}</label>
+        <span style={{
+          fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700,
+          color: "var(--accent)", letterSpacing: "-0.01em"
+        }}>{value}%</span>
+      </div>
+      <div className="range-slider-wrapper">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={e => onChange(parseInt(e.target.value) || 0)}
+          className="range-slider"
+          style={{
+            background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${value}%, rgba(0,0,0,0.06) ${value}%, rgba(0,0,0,0.06) 100%)`
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 Object.assign(window, {
   SectionHead, Eyebrow, Button, IconBtn, Pill, PriorityPill,
   StatusDot, ProgressBar, DisplayNumber, KPI, SubsystemTag, Avatar, ConfirmDialog,
+  SegmentedControl, SubsystemGridSelector, GlowingSlider,
 });
