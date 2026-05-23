@@ -544,7 +544,7 @@ function BentoBoard({ tasks, onTaskClick }) {
 
   return (
     <div style={{
-      display: "grid", gridTemplateColumns: "repeat(6, 1fr)",
+      display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
       gridAutoRows: "var(--bento-row-h)", gap: 10, gridAutoFlow: "dense",
     }}>
       {sortedTasks.map(t => <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)}/>)}
