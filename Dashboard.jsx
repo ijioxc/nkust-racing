@@ -674,7 +674,7 @@ function BentoPreviewModal({ task, onClose, onEdit, onDelete }) {
     : daysToEnd < 0 ? `已逾期 ${-daysToEnd} 週` : `剩 ${daysToEnd} 週`;
 
   return (
-    <GlassModal
+    <CardPreview
       onClose={onClose}
       color={color}
       title={task.title}
@@ -1437,7 +1437,7 @@ function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
   const hasTags = person.workTypes?.length > 0;
 
   return (
-    <GlassModal
+    <CardPreview
       onClose={onClose}
       color={posColor}
       node={<Avatar name={person.name} size={120}/>}

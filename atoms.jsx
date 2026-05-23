@@ -200,7 +200,7 @@ function ConfirmDialog({ open, onClose, onConfirm, title, body }) {
   );
 }
 
-// ─── Premium Segmented Control ───
+// ─── Segmented Control ───
 function SegmentedControl({ options, value, onChange, style, multiple }) {
   return (
     <div className="segmented-control" style={style}>
@@ -327,6 +327,10 @@ function GlowingSlider({ min = 0, max = 100, step = 1, value, onChange, label = 
 }
 
 // ─────────────────────────────────────────────────────────────
+// ─── DetailPreview (長內容預覽 — 計畫 / 文章等「有 body 文字 + 上下張切換」用)
+// 用途：可捲動 body、onPrev/onNext 翻頁、展開更多 meta
+// ⚠️ 無長篇文字 or 不需翻頁 → 改用 CardPreview
+//
 //  DetailPreview — 共用「放大預覽」骨架（讀模式詳情）
 //  以資源預覽為基礎泛化，六個區塊共用。輕量、token-driven、深淺自適應。
 //
@@ -536,8 +540,10 @@ function DetailPreview({
   );
 }
 
-// ─── GlassModal (Unified Bento Preview Skeleton) ───
-function GlassModal({
+// ─── CardPreview (緊湊卡片預覽 — 人員 / 任務 / 零件等「單筆快速預覽」用)
+// 用途：固定高度、無捲動、左值右標籤的 meta 列表
+// ⚠️ 有長篇 body 文字 or 需要上下張切換 → 改用 DetailPreview
+function CardPreview({
   onClose,
   color = "var(--blue)",
   cover,     // image URL
@@ -679,5 +685,5 @@ Object.assign(window, {
   SectionHead, Eyebrow, Button, IconBtn, Pill, PriorityPill,
   StatusDot, ProgressBar, DisplayNumber, KPI, SubsystemTag, Avatar, ConfirmDialog,
   SegmentedControl, ViewToggle, SubsystemGridSelector, GlowingSlider,
-  DetailPreview, RingProgress, GlassModal,
+  DetailPreview, RingProgress, CardPreview,
 });

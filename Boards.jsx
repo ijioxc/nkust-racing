@@ -200,7 +200,7 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
   );
 }
 
-// ─── SupplierPreview — 放大預覽（建於共用 GlassModal）───
+// ─── SupplierPreview — 放大預覽（建於共用 CardPreview）───
 function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
   if (!supplier) return null;
   const tone = STATUS_TONES[supplier.status] || STATUS_TONES["詢價"];
@@ -208,7 +208,7 @@ function SupplierPreview({ supplier, onClose, onEdit, onDelete }) {
   const color = SUBSYSTEM_COLOR[supplier.sub] || "var(--blue)";
 
   return (
-    <GlassModal
+    <CardPreview
       onClose={onClose}
       color={color}
       node={
@@ -586,7 +586,7 @@ function ResourcePreview({ item, onClose, onEdit, onDelete }) {
   const prioLabel = item.priority === "HIGH" ? "高 · HIGH" : item.priority === "MID" ? "中 · MID" : "低 · LOW";
 
   return (
-    <GlassModal
+    <CardPreview
       onClose={onClose}
       color={theme.color}
       cover={item.cover}

@@ -136,6 +136,7 @@ function DynamicEditorModal({ open, onClose, onSave, onDelete, initial, schema, 
                 <div key={`row-${i}`} style={{ display: "flex", position: "relative" }}>
                   {f.fields.map((subF, j) => (
                     <div className="field" key={subF.key} style={{ flex: 1, padding: "12px 16px", position: "relative" }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: "var(--label-tertiary)", marginBottom: 4, letterSpacing: "0.01em" }}>{subF.label}</div>
                       <div>
                         {renderFieldInput(subF, data[subF.key], (val) => update(subF.key, val))}
                       </div>
@@ -148,6 +149,7 @@ function DynamicEditorModal({ open, onClose, onSave, onDelete, initial, schema, 
             }
             return (
               <div className="field" key={f.key} style={{ padding: "12px 16px", position: "relative" }}>
+                <div style={{ fontSize: 11, fontWeight: 500, color: "var(--label-tertiary)", marginBottom: 4, letterSpacing: "0.01em" }}>{f.label}</div>
                 <div>
                   {renderFieldInput(f, data[f.key], (val) => update(f.key, val))}
                 </div>
