@@ -2,12 +2,12 @@
 
 function SectionHead({ title, hint, action }) {
   return (
-    <div style={{
+    <div className="section-head-row" style={{
       display: "flex", justifyContent: "space-between", alignItems: "baseline",
       marginBottom: "var(--gap-card)", paddingBottom: 8, gap: 12,
     }}>
       <div className="section-head">{title}</div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div className="section-head-actions" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         {hint && <div className="eyebrow">{hint}</div>}
         {action}
       </div>
@@ -19,17 +19,17 @@ function Eyebrow({ children, style }) {
   return <div className="eyebrow" style={style}>{children}</div>;
 }
 
-function Button({ children, variant = "default", icon, onClick, type, title, style }) {
+function Button({ children, variant = "default", icon, onClick, type, title, style, className }) {
   return (
     <button
       type={type || "button"}
       title={title}
       onClick={onClick}
-      className={`btn ${variant === "primary" ? "primary" : variant === "ghost" ? "ghost" : variant === "danger" ? "danger" : ""}`}
+      className={`btn ${variant === "primary" ? "primary" : variant === "ghost" ? "ghost" : variant === "danger" ? "danger" : ""}${className ? " " + className : ""}`}
       style={style}
     >
       {icon && <UIIcon kind={icon} size={12} />}
-      {children}
+      {children && <span className="btn-label">{children}</span>}
     </button>
   );
 }
@@ -563,7 +563,7 @@ function CardPreview({
   }, [onClose]);
 
   return (
-    <div style={{
+    <div className="card-preview-overlay" style={{
       position: "fixed", inset: 0, zIndex: 9999,
       display: "flex", alignItems: "center", justifyContent: "center",
       background: "rgba(0,0,0,0.4)",
@@ -571,8 +571,8 @@ function CardPreview({
       animation: "modal-fade .25s var(--ease-out)",
       padding: 24,
     }} onClick={onClose}>
-      
-      <div onClick={e => e.stopPropagation()} style={{
+
+      <div className="card-preview-card" onClick={e => e.stopPropagation()} style={{
         position: "relative",
         width: "100%", maxWidth: 440, minHeight: 540,
         background: "var(--card-fill)",
@@ -595,7 +595,7 @@ function CardPreview({
         </button>
 
         {/* Top Half: Visual Continuum */}
-        <div style={{
+        <div className="card-preview-head" style={{
           position: "relative",
           padding: cover ? "0 0 16px 0" : "48px 32px 16px",
           display: "flex", flexDirection: "column", alignItems: "flex-start",

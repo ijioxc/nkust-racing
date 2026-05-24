@@ -9,6 +9,14 @@ function PartsView({ suppliers, setSuppliers }) {
   const [confirm, setConfirm] = React.useState(null);
   const [drag, setDrag] = React.useState(null);     // dragged supplier id
   const [overSub, setOverSub] = React.useState(null); // target column sub
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth <= 768);
+  const [mobileSub, setMobileSub] = React.useState(SUBSYSTEMS[0]);
+
+  React.useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const save = (s) => setSuppliers(prev => {
     if (s.id) return prev.map(x => x.id === s.id ? { ...x, ...s } : x);
@@ -34,83 +42,205 @@ function PartsView({ suppliers, setSuppliers }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      <div style={{ display: "flex", gap: "var(--gap-card)" }}>
-        <KPI label="TOTAL"     value={total}   foot="ITEMS TRACKED"/>
-        <KPI label="HIGH PRIO" value={high}    foot={`/ ${total} ITEMS`}/>
-        <KPI label="ORDERED"   value={ordered} unit={`/ ${total}`} foot="已下單 + 已收到"/>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+        <KPI label="TOTAL"     value={total}/>
+        <KPI label="HIGH PRIO" value={high}/>
+        <KPI label="ORDERED"   value={ordered} unit={`/ ${total}`} foot="已下單+已收到"/>
         <KPI label="SPONSOR"   value={sponsor} foot="贊助申請中"/>
       </div>
 
-      <SectionHead title="零件供應商 · Suppliers" hint={`${total} ITEMS · KANBAN BY SYSTEM`}
-        action={<Button variant="primary" icon="plus"
-          onClick={() => setEditing({ open: true, initial: null })}>新增項目</Button>}/>
+      {!isMobile && (
+        <SectionHead title="零件供應商 · Suppliers" hint={`${total} ITEMS · KANBAN BY SYSTEM`}
+          action={<Button variant="primary" icon="plus"
+            onClick={() => setEditing({ open: true, initial: null })}>新增項目</Button>}/>
+      )}
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${SUBSYSTEMS.length}, 1fr)`,
-        gap: 10, alignItems: "start",
-      }}>
-        {SUBSYSTEMS.map(sub => {
-          const items = suppliers
-            .filter(s => s.sub === sub)
-            .sort((a, b) => {
-              const pWeight = { HIGH: 3, MID: 2, LOW: 1 };
-              return (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0);
-            });
-          const isOver = overSub === sub;
-          return (
-            <div key={sub}
-              onDragOver={onDragOver(sub)}
-              onDrop={onDrop(sub)}
-              className={`tcard ${isOver ? "drag-over" : ""}`}
-              style={{
-                padding: 12, display: "flex", flexDirection: "column", gap: 8,
-                minHeight: 220,
-                outline: isOver ? "2px solid var(--accent)" : "none",
-                outlineOffset: -2,
-                background: isOver ? "var(--accent-bg)" : "var(--card-fill)",
-                transition: "background .15s, outline-color .15s",
-              }}>
-              <div style={{
-                display: "flex", justifyContent: "space-between",
-                alignItems: "center", padding: "2px 4px 8px",
-                borderBottom: "0.5px solid var(--rule)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <SubsystemIcon kind={sub} size={12} color={SUBSYSTEM_COLOR[sub]}/>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{sub}</span>
-                </div>
-                <span className="eyebrow">{items.length}</span>
+      {isMobile ? (
+        /* ── Mobile: system tabs + vertical list ── */
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* System picker + add button 同一列 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {/* System picker — 所有 7 個系統一排顯示，active 改文字 */}
+          <div style={{
+            display: "flex", gap: 6, flex: 1,
+            overflowX: "visible",
+          }}>
+            {SUBSYSTEMS.map(sub => {
+              const cnt = suppliers.filter(s => s.sub === sub).length;
+              const active = mobileSub === sub;
+              const color = SUBSYSTEM_COLOR[sub];
+              return (
+                <button key={sub} onClick={() => setMobileSub(sub)}
+                  style={{
+                    flex: active ? "0 0 48px" : "0 0 38px",
+                    height: active ? 48 : 38,
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", justifyContent: "center",
+                    gap: 0,
+                    borderRadius: active ? 13 : 10,
+                    border: active
+                      ? `1.5px solid ${color}88`
+                      : "0.5px solid var(--separator)",
+                    background: active ? color + "1a" : "var(--card-fill)",
+                    cursor: "pointer", position: "relative",
+                    transition: "all .18s", overflow: "hidden",
+                  }}>
+                  {/* Colored top accent bar */}
+                  <div style={{
+                    position: "absolute", top: 0, left: 0, right: 0,
+                    height: active ? 2.5 : 1.5,
+                    background: active ? color : color + "44",
+                    borderRadius: "10px 10px 0 0",
+                  }}/>
+                  {/* Count badge — inactive only */}
+                  {cnt > 0 && !active && (
+                    <div style={{
+                      position: "absolute", top: 3, right: 3,
+                      minWidth: 13, height: 13, borderRadius: 99,
+                      background: "rgba(120,120,128,0.22)",
+                      color: "var(--muted)",
+                      fontSize: 8, fontWeight: 800,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      padding: "0 2px",
+                    }}>{cnt}</div>
+                  )}
+                  {/* inactive → icon / active → text label */}
+                  {active ? (
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, letterSpacing: "-0.02em",
+                      color: color, lineHeight: 1,
+                    }}>{sub}</span>
+                  ) : (
+                    <SubsystemIcon kind={sub} size={16} color={color + "99"}/>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {/* + button — 其他右邊，無底色強描線 */}
+          <button onClick={() => setEditing({ open: true, initial: { sub: mobileSub, status: "詢價" } })}
+            style={{
+              flexShrink: 0, width: 38, height: 38, borderRadius: 10,
+              background: "transparent", border: "none",
+              color: "var(--ink)", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+          </div>{/* end picker + add row */}
+
+          {/* Vertical list for selected system */}
+          {(() => {
+            const items = suppliers
+              .filter(s => s.sub === mobileSub)
+              .sort((a, b) => {
+                const pWeight = { HIGH: 3, MID: 2, LOW: 1 };
+                return (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0);
+              });
+            return (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {items.length === 0 && (
+                  <div style={{
+                    padding: "32px 16px", textAlign: "center",
+                    color: "var(--muted)", fontSize: 12,
+                    fontFamily: "var(--font-mono)", letterSpacing: "0.06em",
+                    border: "1px dashed var(--rule)", borderRadius: 12,
+                  }}>EMPTY — 此系統尚無項目</div>
+                )}
+                {items.map(s => (
+                  <SupplierCard key={s.id} supplier={s}
+                    draggable={false}
+                    dragging={false}
+                    onDragStart={() => {}}
+                    onDragEnd={() => {}}
+                    onClick={() => setPreview(s)}
+                    onDelete={() => setConfirm(s)}/>
+                ))}
+                <button onClick={() => setEditing({ open: true, initial: { sub: mobileSub, status: "詢價" } })}
+                  style={{
+                    padding: "10px", borderRadius: 10,
+                    background: "transparent", border: "0.5px dashed var(--rule)",
+                    color: "var(--muted)", fontSize: 12, cursor: "pointer",
+                    fontFamily: "inherit",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  }}><UIIcon kind="plus" size={12}/>新增 {mobileSub} 項目</button>
               </div>
-              {items.map(s => (
-                <SupplierCard key={s.id} supplier={s}
-                  draggable
-                  dragging={drag === s.id}
-                  onDragStart={onDragStart(s.id)}
-                  onDragEnd={onDragEnd}
-                  onClick={() => setPreview(s)}
-                  onDelete={() => setConfirm(s)}/>
-              ))}
-              {items.length === 0 && (
-                <div style={{
-                  padding: "20px 12px", textAlign: "center",
-                  color: "var(--muted)", fontSize: 11,
-                  fontFamily: "var(--font-mono)", letterSpacing: "0.06em",
-                  border: "1px dashed var(--rule)", borderRadius: 8,
-                }}>EMPTY</div>
-              )}
-              <button onClick={() => setEditing({ open: true, initial: { sub, status: "詢價" } })}
+            );
+          })()}
+        </div>
+      ) : (
+        /* ── Desktop: original Kanban grid ── */
+        <div className="parts-kanban-container">
+        <div className="parts-kanban-grid" style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${SUBSYSTEMS.length}, 1fr)`,
+          gap: 10, alignItems: "start",
+        }}>
+          {SUBSYSTEMS.map(sub => {
+            const items = suppliers
+              .filter(s => s.sub === sub)
+              .sort((a, b) => {
+                const pWeight = { HIGH: 3, MID: 2, LOW: 1 };
+                return (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0);
+              });
+            const isOver = overSub === sub;
+            return (
+              <div key={sub}
+                onDragOver={onDragOver(sub)}
+                onDrop={onDrop(sub)}
+                className={`tcard ${isOver ? "drag-over" : ""}`}
                 style={{
-                  padding: "8px 10px", borderRadius: 8,
-                  background: "transparent", border: "0.5px dashed var(--rule)",
-                  color: "var(--muted)", fontSize: 11, cursor: "pointer",
-                  fontFamily: "inherit",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                }}><UIIcon kind="plus" size={11}/>新增項目</button>
-            </div>
-          );
-        })}
-      </div>
+                  padding: 12, display: "flex", flexDirection: "column", gap: 8,
+                  minHeight: 220,
+                  outline: isOver ? "2px solid var(--accent)" : "none",
+                  outlineOffset: -2,
+                  background: isOver ? "var(--accent-bg)" : "var(--card-fill)",
+                  transition: "background .15s, outline-color .15s",
+                }}>
+                <div style={{
+                  display: "flex", justifyContent: "space-between",
+                  alignItems: "center", padding: "2px 4px 8px",
+                  borderBottom: "0.5px solid var(--rule)",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <SubsystemIcon kind={sub} size={12} color={SUBSYSTEM_COLOR[sub]}/>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{sub}</span>
+                  </div>
+                  <span className="eyebrow">{items.length}</span>
+                </div>
+                {items.map(s => (
+                  <SupplierCard key={s.id} supplier={s}
+                    draggable
+                    dragging={drag === s.id}
+                    onDragStart={onDragStart(s.id)}
+                    onDragEnd={onDragEnd}
+                    onClick={() => setPreview(s)}
+                    onDelete={() => setConfirm(s)}/>
+                ))}
+                {items.length === 0 && (
+                  <div style={{
+                    padding: "20px 12px", textAlign: "center",
+                    color: "var(--muted)", fontSize: 11,
+                    fontFamily: "var(--font-mono)", letterSpacing: "0.06em",
+                    border: "1px dashed var(--rule)", borderRadius: 8,
+                  }}>EMPTY</div>
+                )}
+                <button onClick={() => setEditing({ open: true, initial: { sub, status: "詢價" } })}
+                  style={{
+                    padding: "8px 10px", borderRadius: 8,
+                    background: "transparent", border: "0.5px dashed var(--rule)",
+                    color: "var(--muted)", fontSize: 11, cursor: "pointer",
+                    fontFamily: "inherit",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  }}><UIIcon kind="plus" size={11}/>新增項目</button>
+              </div>
+            );
+          })}
+        </div>
+        </div>
+      )}
 
       {/* 放大預覽 — 點供應商卡先預覽，再決定編輯/刪除/開連結 */}
       {preview && (
@@ -328,27 +458,29 @@ function ResourcesView({ resources, setResources }) {
   const remove = (r) => setResources(prev => prev.filter(x => x.id !== r.id));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
+    <div className="resources-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI strip */}
-      <div style={{ display: "flex", gap: "var(--gap-card)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
         {groups.map(g => {
           const items = resources.filter(r => r.group === g.id);
           return (
             <div key={g.id} className="tcard tile hoverable" style={{
-              flex: 1, padding: "var(--tile-pad)", cursor: "pointer",
+              flex: 1, minWidth: 0, padding: "var(--tile-pad)", cursor: "pointer",
+              overflow: "hidden",
             }} onClick={() => setFilter(g.id)}>
               <div className="eyebrow" style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <UIIcon kind={g.icon} size={11}/>
                 {g.en}
               </div>
-              <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8 }}>
+              <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
                 <DisplayNumber value={items.length} size={36}/>
-                <span style={{
+                <span className="resource-kpi-label" style={{
                   fontSize: 13, fontWeight: 600, color: "var(--ink)",
-                  letterSpacing: "-0.01em",
+                  letterSpacing: "-0.01em", overflow: "hidden",
+                  textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>{g.label}</span>
               </div>
-              <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 6, lineHeight: 1.4 }}>
+              <div className="resource-kpi-desc" style={{ fontSize: 12, color: "var(--faint)", marginTop: 6, lineHeight: 1.4 }}>
                 {g.desc}
               </div>
             </div>
@@ -356,10 +488,60 @@ function ResourcesView({ resources, setResources }) {
         })}
       </div>
 
+      {/* Mobile unified glass pill — [全部][賽事][工具][學習] | [⊞][≡][+] */}
+      <div className="resources-mobile-cat">
+        {/* Category icon buttons */}
+        {[{ id: "all", label: "全部", icon: "filter" }, ...groups.map(g => ({ id: g.id, label: g.label, icon: g.icon }))].map(g => {
+          const active = filter === g.id;
+          return (
+            <button key={g.id} onClick={() => setFilter(g.id)} title={g.label}
+              className={active ? "seg-btn--active" : ""}
+              style={{ padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+                background: active ? "#fff" : "transparent", flexShrink: 0,
+                color: active ? "var(--ink)" : "var(--faint)",
+                boxShadow: active ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                display: "inline-flex", alignItems: "center", transition: "all .15s",
+              }}>
+              <UIIcon kind={g.icon} size={13}/>
+            </button>
+          );
+        })}
+
+        {/* Separator */}
+        <div style={{ width: 1, alignSelf: "stretch", background: "rgba(120,120,128,0.35)", margin: "4px 3px", flexShrink: 0 }}/>
+
+        {/* View toggle: 圖卡 / 列表 — single toggle button */}
+        <button onClick={() => setViewMode(v => v === "card" ? "list" : "card")}
+          title={viewMode === "card" ? "切換列表" : "切換圖卡"}
+          className="seg-btn--active"
+          style={{ padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+            background: "#fff", flexShrink: 0, color: "var(--ink)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+            display: "inline-flex", alignItems: "center", transition: "all .15s",
+          }}>
+          {viewMode === "card"
+            ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+            : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+          }
+        </button>
+
+        {/* + add button */}
+        <button onClick={() => setEditing({ open: true, initial: { group: filter === "all" ? "races" : filter } })}
+          title="新增資源"
+          style={{ padding: "0 10px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+            background: "transparent", color: "var(--ink)", flexShrink: 0,
+            display: "inline-flex", alignItems: "center",
+          }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </button>
+      </div>
+
       <SectionHead title="資源庫 · Library" hint={`${visible.length} OF ${resources.length} ITEMS`}
         action={
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <div style={{
+            <div className="section-search-box" style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "5px 10px", background: "rgba(0,0,0,0.04)",
               borderRadius: 999, height: 28,
@@ -372,13 +554,13 @@ function ResourcesView({ resources, setResources }) {
                   color: "var(--ink)",
                 }}/>
             </div>
-            <SegmentedFilter value={filter} onChange={setFilter} options={[
+            <SegmentedFilter className="view-filter" value={filter} onChange={setFilter} options={[
               { id: "all",      label: "全部" },
               { id: "races",    label: "賽事" },
               { id: "tools",    label: "工具" },
               { id: "learning", label: "學習" },
             ]}/>
-            <SegmentedFilter value={viewMode} onChange={setViewMode} options={[
+            <SegmentedFilter className="view-toggle" value={viewMode} onChange={setViewMode} options={[
               { id: "card",     label: "圖卡" },
               { id: "list",     label: "列表" },
             ]}/>
@@ -626,7 +808,7 @@ function ResourcePreview({ item, onClose, onEdit, onDelete }) {
 function ResourceRow({ item, index, onClick, onDelete }) {
   const prioTone = item.priority === "HIGH" ? "high" : item.priority === "MID" ? "mid" : "low";
   return (
-    <div onClick={onClick} style={{
+    <div onClick={onClick} className="resource-row" style={{
       display: "grid",
       gridTemplateColumns: "30px 1fr 110px 90px 60px",
       gap: 12, alignItems: "center",
@@ -634,11 +816,11 @@ function ResourceRow({ item, index, onClick, onDelete }) {
       transition: "background .15s",
     }} onMouseEnter={e => e.currentTarget.style.background = "var(--accent-bg)"}
        onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-      <span style={{
+      <span className="resource-row-index" style={{
         fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)",
         letterSpacing: "0.06em", fontWeight: 500,
       }}>{String(index).padStart(2, "0")}</span>
-      <div style={{ minWidth: 0 }}>
+      <div className="resource-row-line1" style={{ minWidth: 0 }}>
         <div style={{
           fontSize: 13.5, fontWeight: 600, color: "var(--ink)",
           letterSpacing: "-0.005em",
@@ -655,7 +837,7 @@ function ResourceRow({ item, index, onClick, onDelete }) {
         color: "var(--faint)", letterSpacing: "0.02em",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
       }}>{item.org}</div>
-      <div style={{
+      <div className="resource-row-line2" style={{
         fontFamily: "var(--font-mono)", fontSize: 10,
         color: "var(--muted)", letterSpacing: "0.04em",
       }}>{item.date}</div>

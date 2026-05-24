@@ -152,7 +152,7 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
       </div>
 
       {/* Module summaries — 4-up grid */}
-      <div style={{
+      <div className="overview-summary-grid" style={{
         display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
         gap: "var(--gap-card)",
       }}>
@@ -369,31 +369,76 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
   const filtered = filter === "all" ? tasks : tasks.filter(t => t.subsystem === filter);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      {/* KPI strip */}
-      <div style={{ display: "flex", gap: "var(--gap-card)" }}>
-        <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`} foot="IN PROGRESS"/>
-        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`}  foot="OF ACTIVE"/>
-        <KPI label="OVERDUE" value={overdue} foot="ACT BY EOW"/>
-        <KPI label="AVG"     value={donePct} unit="%" foot="ALL TASKS"/>
+    <div className="worklog-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
+      {/* KPI strip — mobile: 2×2 grid via .kpi-strip */}
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+        <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`}/>
+        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`}/>
+        <KPI label="OVERDUE" value={overdue}/>
+        <KPI label="AVG"     value={donePct} unit="%"/>
       </div>
 
-      {/* Filter + view toggle */}
+      {/* Mobile: unified single glass pill — [subsystems] | [view toggle] | [+] */}
+      <div className="worklog-mobile-bar">
+        {/* Subsystem icon buttons */}
+        {[{ id: "all", ui: "filter" }, ...SUBSYSTEMS.map(s => ({ id: s, sub: s }))].map(s => {
+          const active = filter === s.id;
+          return (
+            <button key={s.id} onClick={() => setFilter(s.id)} title={s.id === "all" ? "全部" : s.id}
+              className={active ? "seg-btn--active" : ""}
+              style={{ padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+                background: active ? "#fff" : "transparent", flexShrink: 0,
+                color: active ? "var(--ink)" : "var(--faint)",
+                boxShadow: active ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                display: "inline-flex", alignItems: "center", transition: "all .15s",
+              }}>
+              {s.ui ? <UIIcon kind={s.ui} size={13}/> : <SubsystemIcon kind={s.sub} size={13} color={active ? "var(--ink)" : "var(--faint)"}/>}
+            </button>
+          );
+        })}
+        {/* Separator */}
+        <div style={{ width: 1, alignSelf: "stretch", background: "rgba(120,120,128,0.35)", margin: "4px 3px", flexShrink: 0 }}/>
+        {/* View toggle — single button, tap to cycle */}
+        <button onClick={() => setView(v => v === "gantt" ? "bento" : "gantt")}
+          title={view === "gantt" ? "切換 Bento" : "切換甘特"}
+          className="seg-btn--active"
+          style={{ padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+            background: "#fff", flexShrink: 0, color: "var(--ink)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+            display: "inline-flex", alignItems: "center", transition: "all .15s",
+          }}>
+          <UIIcon kind={view === "gantt" ? "calendar" : "target"} size={13}/>
+        </button>
+        {/* + button */}
+        <button onClick={newTask} title="新增工作"
+          style={{ padding: "0 10px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+            background: "transparent", color: "var(--ink)", flexShrink: 0,
+            display: "inline-flex", alignItems: "center",
+          }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Desktop section head — hidden on mobile */}
       <SectionHead
         title={view === "gantt" ? "甘特圖 · Gantt" : "Bento Board"}
         hint={`${filtered.length} OF ${tasks.length} TASKS`}
         action={
           <div style={{ display: "flex", gap: 8 }}>
-            <SegmentedFilter value={filter} onChange={setFilter} options={[
-              { id: "all", label: "全部" },
-              ...SUBSYSTEMS.map(s => ({ id: s, label: s })),
+            <SegmentedFilter className="subsystem-filter" value={filter} onChange={setFilter} options={[
+              { id: "all",  label: "全部", uiIcon: "filter" },
+              ...SUBSYSTEMS.map(s => ({ id: s, label: s, subIcon: s })),
             ]}/>
             <div style={{ width: 1, background: "var(--rule)" }}/>
-            <SegmentedFilter value={view} onChange={setView} options={[
-              { id: "gantt", label: "甘特" },
-              { id: "bento", label: "Bento" },
+            <SegmentedFilter className="gantt-view-toggle" value={view} onChange={setView} options={[
+              { id: "gantt", label: "甘特", uiIcon: "calendar" },
+              { id: "bento", label: "Bento", uiIcon: "target" },
             ]}/>
-            <Button variant="primary" icon="plus" onClick={newTask}>新增工作</Button>
+            <Button variant="primary" icon="plus" className="btn-new-task" onClick={newTask}>
+              <span className="btn-label">新增工作</span>
+            </Button>
           </div>
         }/>
 
@@ -406,22 +451,31 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
   );
 }
 
-function SegmentedFilter({ options, value, onChange }) {
+function SegmentedFilter({ options, value, onChange, className }) {
   return (
-    <div style={{
+    <div className={className || ""} style={{
       display: "inline-flex", alignItems: "center", gap: 2,
       padding: 2, background: "rgba(0,0,0,0.04)",
       borderRadius: 999, height: 28,
     }}>
       {options.map(o => (
-        <button key={o.id} onClick={() => onChange(o.id)} style={{
+        <button key={o.id} className={value === o.id ? "seg-btn--active" : ""} onClick={() => onChange(o.id)} style={{
           padding: "0 11px", height: 24, borderRadius: 999,
           background: value === o.id ? "#fff" : "transparent",
           border: 0, fontSize: 11.5, color: value === o.id ? "var(--ink)" : "var(--faint)",
           fontWeight: value === o.id ? 600 : 500, cursor: "pointer",
           boxShadow: value === o.id ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
           transition: "all .15s", fontFamily: "inherit",
-        }}>{o.label}</button>
+          display: "inline-flex", alignItems: "center", gap: 4,
+          whiteSpace: "nowrap", flexShrink: 0,
+        }}>
+          {o.uiIcon && <UIIcon kind={o.uiIcon} size={12} />}
+          {o.subIcon && <SubsystemIcon kind={o.subIcon} size={12} />}
+          {o.shortLabel
+            ? <><span className="seg-label">{o.label}</span><span className="seg-short">{o.shortLabel}</span></>
+            : <span className="seg-label">{o.label}</span>
+          }
+        </button>
       ))}
     </div>
   );
@@ -431,9 +485,9 @@ function SegmentedFilter({ options, value, onChange }) {
 function GanttChart({ tasks, onTaskClick, onDelete }) {
   const colW = 100 / TOTAL_WEEKS;
   return (
-    <div className="tcard large" style={{ padding: "16px 14px 18px" }}>
+    <div className="tcard large gantt-chart" style={{ padding: "16px 14px 18px" }}>
       {/* week ruler */}
-      <div style={{ display: "flex", paddingLeft: 220, marginBottom: 8 }}>
+      <div className="gantt-ruler" style={{ display: "flex", paddingLeft: 220, marginBottom: 8 }}>
         {WEEK_LABELS.map((w, i) => (
           <div key={w} style={{
             flex: 1, fontFamily: "var(--font-mono)", fontSize: 9,
@@ -481,7 +535,7 @@ function GanttRow({ task, colW, onClick, onDelete }) {
       cursor: "pointer", padding: "4px 6px",
     }} onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.03)"}
        onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-      <div style={{ width: 214, display: "flex", alignItems: "center", gap: 8, paddingRight: 10 }}>
+      <div className="gantt-label" style={{ width: 214, display: "flex", alignItems: "center", gap: 8, paddingRight: 10 }}>
         <SubsystemIcon kind={task.subsystem} size={13} color={color}/>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
@@ -532,7 +586,7 @@ function GanttRow({ task, colW, onClick, onDelete }) {
           }}>{task.progress}%</span>
         </div>
       </div>
-      <div style={{ width: 60, display: "flex", justifyContent: "flex-end", gap: 0 }}>
+      <div className="gantt-row-actions" style={{ width: 60, display: "flex", justifyContent: "flex-end", gap: 0 }}>
         <IconBtn icon="edit"  onClick={(e) => { e.stopPropagation(); onClick(); }} title="編輯" size={24}/>
         <IconBtn icon="trash" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="刪除" size={24} danger/>
       </div>
@@ -554,7 +608,7 @@ function BentoBoard({ tasks, onTaskClick }) {
   }, [tasks]);
 
   return (
-    <div style={{
+    <div className="bento-board" style={{
       display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
       gridAutoRows: "var(--bento-row-h)", gap: 10, gridAutoFlow: "dense",
     }}>
@@ -611,7 +665,7 @@ function BentoCard({ task, onClick }) {
                   : daysToEnd < 0 ? `OVERDUE ${-daysToEnd}W` : `T-${daysToEnd}W`;
 
   return (
-    <div onClick={onClick} className="tcard tile hoverable" style={{
+    <div onClick={onClick} className={`tcard tile hoverable bento-card-${size || "1x1"}`} style={{
       ...sizeStyle,
       padding: "12px 14px", cursor: "pointer", overflow: "hidden",
       display: "flex", flexDirection: "column", justifyContent: "space-between",
@@ -672,6 +726,10 @@ function BentoPreviewModal({ task, onClose, onEdit, onDelete }) {
   const daysToEnd = (task.start || 0) + (task.span || 0) - 5;
   const schedule = daysToEnd === 0 ? "本週到期"
     : daysToEnd < 0 ? `已逾期 ${-daysToEnd} 週` : `剩 ${daysToEnd} 週`;
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  const ringSize = isMobile ? 88 : 140;
+  const ringStroke = isMobile ? 10 : 16;
+  const ringFont = isMobile ? 28 : 36;
 
   return (
     <CardPreview
@@ -680,11 +738,11 @@ function BentoPreviewModal({ task, onClose, onEdit, onDelete }) {
       title={task.title}
       subsystem={task.subsystem}
       node={
-        <div style={{ position: "relative", width: 140, height: 140 }}>
-          <ActivityRing progress={task.progress || 0} size={140} strokeWidth={16} color={color} />
+        <div style={{ position: "relative", width: ringSize, height: ringSize }}>
+          <ActivityRing progress={task.progress || 0} size={ringSize} strokeWidth={ringStroke} color={color} />
           <div style={{
             position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: 36, letterSpacing: "-0.04em",
+            fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: ringFont, letterSpacing: "-0.04em",
             color: "var(--ink)",
           }}>
             {task.progress || 0}%
@@ -788,12 +846,12 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
   return (
     <>
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      {/* KPI row */}
-      <div style={{ display: "flex", gap: "var(--gap-card)" }}>
-        <KPI label="TOTAL PROPOSALS" value={total} foot="計畫提案總數" />
-        <KPI label="IN PROGRESS" value={inProgress} foot="進行中優化案" />
-        <KPI label="COMPLETED" value={completed} foot="已完成評審驗證" />
-        <KPI label="PENDING / BLOCKED" value={pending} foot="待討論或擱置項目" />
+      {/* KPI row — mobile: 一列壓縮 via .kpi-strip */}
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+        <KPI label="PROPOSALS" value={total} foot="提案總數" />
+        <KPI label="IN PROGRESS" value={inProgress} foot="進行中" />
+        <KPI label="COMPLETED" value={completed} foot="已完成" />
+        <KPI label="PENDING" value={pending} foot="待討論" />
       </div>
 
       <SectionHead
@@ -1481,15 +1539,17 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
       <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
         action={
           <div style={{ display: "flex", gap: 8 }}>
-            <SegmentedFilter value={filter} onChange={setFilter} options={[
-              { id: "all", label: "全部" },
-              { id: "隊長", label: "隊長" },
-              { id: "副隊長", label: "副隊長" },
-              { id: "組長", label: "組長" },
-              { id: "成員", label: "成員" },
-              { id: "教授", label: "教授" },
+            <SegmentedFilter className="role-filter" value={filter} onChange={setFilter} options={[
+              { id: "all",   label: "全部", shortLabel: "全" },
+              { id: "隊長",  label: "隊長", shortLabel: "長" },
+              { id: "副隊長", label: "副隊長", shortLabel: "副" },
+              { id: "組長",  label: "組長", shortLabel: "組" },
+              { id: "成員",  label: "成員", shortLabel: "員" },
+              { id: "教授",  label: "教授", shortLabel: "授" },
             ]}/>
-            <Button variant="primary" icon="plus" onClick={newPerson}>新增成員</Button>
+            <Button variant="primary" icon="plus" className="btn-new-task" onClick={newPerson}>
+              <span className="btn-label">新增成員</span>
+            </Button>
           </div>
         }/>
       <div style={{
