@@ -1577,15 +1577,26 @@ function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
   );
 }
 
-// ─── PeopleView ────────────────────────────────────────────────
 function PeopleView({ people, editPerson, newPerson, onDelete }) {
   const [filter, setFilter] = React.useState("all");
   const [profileId, setProfileId] = React.useState(null);
+
+  const totalPeople = people.length;
+  const professorCount = people.filter(p => p.position === "教授").length;
+  const advisorCount = people.filter(p => p.position === "顧問").length;
+  const studentCount = people.filter(p => !["教授", "顧問"].includes(p.position)).length;
+
   const filtered = filter === "all" ? people : people.filter(p => p.position === filter);
   const profilePerson = people.find(p => p.id === profileId) || null;
 
   return (
     <div className="people-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+        <KPI label="STUDENTS" value={studentCount} foot="學生隊員"/>
+        <KPI label="ADVISORS" value={advisorCount} foot="專業顧問"/>
+        <KPI label="FACULTY"  value={professorCount} foot="指導教授"/>
+        <KPI label="TOTAL"    value={totalPeople} foot="團隊總人數" accent/>
+      </div>
       <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
         action={
           <div style={{ display: "flex", gap: 8 }}>
