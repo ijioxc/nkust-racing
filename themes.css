@@ -1164,13 +1164,18 @@ header + * .subBar,
     grid-template-columns: repeat(4, 1fr) !important;
   }
 
-  /* ── 真實 2:2 / 2:1 比例
-     4 col, 16px side-padding, 10px gap → col ≈ 78px
-     2x2: 2cols+gap = 166px wide, 2rows+gap = 166px tall → ≈ 1:1 ✓
-     2x1: 166px wide × 78px tall → ≈ 2:1 ✓  */
+  /* ── 真實比例 + 呼吸感
+     4 col, 16px side-padding, 14px gap → col ≈ 74px
+     2x2: 2cols+gap = 162px wide, 2rows+gap = 150px tall → near-square
+     2x1: 162px wide × 68px tall → ≈ 2.4:1, feels like widget tile  */
   :root {
-    --bento-row-h: 78px;
-    --bento-gap:   10px;
+    --bento-row-h: 68px;
+    --bento-gap:   14px;
+  }
+
+  /* 大圓角：配合進度圓環視覺語言 */
+  .bento-board .tcard.tile {
+    border-radius: 20px !important;
   }
 
   /* 總覽底部 4-up 摘要卡：4 欄 → 2×2 */

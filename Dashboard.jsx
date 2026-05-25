@@ -679,7 +679,8 @@ function BentoCard({ task, onClick }) {
   return (
     <div onClick={onClick} className={`tcard tile hoverable bento-card-${size || "1x1"}`} style={{
       ...sizeStyle,
-      padding: isLarge ? "14px 16px" : "11px 14px",
+      /* 非大卡：左 padding 壓縮讓圈靠近邊界；大卡維持對稱 */
+      padding: isLarge ? "14px 16px" : "10px 14px 10px 10px",
       cursor: "pointer", overflow: "hidden",
       display: "flex", flexDirection: "column",
       background: isFocus ? "var(--accent)" : "var(--card-fill)",
