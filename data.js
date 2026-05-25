@@ -19,6 +19,10 @@ const MEME_TASK_POOLS = [
     { id: "t6", subsystem: "煞車", title: "蹬腳煞車系統驗證",            progress: 100, start: 0,  span: 4,  owner: "羅賓",   size: "1x1", state: "done"   },
     { id: "t7", subsystem: "其他", title: "向贊助商介紹偉大航道計畫",    progress: 42,  start: 6,  span: 4,  owner: "香吉士", size: "1x1", state: "active" },
     { id: "t8", subsystem: "車體", title: "鋼鐵之星車殼製作",            progress: 100, start: 1,  span: 5,  owner: "佛朗基", size: "2x1", state: "done"   },
+    { id: "t9",  subsystem: "煞車", title: "閻魔煞車系統磨合",           progress: 44,  start: 5,  span: 4,  owner: "索隆",   size: "1x1", state: "active" },
+    { id: "t10", subsystem: "電裝", title: "花花 ECU 改裝（花紋版）",    progress: 78,  start: 0,  span: 6,  owner: "娜美",   size: "1x1", state: "active" },
+    { id: "t11", subsystem: "引擎", title: "超人引擎喬巴一般型",         progress: 22,  start: 3,  span: 5,  owner: "喬巴",   size: "1x1", state: "active" },
+    { id: "t12", subsystem: "其他", title: "考古石碑解讀懸吊圖面",       progress: 91,  start: 2,  span: 4,  owner: "羅賓",   size: "1x1", state: "active" },
   ],
   // 組合 B — Minecraft 版 ⛏️
   [
@@ -30,6 +34,10 @@ const MEME_TASK_POOLS = [
     { id: "t6", subsystem: "煞車", title: "黏液方塊煞車系統完工",        progress: 100, start: 1,  span: 3,  owner: "Alex",     size: "1x1", state: "done"   },
     { id: "t7", subsystem: "其他", title: "苦力怕炸毀工廠善後",          progress: 20,  start: 4,  span: 5,  owner: "全體",     size: "1x1", state: "active" },
     { id: "t8", subsystem: "車體", title: "鑽石車殼製作（還在挖礦）",    progress: 5,   start: 0,  span: 12, owner: "Steve",    size: "2x1", state: "active" },
+    { id: "t9",  subsystem: "空力", title: "鞘翅滑翔前翼氣動測試",       progress: 60,  start: 2,  span: 5,  owner: "Alex",     size: "1x1", state: "active" },
+    { id: "t10", subsystem: "煞車", title: "活塞煞車缸蓋版設計",         progress: 33,  start: 0,  span: 7,  owner: "Steve",    size: "1x1", state: "active" },
+    { id: "t11", subsystem: "引擎", title: "鍛造錠塊引擎座完工",         progress: 100, start: 1,  span: 3,  owner: "Alex",     size: "1x1", state: "done"   },
+    { id: "t12", subsystem: "其他", title: "爬行者再次炸毀工作間",       progress: 0,   start: 6,  span: 2,  owner: "全體",     size: "1x1", state: "active" },
   ],
   // 組合 C — F1 版 🏎️
   [
@@ -41,6 +49,10 @@ const MEME_TASK_POOLS = [
     { id: "t6", subsystem: "車體", title: "碳纖維單體殼完工 ✓",          progress: 100, start: 0,  span: 3,  owner: "Newey",      size: "1x1", state: "done"   },
     { id: "t7", subsystem: "其他", title: "無線電喊話：Box Box Box",      progress: 50,  start: 4,  span: 4,  owner: "Lambiase",   size: "1x1", state: "active" },
     { id: "t8", subsystem: "空力", title: "後翼被 FIA 抗議重新設計",     progress: 15,  start: 1,  span: 9,  owner: "Newey",      size: "2x1", state: "active" },
+    { id: "t9",  subsystem: "懸吊", title: "保時捷效應避震調校",         progress: 55,  start: 3,  span: 5,  owner: "Verstappen", size: "1x1", state: "active" },
+    { id: "t10", subsystem: "電裝", title: "DRS 感應器校正",             progress: 80,  start: 0,  span: 4,  owner: "Hamilton",   size: "1x1", state: "active" },
+    { id: "t11", subsystem: "車體", title: "側箱冷卻開口比例優化",       progress: 44,  start: 2,  span: 6,  owner: "Newey",      size: "1x1", state: "active" },
+    { id: "t12", subsystem: "其他", title: "媒體公關稿：我們沒作弊",     progress: 100, start: 0,  span: 2,  owner: "Lambiase",   size: "1x1", state: "done"   },
   ],
   // 組合 D — 佛系 × 科學家版 🧘
   [
@@ -52,6 +64,10 @@ const MEME_TASK_POOLS = [
     { id: "t6", subsystem: "懸吊", title: "前輪歪掉 → 斜面定理正常",    progress: 44,  start: 3,  span: 6,  owner: "伽利略",   size: "1x1", state: "active" },
     { id: "t7", subsystem: "煞車", title: "煞車油管沒漏 → 量子隧穿",    progress: 85,  start: 0,  span: 3,  owner: "費曼",     size: "1x1", state: "active" },
     { id: "t8", subsystem: "電裝", title: "交流電系統 Tesla 版本",       progress: 100, start: 0,  span: 2,  owner: "特斯拉",   size: "2x1", state: "done"   },
+    { id: "t9",  subsystem: "空力", title: "飛行機器前翼草稿第 3 版",    progress: 62,  start: 2,  span: 5,  owner: "達文西",   size: "1x1", state: "active" },
+    { id: "t10", subsystem: "車體", title: "蘋果砸到的地方要補強",       progress: 77,  start: 0,  span: 4,  owner: "牛頓",     size: "1x1", state: "active" },
+    { id: "t11", subsystem: "煞車", title: "自由落體煞車距離計算",       progress: 90,  start: 1,  span: 3,  owner: "伽利略",   size: "1x1", state: "active" },
+    { id: "t12", subsystem: "引擎", title: "黑洞功率密度可行性研究",     progress: 1,   start: 4,  span: 8,  owner: "霍金",     size: "1x1", state: "active" },
   ],
   // 組合 E — 深夜哲學家 × 斯多葛主義版 🌑
   [
@@ -63,6 +79,10 @@ const MEME_TASK_POOLS = [
     { id: "t6", subsystem: "空力", title: "下壓力不足·風本無意傷我",            progress: 80,  start: 0,  span: 4,  owner: "塞內卡",      size: "1x1", state: "done"   },
     { id: "t7", subsystem: "其他", title: "贊助商沒回·外物不由我主",            progress: 10,  start: 5,  span: 6,  owner: "愛比克泰德",  size: "1x1", state: "active" },
     { id: "t8", subsystem: "車體", title: "熬夜焊接·此刻即永恆",                progress: 99,  start: 0,  span: 3,  owner: "馬可·奧里略", size: "2x1", state: "done"   },
+    { id: "t9",  subsystem: "懸吊", title: "路不平·命不由我·調就對了",           progress: 38,  start: 2,  span: 6,  owner: "塞內卡",      size: "1x1", state: "active" },
+    { id: "t10", subsystem: "電裝", title: "斷路·與其憤怒·不如接線",            progress: 55,  start: 1,  span: 5,  owner: "愛比克泰德",  size: "1x1", state: "active" },
+    { id: "t11", subsystem: "其他", title: "迷路·偉大的靈魂不在地圖上",         progress: 20,  start: 4,  span: 4,  owner: "馬可·奧里略", size: "1x1", state: "active" },
+    { id: "t12", subsystem: "空力", title: "風阻·自然給的·欣然接受",            progress: 70,  start: 0,  span: 5,  owner: "塞內卡",      size: "1x1", state: "active" },
   ],
 ];
 
