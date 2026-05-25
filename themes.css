@@ -1352,8 +1352,25 @@ header + * .subBar,
     right: 0 !important;
     transition: transform 0.32s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
   }
+  /* 手機：整個 wrapper 不整個 translateY，改為只讓主列 header 滑出 */
   .hdr-wrapper.hdr--hidden {
+    transform: none !important;
+  }
+  /* 主列（logo＋頭像）：捲下時向上滑出 */
+  .hdr-wrapper header {
+    transition: transform 0.28s cubic-bezier(0.25, 0.1, 0.25, 1),
+                opacity 0.22s ease;
+  }
+  .hdr-wrapper.hdr--hidden header {
     transform: translateY(-100%) !important;
+    opacity: 0 !important;
+  }
+  /* sub-nav 列：始終可見，transition 讓它跟上 */
+  .hdr-subbar {
+    transition: transform 0.28s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  }
+  .hdr-wrapper.hdr--hidden .hdr-subbar {
+    transform: translateY(-52px) !important; /* 補上主列消失的高度 */
   }
   /* main-content 頂部留出 header 實際高度（JS 寫入 --hdr-total-h）*/
   .main-content {
