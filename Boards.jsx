@@ -61,9 +61,10 @@ function PartsView({ suppliers, setSuppliers }) {
           {/* System picker + add button 同一列 */}
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {/* System picker — 所有 7 個系統一排顯示，active 改文字 */}
-          <div style={{
-            display: "flex", gap: 6, flex: 1,
-            overflowX: "visible",
+          <div className="hdr-sub-nav" style={{
+            display: "flex", gap: 12, flex: 1,
+            marginInline: -16,
+            paddingInline: 16,
           }}>
             {SUBSYSTEMS.map(sub => {
               const cnt = suppliers.filter(s => s.sub === sub).length;
@@ -116,19 +117,24 @@ function PartsView({ suppliers, setSuppliers }) {
                 </button>
               );
             })}
-          </div>
-          {/* + button — 其他右邊，無底色強描線 */}
+          {/* + button 直接置入滾動列的最後一個元素，避免左右分裂與對齊跑掉 */}
           <button onClick={() => setEditing({ open: true, initial: { sub: mobileSub, status: "詢價" } })}
             style={{
               flexShrink: 0, width: 38, height: 38, borderRadius: 10,
-              background: "transparent", border: "none",
-              color: "var(--ink)", cursor: "pointer",
+              background: "var(--card-fill)",
+              border: "0.5px solid var(--separator)",
+              color: "var(--faint)", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              transition: "all .18s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--ink)"; e.currentTarget.style.borderColor = "var(--blue)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--faint)"; e.currentTarget.style.borderColor = "var(--separator)"; }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14"/>
             </svg>
           </button>
+          </div>
           </div>{/* end picker + add row */}
 
           {/* Vertical list for selected system */}

@@ -51,6 +51,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
   const menuWrapRef = React.useRef(null);
   const wrapperRef = React.useRef(null);
   const [hdrHidden, setHdrHidden] = React.useState(false);
+  const subHidden = hdrHidden;
   const lastScrollY = React.useRef(0);
 
   // ── Tab 切換時：重設顯示、捲回頂部 ──

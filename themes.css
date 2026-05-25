@@ -1504,7 +1504,7 @@ header + * .subBar,
   .resources-mobile-cat {
     display: inline-flex !important;
     align-items: center !important;
-    align-self: flex-start !important;
+    align-self: flex-end !important;
     gap: 0 !important;
     padding: 2px !important;
     background: rgba(120,120,128,0.16) !important;
