@@ -73,9 +73,9 @@ function App() {
     { id: "overview",  label: "總覽",   icon: "target",   count: undefined },
     { id: "worklog",   label: "工作日誌", icon: "calendar", count: tasks.length },
     { id: "plans",     label: "計畫",   icon: "wrench",   count: plans.length },
-    { id: "people",    label: "人員",   icon: "users",    count: people.length },
     { id: "parts",     label: "零件",   icon: "factory",  count: suppliers.length },
     { id: "resources", label: "資源",   icon: "book",     count: resources.length },
+    { id: "people",    label: "人員",   icon: "users",    count: people.length },
   ];
 
   return (
