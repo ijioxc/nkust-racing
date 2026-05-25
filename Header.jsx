@@ -212,7 +212,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
         </div>
       </header>
       {page === "dashboard" && dashTabs &&
-      <div className={subHidden ? "hdr-subbar hdr-sub--hidden" : "hdr-subbar"} style={hdrStyles.subBar}>
+      <div className={hdrHidden ? "hdr-subbar hdr-sub--hidden" : "hdr-subbar"} style={hdrStyles.subBar}>
           <div style={{ ...hdrStyles.subInner, opacity: "1" }}>
             <nav className="hdr-sub-nav" style={{ ...hdrStyles.subNav }}>
               {dashTabs.map((t) =>

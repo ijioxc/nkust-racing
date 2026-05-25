@@ -175,23 +175,26 @@ function WeeklyFocusCard() {
   return (
     <div className="tcard large" style={{ padding: "var(--card-pad)", minWidth: 0 }}>
       <SectionHead title="本週重點" hint="WEEKLY"/>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {items.map((it, i) => (
           <div key={i} style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "7px 0",
+            display: "flex", alignItems: "flex-start", gap: 7,
+            padding: "6px 0",
             borderBottom: i < items.length - 1 ? "0.5px solid var(--rule)" : "none",
           }}>
+            {/* 優先度色點 */}
+            <PriorityPill priority={it.priority} dotOnly style={{ marginTop: 4 }}/>
+            {/* 名稱（主角，允許換行） */}
             <span style={{
-              fontFamily: "var(--font-mono)", fontSize: 9,
-              color: "var(--muted)", width: 28,
-              letterSpacing: "0.04em", flexShrink: 0,
-            }}>{it.date}</span>
-            <span style={{
-              flex: 1, fontSize: 12.5, color: "var(--ink)",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              flex: 1, fontSize: 12, lineHeight: 1.35, color: "var(--ink)",
+              fontWeight: 500, letterSpacing: "-0.005em",
             }}>{it.label}</span>
-            <PriorityPill priority={it.priority}/>
+            {/* 週次 */}
+            <span style={{
+              fontFamily: "var(--font-mono)", fontSize: 8,
+              color: "var(--muted)", flexShrink: 0,
+              letterSpacing: "0.04em", marginTop: 2,
+            }}>{it.date}</span>
           </div>
         ))}
       </div>
@@ -649,9 +652,10 @@ function ActivityRing({ progress, size, strokeWidth, color }) {
 function BentoCard({ task, onClick }) {
   const { subsystem, title, progress, start, span, size = "1x1", state, owner } = task;
   const isFocus = state === "focus";
-  const isDone = state === "done";
+  const isDone  = state === "done";
   const isLarge = size === "2x2" || size === "3x2";
-  const isWide = size === "2x1";
+  const isWide  = size === "2x1";
+  const isSmall = size === "1x1";
 
   const sizeStyle = {
     "1x1": { gridColumn: "span 1", gridRow: "span 1" },
@@ -662,54 +666,69 @@ function BentoCard({ task, onClick }) {
 
   const daysToEnd = start + span - 5;
   const daysLabel = daysToEnd === 0 ? "TODAY"
-                  : daysToEnd < 0 ? `OVERDUE ${-daysToEnd}W` : `T-${daysToEnd}W`;
+                  : daysToEnd < 0  ? `OVERDUE ${-daysToEnd}W` : `T-${daysToEnd}W`;
+
+  const subColor   = window.SUBSYSTEM_COLOR?.[subsystem] || "var(--blue)";
+  const textColor  = isFocus ? "#fff" : "var(--ink)";
+  const mutedColor = isFocus ? "rgba(255,255,255,0.65)" : "var(--muted)";
+
+  // 依大小給更多留白
+  const pad = isLarge ? "16px 18px" : isWide ? "14px 16px" : "13px 14px";
 
   return (
     <div onClick={onClick} className={`tcard tile hoverable bento-card-${size || "1x1"}`} style={{
       ...sizeStyle,
-      padding: "12px 14px", cursor: "pointer", overflow: "hidden",
-      display: "flex", flexDirection: "column", justifyContent: "space-between",
+      padding: pad, cursor: "pointer", overflow: "hidden",
+      display: "flex", flexDirection: "column",
       background: isFocus ? "var(--accent)" : "var(--card-fill)",
       borderColor: isFocus ? "var(--accent)" : undefined,
       opacity: isDone ? 0.66 : 1,
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-        <span className="eyebrow" style={{
-          color: isFocus ? "rgba(255,255,255,0.78)" : "var(--muted)",
-          display: "flex", alignItems: "center", gap: 5,
-        }}>
-          <SubsystemIcon kind={subsystem} size={11}/>
-          {subsystem}
-        </span>
+
+      {/* ── TOP：系統色點 ＋ 完成度%（large 除外，用大數字代替）── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{
+          width: 6, height: 6, borderRadius: 99, flexShrink: 0,
+          background: isFocus ? "rgba(255,255,255,0.7)" : subColor,
+          display: "inline-block",
+        }}/>
         {!isLarge && (
           <span style={{
-            fontFamily: "var(--display-family)",
-            fontWeight: 700, lineHeight: 1,
-            color: isFocus ? "#fff" : isDone ? "var(--muted)" : "var(--ink)",
-            fontSize: isWide ? 22 : 15,
-            fontFeatureSettings: "'tnum'",
+            fontFamily: "var(--font-mono)",
+            fontSize: isWide ? 13 : 11,
+            fontWeight: 700, letterSpacing: "0.02em",
+            color: isDone ? "var(--green)" : mutedColor,
           }}>{progress}%</span>
         )}
       </div>
-      <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
+
+      {/* ── MAIN：名稱（最重要）＋ 大%（large only）─── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 5, marginTop: 6 }}>
         {isLarge && (
-          <DisplayNumber value={progress} unit="%" size={48} color={isFocus ? "#fff" : "var(--ink)"}/>
+          <DisplayNumber value={progress} unit="%" size={44} color={textColor}/>
         )}
+
+        {/* 1x1: 小卡只顯示名稱，給 3 行 */}
         <div style={{
-          fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em",
-          color: isFocus ? "#fff" : "var(--ink)",
-          fontSize: isLarge ? 16 : isWide ? 14 : 13,
-          display: "-webkit-box", WebkitLineClamp: 2,
+          fontWeight: 700, lineHeight: 1.25, letterSpacing: "-0.01em",
+          color: textColor,
+          fontSize: isLarge ? 15 : isWide ? 13.5 : 12,
+          display: "-webkit-box",
+          WebkitLineClamp: isSmall ? 4 : 2,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>{title}</div>
+
+        {/* 進度條 */}
         <ProgressBar value={progress} height={2} dark={isFocus}/>
-        <div style={{
-          fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.04em",
-          color: isFocus ? "rgba(255,255,255,0.78)" : "var(--muted)",
-          display: "flex", justifyContent: "space-between",
+
+        {/* ── BOTTOM：時間 ＋ (large) 負責人
+              小卡(1x1)桌面太擠故隱藏，但手機 CSS 會 span 2 故加 class 回應 ── */}
+        <div className={isSmall ? "bento-small-foot" : ""} style={{
+          fontFamily: "var(--font-mono)", fontSize: 8, letterSpacing: "0.04em",
+          color: mutedColor, display: "flex", justifyContent: "space-between",
         }}>
           <span>{daysLabel}</span>
-          <span>{owner}</span>
+          {isLarge && <span>{owner}</span>}
         </div>
       </div>
     </div>

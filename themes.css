@@ -1164,10 +1164,11 @@ header + * .subBar,
     grid-template-columns: repeat(4, 1fr) !important;
   }
 
-  /* 總覽底部 4-up 摘要卡：4 欄 → 2×2 */
+  /* 總覽底部 4-up 摘要卡：4 欄 → 2×2（中等手機），≤430px → 1欄 */
   .overview-summary-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
+
 
   /* size 對應：3x2 → span 4（全寬），2x2/2x1/1x1 → span 2（半寬） */
   .bento-card-3x2 { grid-column: span 4 !important; }
@@ -1316,6 +1317,8 @@ header + * .subBar,
 /* 桌面：.seg-short 永遠不顯示 */
 @media (min-width: 769px) {
   .role-filter .seg-short { display: none; }
+  /* 桌面 1x1 小卡：底列時間標籤空間不足，隱藏 */
+  .bento-small-foot { display: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1560,4 +1563,32 @@ header + * .subBar,
     grid-template-columns: 1fr !important;
     gap: 8px !important;
   }
+
+  /* 7. 總覽本週重點卡片：手機半寬時改為卡片式堆疊
+        - label 允許換行，移除單行省略
+        - priority pill 移到 label 下方（flex-wrap）
+        - date 縮至最小 */
+  .weekly-focus-row {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  .weekly-focus-date {
+    width: auto !important;
+    flex-shrink: 0 !important;
+    font-size: 8px !important;
+    opacity: 0.7 !important;
+  }
+  .weekly-focus-label {
+    white-space: normal !important;       /* 允許換行 */
+    overflow: visible !important;
+    text-overflow: unset !important;
+    font-size: 11.5px !important;
+    line-height: 1.35 !important;
+    flex: 1 1 100% !important;           /* 獨佔一行 */
+    order: 2 !important;                 /* date → label → pill */
+  }
+  .weekly-focus-date { order: 1 !important; }
+  .weekly-focus-row .pill { order: 3 !important; flex-shrink: 0 !important; font-size: 9px !important; padding: 2px 7px !important; }
+  /* SectionHead 本週重點卡：在手機隱藏 WEEKLY hint 節省空間 */
+  .weekly-focus-card .section-head { display: flex !important; }
 }

@@ -62,10 +62,14 @@ function Pill({ tone = "muted", children, style }) {
   return <span className={`pill ${tone}`} style={style}>{children}</span>;
 }
 
-function PriorityPill({ priority }) {
-  if (!priority) return <Pill tone="muted">—</Pill>;
+function PriorityPill({ priority, dotOnly = false }) {
+  if (!priority) return dotOnly ? null : <Pill tone="muted">—</Pill>;
   const tone = priority === "HIGH" ? "high" : priority === "MID" ? "mid" : "low";
   const label = priority === "HIGH" ? "高" : priority === "MID" ? "中" : "低";
+  if (dotOnly) {
+    const color = priority === "HIGH" ? "var(--red)" : priority === "MID" ? "var(--orange)" : "var(--green)";
+    return <span style={{ width: 7, height: 7, borderRadius: 99, background: color, display: "inline-block", flexShrink: 0 }}/>;
+  }
   return <Pill tone={tone}>{label} · {priority}</Pill>;
 }
 
