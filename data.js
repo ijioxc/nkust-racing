@@ -53,6 +53,17 @@ const MEME_TASK_POOLS = [
     { id: "t7", subsystem: "煞車", title: "煞車油管沒漏 → 量子隧穿",    progress: 85,  start: 0,  span: 3,  owner: "費曼",     size: "1x1", state: "active" },
     { id: "t8", subsystem: "電裝", title: "交流電系統 Tesla 版本",       progress: 100, start: 0,  span: 2,  owner: "特斯拉",   size: "2x1", state: "done"   },
   ],
+  // 組合 E — 深夜哲學家 × 斯多葛主義版 🌑
+  [
+    { id: "t1", subsystem: "車體", title: "底盤尚未完成，但死亡亦尚未到來",      progress: 17,  start: 0,  span: 12, owner: "馬可·奧里略", size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "懸吊", title: "避震壞了·接受它·調整它·繼續",        progress: 44,  start: 1,  span: 7,  owner: "愛比克泰德",  size: "2x1", state: "active" },
+    { id: "t3", subsystem: "引擎", title: "引擎不動是宇宙給我的考驗",            progress: 21,  start: 0,  span: 9,  owner: "塞內卡",      size: "2x1", state: "active" },
+    { id: "t4", subsystem: "煞車", title: "煞車失靈·我能控制的只有反應",         progress: 60,  start: 2,  span: 6,  owner: "馬可·奧里略", size: "1x1", state: "active" },
+    { id: "t5", subsystem: "電裝", title: "ECU 報錯·萬物皆短暫",                progress: 35,  start: 3,  span: 5,  owner: "愛比克泰德",  size: "1x1", state: "active" },
+    { id: "t6", subsystem: "空力", title: "下壓力不足·風本無意傷我",            progress: 80,  start: 0,  span: 4,  owner: "塞內卡",      size: "1x1", state: "done"   },
+    { id: "t7", subsystem: "其他", title: "贊助商沒回·外物不由我主",            progress: 10,  start: 5,  span: 6,  owner: "愛比克泰德",  size: "1x1", state: "active" },
+    { id: "t8", subsystem: "車體", title: "熬夜焊接·此刻即永恆",                progress: 99,  start: 0,  span: 3,  owner: "馬可·奧里略", size: "2x1", state: "done"   },
+  ],
 ];
 
 // 每次載入隨機抽一組
