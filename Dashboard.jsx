@@ -1129,7 +1129,7 @@ function PlanThumb({ plan, draggable, dragging, dragOver, onDragStart, onDragOve
   const [hov, setHov] = React.useState(false);
   return (
     <div
-      className="tcard tile hoverable"
+      className="tcard large hoverable"
       draggable={draggable}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
