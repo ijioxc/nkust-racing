@@ -134,8 +134,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           })}
         </nav>
         <div style={hdrStyles.actions}>
-          <button className="hdr-btn-search" style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
-          <button className="hdr-btn-export" style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
+
 
           {/* Mobile-only page cycle button — cycles essay ↔ blueprint ↔ dashboard */}
           {(() => {

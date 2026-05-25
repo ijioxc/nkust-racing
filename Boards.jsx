@@ -42,7 +42,7 @@ function PartsView({ suppliers, setSuppliers }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
         <KPI label="TOTAL"     value={total} foot="供應商總數"/>
         <KPI label="HIGH PRIO" value={high} foot="高優先項目"/>
         <KPI label="ORDERED"   value={ordered} unit={`/ ${total}`} foot="已下單+已收到"/>
@@ -138,7 +138,7 @@ function PartsView({ suppliers, setSuppliers }) {
         <div className="parts-kanban-grid" style={{
           display: "grid",
           gridTemplateColumns: `repeat(${SUBSYSTEMS.length}, 1fr)`,
-          gap: "var(--gap-zone)", alignItems: "start",
+          gap: "var(--gap-card)", alignItems: "start",
         }}>
           {SUBSYSTEMS.map(sub => {
             const items = suppliers
@@ -429,7 +429,7 @@ function ResourcesView({ resources, setResources }) {
   return (
     <div className="resources-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI strip — 4 cards: TOTAL + 3 groups */}
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
         <KPI
           label="ALL"
           value={resources.length}
@@ -545,18 +545,6 @@ function ResourcesView({ resources, setResources }) {
           if (items.length === 0) return null;
           return (
             <div key={g.id}>
-              <div className="resource-group-header" style={{
-                display: "flex", alignItems: "baseline", gap: 12, marginBottom: 10,
-                paddingBottom: 6,
-              }}>
-                <UIIcon kind={g.icon} size={14} color="var(--muted)"/>
-                <div style={{
-                  fontFamily: "var(--display-family)",
-                  fontSize: 17, fontWeight: 700, color: "var(--ink)",
-                  letterSpacing: "-0.015em",
-                }}>{g.label}</div>
-                <div className="eyebrow">{g.en} · {items.length}</div>
-              </div>
               {viewMode === "list" ? (
                 <div className="tcard large" style={{ padding: 8 }}>
                   {items.map((r, i) => (

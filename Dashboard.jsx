@@ -132,14 +132,13 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
   const focused = tasks.find(t => t.state === "focus") || tasks[0];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
       <div>
         <BentoBoard tasks={tasks} onTaskClick={openTask}/>
       </div>
 
       {/* Roster — own row, scrolls horizontally */}
-      <div style={{ minWidth: 0 }}>
-        <div className="overview-section-label">團隊成員 <span className="eyebrow" style={{marginLeft:8}}>{`${people.length} 人 · ROSTER`}</span></div>
+      <div style={{ minWidth: 0, marginTop: 72 }}>
         <div style={{
           display: "flex", gap: 8, overflowX: "auto",
           paddingBottom: 6, paddingRight: 4,
@@ -152,7 +151,7 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
       {/* Module summaries — 4-up grid */}
       <div className="overview-summary-grid" style={{
         display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-        gap: "var(--gap-card)",
+        gap: "var(--gap-card)", marginTop: 48,
       }}>
         <WeeklyFocusCard/>
         <PlansSnapshot plans={plans} onOpen={openPlan}/>
@@ -379,7 +378,7 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
   return (
     <div className="worklog-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI strip — mobile: 2×2 grid via .kpi-strip */}
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
         <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`} foot="進行中任務"/>
         <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`} foot="進度正常"/>
         <KPI label="OVERDUE" value={overdue} foot="已逾期工作"/>
@@ -601,23 +600,81 @@ function GanttRow({ task, colW, onClick, onDelete }) {
 
 // ─── Bento Board ───────────────────────────────────────────
 function BentoBoard({ tasks, onTaskClick }) {
-  // 將卡片依照尺寸權重排序，讓大方塊 (3x2, 2x2, 2x1) 優先繪製，從而自動往左上角排列
-  const sortedTasks = React.useMemo(() => {
-    const getWeight = (size) => {
-      if (size === "3x2") return 6;
-      if (size === "2x2") return 4;
-      if (size === "2x1") return 2;
-      return 1; // 1x1
-    };
-    return [...tasks].sort((a, b) => getWeight(b.size || "1x1") - getWeight(a.size || "1x1"));
+  // 欄優先排版：大卡 → 填滿第 1 欄 → 第 2 欄 → 第 3 欄 → 第 4 欄
+  // 8 grid-cols = 4 視覺欄，每欄 2 grid-col 寬
+  const positioned = React.useMemo(() => {
+    const getWeight = size => ({ "3x2": 6, "2x2": 4, "2x1": 2 }[size] ?? 1);
+    const sorted = [...tasks].sort((a, b) => getWeight(b.size || "1x1") - getWeight(a.size || "1x1"));
+
+    const VCOLS  = 4;
+    const BAND_H = 2;                           // 每欄固定 2 rows 為一帶
+    const heights  = new Array(VCOLS).fill(0);
+    const halfFill = new Array(VCOLS).fill(null); // 等待配對的 1x1 左半位置
+    let currentVC = 0;
+    let targetH   = BAND_H;
+
+    const results = [];
+
+    for (const task of sorted) {
+      const [gc, gr] = (task.size || "1x1").split("x").map(Number);
+      const is1x1   = gc === 1 && gr === 1;
+      const vcSpan  = is1x1 ? 1 : Math.ceil(gc / 2);
+
+      if (is1x1) {
+        // ── 1x1：兩兩配對共用一個視覺欄的同一 row ──
+        while (true) {
+          if (halfFill[currentVC] !== null) break;   // 左半已等待 → 填右半
+          if (heights[currentVC] < targetH)  break;  // 有空 row
+          currentVC++;
+          if (currentVC >= VCOLS) { currentVC = 0; targetH += BAND_H; }
+        }
+
+        if (halfFill[currentVC] === null) {
+          // 第一張：放左半，預佔 row（heights 先 +1，防止其他卡疊進來）
+          const row = heights[currentVC];
+          halfFill[currentVC] = row;
+          heights[currentVC]  = row + 1;
+          results.push({ task, gridStyle: {
+            gridColumnStart: currentVC * 2 + 1, gridColumnEnd: currentVC * 2 + 2,
+            gridRowStart: row + 1,              gridRowEnd:   row + 2,
+          }});
+        } else {
+          // 第二張：放右半，完成配對
+          const row = halfFill[currentVC];
+          halfFill[currentVC] = null;
+          results.push({ task, gridStyle: {
+            gridColumnStart: currentVC * 2 + 2, gridColumnEnd: currentVC * 2 + 3,
+            gridRowStart: row + 1,              gridRowEnd:   row + 2,
+          }});
+        }
+      } else {
+        // ── 非 1x1：欄優先 + 帶換行 ──
+        while (true) {
+          const h = Math.max(...heights.slice(currentVC, currentVC + vcSpan));
+          if (h + gr <= targetH) break;
+          currentVC++;
+          if (currentVC + vcSpan > VCOLS) { currentVC = 0; targetH += BAND_H; }
+        }
+        const row = Math.max(...heights.slice(currentVC, currentVC + vcSpan));
+        for (let i = 0; i < vcSpan; i++) heights[currentVC + i] = row + gr;
+        results.push({ task, gridStyle: {
+          gridColumnStart: currentVC * 2 + 1,       gridColumnEnd: currentVC * 2 + 1 + gc,
+          gridRowStart:    row + 1,                 gridRowEnd:    row + 1 + gr,
+        }});
+      }
+    }
+
+    return results;
   }, [tasks]);
 
   return (
     <div className="bento-board" style={{
       display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
-      gridAutoRows: "var(--bento-row-h)", gap: "var(--gap-zone)", gridAutoFlow: "dense",
+      gridAutoRows: "var(--bento-row-h)", gap: "var(--bento-gap, var(--gap-card))",
     }}>
-      {sortedTasks.map(t => <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)}/>)}
+      {positioned.map(({ task, gridStyle }) =>
+        <BentoCard key={task.id} task={task} gridStyle={gridStyle} onClick={() => onTaskClick(task)}/>
+      )}
     </div>
   );
 }
@@ -651,7 +708,8 @@ function ActivityRing({ progress, size, strokeWidth, color }) {
   );
 }
 
-function BentoCard({ task, onClick }) {
+function BentoCard({ task, onClick, gridStyle }) {
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const { subsystem, title, progress, start, span, size = "1x1", state, owner } = task;
   const isFocus = state === "focus";
   const isDone  = state === "done";
@@ -680,7 +738,7 @@ function BentoCard({ task, onClick }) {
 
   return (
     <div onClick={onClick} className={`tcard large hoverable bento-card-${size || "1x1"}`} style={{
-      ...sizeStyle,
+      ...gridStyle,
       /* 非大卡：左 padding 壓縮讓圈靠近邊界；大卡維持對稱 */
       padding: isLarge ? "14px 16px" : "10px 14px 10px 10px",
       cursor: "pointer", overflow: "hidden",
@@ -724,7 +782,7 @@ function BentoCard({ task, onClick }) {
           <div style={{ position: "relative", flexShrink: 0 }}>
             <ActivityRing
               progress={progress}
-              size={40}
+              size={isMobile ? 40 : 68}
               strokeWidth={3.5}
               color={ringColor}
             />
@@ -734,7 +792,7 @@ function BentoCard({ task, onClick }) {
             }}>
               <span style={{
                 fontFamily: "var(--font-mono)", fontWeight: 700,
-                fontSize: 15, lineHeight: 1,
+                fontSize: isMobile ? 18 : 28, lineHeight: 1,
                 color: textColor,
               }}>{progress}</span>
             </div>
@@ -744,16 +802,18 @@ function BentoCard({ task, onClick }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
               fontWeight: 700, lineHeight: 1.28, letterSpacing: "-0.01em",
-              color: textColor, fontSize: 13,
+              color: textColor, fontSize: isMobile ? 13 : 16,
               display: "-webkit-box",
-              WebkitLineClamp: 2,
+              WebkitLineClamp: isSmall && !isMobile ? 3 : 2,
               WebkitBoxOrient: "vertical", overflow: "hidden",
             }}>{title}</div>
-            <div style={{
-              fontFamily: "var(--font-mono)", fontSize: 9,
-              letterSpacing: "0.04em", color: mutedColor,
-              marginTop: 4,
-            }}>{daysLabel}</div>
+            {!(isSmall && !isMobile) && (
+              <div style={{
+                fontFamily: "var(--font-mono)", fontSize: 9,
+                letterSpacing: "0.04em", color: mutedColor,
+                marginTop: 4,
+              }}>{daysLabel}</div>
+            )}
           </div>
 
         </div>
@@ -910,7 +970,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
     <>
     <div className="plans-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI row — mobile: 一列壓縮 via .kpi-strip */}
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
         <KPI label="PROPOSALS" value={total} foot="提案總數" />
         <KPI label="IN PROGRESS" value={inProgress} foot="進行中" />
         <KPI label="COMPLETED" value={completed} foot="已完成" />
@@ -1658,7 +1718,7 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
 
   return (
     <div className="people-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
         <KPI label="STUDENTS" value={studentCount} foot="學生隊員"/>
         <KPI label="ADVISORS" value={advisorCount} foot="專業顧問"/>
         <KPI label="FACULTY"  value={professorCount} foot="指導教授"/>

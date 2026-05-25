@@ -932,7 +932,7 @@ header + * .subBar,
 /* ─── KPI Widget — Apple widget-style tile (WWDC 2025) ──────────────────── */
 .widget-tile {
   border-radius: var(--radius-large);
-  padding: 20px;
+  padding: 24px 24px 20px;
   background: var(--card-fill);
   backdrop-filter: var(--card-blur);
   -webkit-backdrop-filter: var(--card-blur);
@@ -940,7 +940,7 @@ header + * .subBar,
   box-shadow: var(--card-highlight), var(--card-shadow);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   transition: transform .3s var(--ease-back), box-shadow .25s var(--ease-out);
 }
 .widget-tile:hover {
@@ -1333,7 +1333,7 @@ header + * .subBar,
   /* ── KPI strip：4 tiles 一列橫排，字型壓縮 ── */
   .kpi-strip {
     flex-wrap: nowrap !important;
-    gap: 8px !important;
+    gap: 14px !important;
   }
   .kpi-strip .widget-tile {
     flex: 1 1 0 !important;
@@ -1614,6 +1614,7 @@ header + * .subBar,
     overflow-x: auto !important;
     scrollbar-width: none !important;
     max-width: 100% !important;
+    margin-bottom: 8px !important;
   }
   .worklog-mobile-bar::-webkit-scrollbar,
   .parts-mobile-bar::-webkit-scrollbar,
@@ -1630,6 +1631,7 @@ header + * .subBar,
     background: rgba(120,120,128,0.16) !important;
     border-radius: 999px !important;
     height: 32px !important;
+    margin-bottom: 8px !important;
   }
   .resources-mobile-cat::-webkit-scrollbar { display: none; }
 
