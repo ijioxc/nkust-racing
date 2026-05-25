@@ -136,6 +136,24 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           <button className="hdr-btn-search" style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
           <button className="hdr-btn-export" style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
 
+          {/* Mobile-only page cycle button — cycles essay ↔ blueprint ↔ dashboard */}
+          {(() => {
+            const pages = ["dashboard", "essay", "blueprint"];
+            const nextPage = pages[(pages.indexOf(page) + 1) % pages.length];
+            const icons = { dashboard: "target", essay: "book", blueprint: "wrench" };
+            const labels = { dashboard: "工作台", essay: "技術手冊", blueprint: "車體圖解" };
+            return (
+              <button
+                className="hdr-page-cycle-btn"
+                style={hdrStyles.hdrBtn}
+                title={`切換至 ${labels[nextPage]}`}
+                onClick={() => onPageChange(nextPage)}
+              >
+                <UIIcon kind={icons[nextPage]} size={16} />
+              </button>
+            );
+          })()}
+
           {/* Avatar — doubles as the account / settings menu trigger (guest state) */}
           <div ref={menuWrapRef} style={{ position: "relative" }}>
             <button style={{ ...hdrStyles.avatarBtn, boxShadow: settingsOpen ? "0 0 0 2px var(--blue)" : "none" }}

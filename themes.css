@@ -977,6 +977,8 @@ header + * .subBar,
 .bottom-tab-bar {
   display: none; /* 桌面隱藏 */
 }
+/* 頁面切換按鈕：桌面隱藏，手機顯示 */
+.hdr-page-cycle-btn { display: none; }
 
 @media (max-width: 768px) {
   .bottom-tab-bar {
@@ -1363,6 +1365,10 @@ header + * .subBar,
   .hdr-btn-export { display: none !important; }
   /* avatar 推至右上角 */
   .hdr-wrapper header > div:last-child { margin-left: auto !important; }
+  /* 底部導覽列改為頭像左側一鍵切換，隱藏 bottom tab bar */
+  .bottom-tab-bar { display: none !important; }
+  /* 頁面切換按鈕：手機顯示 */
+  .hdr-page-cycle-btn { display: flex !important; }
 
   /* ── Section-head：移除標題文字與 hint 小字 ── */
   .section-head { display: none !important; }
