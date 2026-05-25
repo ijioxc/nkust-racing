@@ -366,6 +366,13 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
   const overdue = tasks.filter(t => t.state !== "done" && t.progress < 40).length;
   const donePct = Math.round(tasks.reduce((a, t) => a + t.progress, 0) / tasks.length);
 
+  const [isMobile, setIsMobile] = React.useState(typeof window !== "undefined" && window.innerWidth <= 768);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [view, setView] = React.useState("gantt"); // gantt | bento
   const [filter, setFilter] = React.useState("all");
 
@@ -425,25 +432,27 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
       </div>
 
       {/* Desktop section head — hidden on mobile */}
-      <SectionHead
-        title={view === "gantt" ? "甘特圖 · Gantt" : "Bento Board"}
-        hint={`${filtered.length} OF ${tasks.length} TASKS`}
-        action={
-          <div style={{ display: "flex", gap: 8 }}>
-            <SegmentedFilter className="subsystem-filter" value={filter} onChange={setFilter} options={[
-              { id: "all",  label: "全部", uiIcon: "filter" },
-              ...SUBSYSTEMS.map(s => ({ id: s, label: s, subIcon: s })),
-            ]}/>
-            <div style={{ width: 1, background: "var(--rule)" }}/>
-            <SegmentedFilter className="gantt-view-toggle" value={view} onChange={setView} options={[
-              { id: "gantt", label: "甘特", uiIcon: "calendar" },
-              { id: "bento", label: "Bento", uiIcon: "target" },
-            ]}/>
-            <Button variant="primary" icon="plus" className="btn-new-task" onClick={newTask}>
-              <span className="btn-label">新增工作</span>
-            </Button>
-          </div>
-        }/>
+      {!isMobile && (
+        <SectionHead
+          title={view === "gantt" ? "甘特圖 · Gantt" : "Bento Board"}
+          hint={`${filtered.length} OF ${tasks.length} TASKS`}
+          action={
+            <div style={{ display: "flex", gap: 8 }}>
+              <SegmentedFilter className="subsystem-filter" value={filter} onChange={setFilter} options={[
+                { id: "all",  label: "全部", uiIcon: "filter" },
+                ...SUBSYSTEMS.map(s => ({ id: s, label: s, subIcon: s })),
+              ]}/>
+              <div style={{ width: 1, background: "var(--rule)" }}/>
+              <SegmentedFilter className="gantt-view-toggle" value={view} onChange={setView} options={[
+                { id: "gantt", label: "甘特", uiIcon: "calendar" },
+                { id: "bento", label: "Bento", uiIcon: "target" },
+              ]}/>
+              <Button variant="primary" icon="plus" className="btn-new-task" onClick={newTask}>
+                <span className="btn-label">新增工作</span>
+              </Button>
+            </div>
+          }/>
+      )}
 
       {view === "gantt" ? (
         <GanttChart tasks={filtered} onTaskClick={openTask} onDelete={onDelete}/>

@@ -395,6 +395,13 @@ function SupplierModal({ open, onClose, onSave, onDelete, initial }) {
 //  RESOURCES — Races / Tools / Learning library
 // ═══════════════════════════════════════════════════════════
 function ResourcesView({ resources, setResources }) {
+  const [isMobile, setIsMobile] = React.useState(typeof window !== "undefined" && window.innerWidth <= 768);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [filter, setFilter] = React.useState("all");
   const [viewMode, setViewMode] = React.useState("card");
   const [editing, setEditing] = React.useState({ open: false, initial: null });
@@ -496,38 +503,40 @@ function ResourcesView({ resources, setResources }) {
         </button>
       </div>
 
-      <SectionHead title="資源庫 · Library" hint={`${visible.length} OF ${resources.length} ITEMS`}
-        action={
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <div className="section-search-box" style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "5px 10px", background: "rgba(0,0,0,0.04)",
-              borderRadius: 999, height: 28,
-            }}>
-              <UIIcon kind="search" size={12} color="var(--muted)"/>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="搜尋…"
-                style={{
-                  background: "transparent", border: 0, outline: 0,
-                  fontSize: 12, fontFamily: "inherit", width: 130,
-                  color: "var(--ink)",
-                }}/>
+      {!isMobile && (
+        <SectionHead title="資源庫 · Library" hint={`${visible.length} OF ${resources.length} ITEMS`}
+          action={
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div className="section-search-box" style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "5px 10px", background: "rgba(0,0,0,0.04)",
+                borderRadius: 999, height: 28,
+              }}>
+                <UIIcon kind="search" size={12} color="var(--muted)"/>
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="搜尋…"
+                  style={{
+                    background: "transparent", border: 0, outline: 0,
+                    fontSize: 12, fontFamily: "inherit", width: 130,
+                    color: "var(--ink)",
+                  }}/>
+              </div>
+              <SegmentedFilter className="view-filter" value={filter} onChange={setFilter} options={[
+                { id: "all",      label: "全部" },
+                { id: "races",    label: "賽事" },
+                { id: "tools",    label: "工具" },
+                { id: "learning", label: "學習" },
+              ]}/>
+              <SegmentedFilter className="view-toggle" value={viewMode} onChange={setViewMode} options={[
+                { id: "card",     label: "圖卡" },
+                { id: "list",     label: "列表" },
+              ]}/>
+              <Button variant="primary" icon="plus"
+                onClick={() => setEditing({ open: true, initial: { group: filter === "all" ? "races" : filter } })}>
+                新增資源
+              </Button>
             </div>
-            <SegmentedFilter className="view-filter" value={filter} onChange={setFilter} options={[
-              { id: "all",      label: "全部" },
-              { id: "races",    label: "賽事" },
-              { id: "tools",    label: "工具" },
-              { id: "learning", label: "學習" },
-            ]}/>
-            <SegmentedFilter className="view-toggle" value={viewMode} onChange={setViewMode} options={[
-              { id: "card",     label: "圖卡" },
-              { id: "list",     label: "列表" },
-            ]}/>
-            <Button variant="primary" icon="plus"
-              onClick={() => setEditing({ open: true, initial: { group: filter === "all" ? "races" : filter } })}>
-              新增資源
-            </Button>
-          </div>
-        }/>
+          }/>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
         {(filter === "all" ? groups : groups.filter(g => g.id === filter)).map(g => {
