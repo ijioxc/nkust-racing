@@ -93,7 +93,6 @@ function PartsView({ suppliers, setSuppliers }) {
               </svg>
             </button>
           </div>
-          </div>{/* end picker + add row */}
 
           {/* Vertical list for selected system */}
           {(() => {
