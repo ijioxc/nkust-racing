@@ -103,11 +103,11 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
     <>
     <div ref={wrapperRef} className={`hdr-wrapper${hdrHidden ? " hdr--hidden" : ""}`} style={hdrStyles.bar}>
       <header style={{ ...hdrStyles.inner, fontFamily: "-apple-system" }}>
-        <div style={hdrStyles.left}>
-          <div style={hdrStyles.logoBox}>
-            <img src="assets/nkust-logo.png" alt="NKUST" style={hdrStyles.logoImg} />
+        <div style={hdrStyles.left} className="hdr-left">
+          <div style={hdrStyles.logoBox} className="hdr-logo-box">
+            <img src="assets/nkust-logo.png" alt="NKUST" style={hdrStyles.logoImg} className="hdr-logo-img" />
           </div>
-          <span style={hdrStyles.wordmark}>高科大賽車隊</span>
+          <span style={hdrStyles.wordmark} className="hdr-wordmark">高科大賽車隊</span>
         </div>
         <nav className="hdr-page-nav" style={hdrStyles.pageNav}>
           {[
@@ -122,11 +122,11 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
               style={{ ...hdrStyles.pageTab,
                 color: active ? "var(--blue)" : "var(--label-secondary)",
                 fontWeight: active ? 600 : 500,
-                background: active ? "var(--fill-tertiary)" : "transparent",
+                background: "transparent",
                 opacity: 1,
               }}
-              onMouseEnter={e => { if (!active) { e.currentTarget.style.background = "var(--fill-quaternary)"; e.currentTarget.style.color = "var(--label-primary)"; } }}
-              onMouseLeave={e => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--label-secondary)"; } }}
+              onMouseEnter={e => { if (!active) { e.currentTarget.style.color = "var(--label-primary)"; } }}
+              onMouseLeave={e => { if (!active) { e.currentTarget.style.color = "var(--label-secondary)"; } }}
               >
                 {p.label}
               </button>);
@@ -292,7 +292,7 @@ const hdrStyles = {
     width: 32, height: 32,            /* 32px visual, 44pt tappable area via padding */
     minWidth: 44, minHeight: 44,      /* HIG: 44pt minimum touch target */
     borderRadius: "var(--radius-sm)", background: "transparent",
-    border: "none", color: "var(--blue)", cursor: "pointer",
+    border: "none", color: "var(--label-secondary)", cursor: "pointer",
     display: "flex", alignItems: "center", justifyContent: "center",
     transition: "background .15s, transform .1s",
     marginInline: -6,                 /* compensate extra touch area */

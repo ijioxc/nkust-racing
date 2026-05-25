@@ -932,7 +932,7 @@ header + * .subBar,
 /* ─── KPI Widget — Apple widget-style tile (WWDC 2025) ──────────────────── */
 .widget-tile {
   border-radius: var(--radius-large);
-  padding: 24px 24px 20px;
+  padding: 20px;
   background: var(--card-fill);
   backdrop-filter: var(--card-blur);
   -webkit-backdrop-filter: var(--card-blur);
@@ -940,7 +940,7 @@ header + * .subBar,
   box-shadow: var(--card-highlight), var(--card-shadow);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   transition: transform .3s var(--ease-back), box-shadow .25s var(--ease-out);
 }
 .widget-tile:hover {
@@ -1237,25 +1237,14 @@ header + * .subBar,
   }
 }
 
-/* BentoBoard：桌面 4 欄，自動 dense 填補空隙 */
-.bento-board {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: var(--bento-row-h);
-  grid-auto-flow: row dense;
-  gap: var(--bento-gap, var(--gap-card));
-}
-
 /* ═══════════════════════════════════════════════════════════
-   MOBILE — BentoBoard：4 欄 → 2 欄
+   MOBILE — BentoBoard：8 欄 → 4 欄
    ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
   .bento-board {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr) !important;
   }
-  /* span 超過 2 的卡片（如 3x2）在手機上最多佔滿 2 欄 */
-  .bento-board > * { max-width: 100%; }
 
   /* ── 真實比例 + 呼吸感
      4 col, 16px side-padding, 14px gap → col ≈ 74px
@@ -1276,8 +1265,11 @@ header + * .subBar,
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  /* 3x2 在 2 欄手機網格：最多佔 2 欄（全寬） */
-  .bento-card-3x2 { grid-column: span 2 !important; }
+  /* size 對應：3x2 → span 4（全寬），2x2/2x1/1x1 → span 2（半寬） */
+  .bento-card-3x2 { grid-column: span 4 !important; }
+  .bento-card-2x2 { grid-column: span 2 !important; }
+  .bento-card-2x1 { grid-column: span 2 !important; }
+  .bento-card-1x1 { grid-column: span 2 !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1341,11 +1333,11 @@ header + * .subBar,
   /* ── KPI strip：4 tiles 一列橫排，字型壓縮 ── */
   .kpi-strip {
     flex-wrap: nowrap !important;
-    gap: 14px !important;
+    gap: 8px !important;
   }
   .kpi-strip .widget-tile {
     flex: 1 1 0 !important;
-    padding: 12px 8px !important;
+    padding: 12px 6px 12px 14px !important; /* 將內容微幅往右推 */
     min-width: 0 !important;
   }
   .kpi-strip .widget-eyebrow {
@@ -1445,7 +1437,6 @@ header + * .subBar,
 /* Mobile unified bars — hidden on desktop */
 .worklog-mobile-bar,
 .parts-mobile-bar,
-.plans-mobile-bar,
 .people-mobile-bar,
 .resources-mobile-cat { display: none; }
 
@@ -1470,6 +1461,18 @@ header + * .subBar,
   .hdr-wrapper header {
     transition: transform 0.28s cubic-bezier(0.25, 0.1, 0.25, 1),
                 opacity 0.22s ease;
+    height: 38px !important;
+  }
+  /* 縮小手機版 Logo 尺寸 */
+  .hdr-wrapper header .hdr-logo-box {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .hdr-wrapper header .hdr-logo-img {
+    height: 22px !important;
+  }
+  .hdr-wrapper header .hdr-wordmark {
+    font-size: 13.5px !important;
   }
   .hdr-wrapper.hdr--hidden header {
     transform: translateY(-100%) !important;
@@ -1484,21 +1487,25 @@ header + * .subBar,
   }
   /* main-content 頂部留出 header 實際高度（JS 寫入 --hdr-total-h）*/
   .main-content {
-    padding-top: calc(var(--hdr-total-h, 94px) + 8px) !important;
+    /* 預設總高： 38 (header) + 34 (subbar) = 72px */
+    padding-top: calc(var(--hdr-total-h, 72px) + 24px) !important;
   }
 
   /* ── Header actions：隱藏搜尋＋匯出，只留頭像；頭像推至右側 ── */
   .hdr-btn-search,
   .hdr-btn-export { display: none !important; }
-  /* avatar 推至右上角 */
-  .hdr-wrapper header > div:last-child { margin-left: auto !important; }
+  /* avatar 推至右上角，並微調往左移以對齊下方 icon */
+  .hdr-wrapper header > div:last-child { 
+    margin-left: auto !important; 
+    margin-right: 12px !important; 
+  }
   /* 底部導覽列改為頭像左側一鍵切換，隱藏 bottom tab bar */
   .bottom-tab-bar { display: none !important; }
   /* 頁面切換按鈕：手機顯示 */
   .hdr-page-cycle-btn { display: flex !important; }
 
-  /* ── Section-head：移除標題文字與 hint 小字 ── */
-  .section-head { display: none !important; }
+  /* ── Section-head：移除 hint 小字，但保留標題 ── */
+  /* .section-head { display: none !important; } */
   .section-head-actions .eyebrow { display: none !important; }
   .section-head-row { justify-content: flex-end !important; }
 
@@ -1622,7 +1629,6 @@ header + * .subBar,
     overflow-x: auto !important;
     scrollbar-width: none !important;
     max-width: 100% !important;
-    margin-bottom: 8px !important;
   }
   .worklog-mobile-bar::-webkit-scrollbar,
   .parts-mobile-bar::-webkit-scrollbar,
@@ -1639,7 +1645,6 @@ header + * .subBar,
     background: rgba(120,120,128,0.16) !important;
     border-radius: 999px !important;
     height: 32px !important;
-    margin-bottom: 8px !important;
   }
   .resources-mobile-cat::-webkit-scrollbar { display: none; }
 
@@ -1710,7 +1715,7 @@ header + * .subBar,
 
   /* 1. 收窄 gap tokens：讓各 section 間距更緊湊、有節奏感 */
   :root {
-    --gap-zone: 14px;
+    --gap-zone: 24px;
     --gap-card:  8px;
   }
 
@@ -1729,23 +1734,25 @@ header + * .subBar,
     justify-content: flex-end !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
-    padding: 5px 14px !important;
-    gap: 2px !important;
+    padding: 0px 0px !important; /* 將 padding 移交給 tab 本身 */
+    gap: 0px !important;
     width: 100% !important;
   }
   .hdr-sub-nav::-webkit-scrollbar { display: none; }
   .hdr-sub-tab {
     flex-shrink: 0 !important;
-    padding: 7px 14px !important;
+    padding: 0px 24px !important; /* 加寬至 24px，按鈕間距達到 48px */
     min-width: auto !important;
+    height: 34px !important;
+  }
+  .hdr-sub-tab:last-child {
+    padding-right: 16px !important; /* 恢復原狀，不更動 icon 位置 */
   }
 
-  /* 4. section-head-row：移除多餘的上下 margin，讓頭部與內容間距由 gap-zone 控制 */
+  /* 4. section-head-row：刻意加大手機版的上下間距 */
   .section-head-row {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    margin-top: 16px !important;
+    margin-bottom: 8px !important;
   }
 
   /* 5. 通用卡片：統一 padding 為 14px（稍小於桌面 16px） */
@@ -1785,10 +1792,10 @@ header + * .subBar,
   /* SectionHead 本週重點卡：在手機隱藏 WEEKLY hint 節省空間 */
   .weekly-focus-card .section-head { display: flex !important; }
 
-  /* ── WorklogView 間距：拉開各 section 與 bento-board 一致 ── */
-  .worklog-view {
+  /* ── WorklogView 間距：原先被寫死為 bento-gap (14px)，導致與其他頁面 (24px) 不同，在此移除 ── */
+  /* .worklog-view {
     gap: var(--bento-gap, 14px) !important;
-  }
+  } */
   .kpi-strip {
     gap: 10px !important;
   }

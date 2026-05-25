@@ -132,13 +132,14 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
   const focused = tasks.find(t => t.state === "focus") || tasks[0];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       <div>
         <BentoBoard tasks={tasks} onTaskClick={openTask}/>
       </div>
 
       {/* Roster — own row, scrolls horizontally */}
-      <div style={{ minWidth: 0, marginTop: 72 }}>
+      <div style={{ minWidth: 0, marginTop: 24 }}>
+        <div className="overview-section-label">團隊成員 <span className="eyebrow" style={{marginLeft:8}}>{`${people.length} 人 · ROSTER`}</span></div>
         <div style={{
           display: "flex", gap: 8, overflowX: "auto",
           paddingBottom: 6, paddingRight: 4,
@@ -151,7 +152,7 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
       {/* Module summaries — 4-up grid */}
       <div className="overview-summary-grid" style={{
         display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-        gap: "var(--gap-card)", marginTop: 48,
+        gap: "var(--gap-card)",
       }}>
         <WeeklyFocusCard/>
         <PlansSnapshot plans={plans} onOpen={openPlan}/>
@@ -378,7 +379,7 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
   return (
     <div className="worklog-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI strip — mobile: 2×2 grid via .kpi-strip */}
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`} foot="進行中任務"/>
         <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`} foot="進度正常"/>
         <KPI label="OVERDUE" value={overdue} foot="已逾期工作"/>
@@ -600,19 +601,90 @@ function GanttRow({ task, colW, onClick, onDelete }) {
 
 // ─── Bento Board ───────────────────────────────────────────
 function BentoBoard({ tasks, onTaskClick }) {
+  const [isMobile, setIsMobile] = React.useState(typeof window !== "undefined" && window.innerWidth <= 768);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 將卡片依照尺寸權重排序，讓大方塊 (3x2, 2x2, 2x1) 優先繪製，從而自動往左上角排列
+  const sortedTasks = React.useMemo(() => {
+    const getWeight = (size) => {
+      if (size === "3x2") return 6;
+      if (size === "2x2") return 4;
+      if (size === "2x1") return 2;
+      return 1; // 1x1
+    };
+    return [...tasks].sort((a, b) => getWeight(b.size || "1x1") - getWeight(a.size || "1x1"));
+  }, [tasks]);
+
+  const renderCards = () => {
+    const elements = [];
+    let pending2x1 = null;
+    let cellsUsed = 0;
+    const maxCells = isMobile ? 16 : 24; // 8x3 on desktop, 4x4 on mobile
+
+    const getCells = (size) => {
+      if (isMobile) {
+        if (size === "3x2") return 8; // 手機版滿寬 (4col) x 2row
+        if (size === "2x2") return 4; // 2col x 2row
+        if (size === "2x1") return 2; // 2col x 1row
+        return 2;                     // 1x1 在手機版也是 2col x 1row
+      }
+      if (size === "3x2") return 6;
+      if (size === "2x2") return 4;
+      if (size === "2x1") return 2;
+      return 1;
+    };
+
+    for (let i = 0; i < sortedTasks.length; i++) {
+      const t = sortedTasks[i];
+      const taskCells = getCells(t.size || "1x1");
+      
+      // 不看數量，看空間：超過空間就不再塞
+      if (cellsUsed + taskCells > maxCells) {
+        continue;
+      }
+      cellsUsed += taskCells;
+
+      if (t.size === "2x1") {
+        if (pending2x1) {
+          elements.push(
+            <div key={`group-${pending2x1.id}-${t.id}`} className="group-wrapper-2x2" style={{
+              gridColumn: "span 2", gridRow: "span 2",
+              display: "flex", flexDirection: "column", gap: "var(--bento-gap, var(--gap-card))"
+            }}>
+              <BentoCard task={pending2x1} onClick={() => onTaskClick(pending2x1)} inGroup />
+              <BentoCard task={t} onClick={() => onTaskClick(t)} inGroup />
+            </div>
+          );
+          pending2x1 = null;
+        } else {
+          pending2x1 = t;
+        }
+      } else {
+        if (pending2x1) {
+          elements.push(<BentoCard key={pending2x1.id} task={pending2x1} onClick={() => onTaskClick(pending2x1)} />);
+          pending2x1 = null;
+        }
+        elements.push(<BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)} />);
+      }
+    }
+
+    if (pending2x1) {
+      elements.push(<BentoCard key={pending2x1.id} task={pending2x1} onClick={() => onTaskClick(pending2x1)} />);
+    }
+
+    return elements;
+  };
+
   return (
-    <div className="bento-board">
-      {tasks.map(task => {
-        const [gc, gr] = (task.size || "1x1").split("x").map(Number);
-        return (
-          <BentoCard
-            key={task.id}
-            task={task}
-            gridStyle={{ gridColumn: `span ${gc}`, gridRow: `span ${gr}` }}
-            onClick={() => onTaskClick(task)}
-          />
-        );
-      })}
+    <div className="bento-board" style={{
+      display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
+      gridAutoRows: "var(--bento-row-h)", gap: "var(--bento-gap, var(--gap-card))", gridAutoFlow: "dense",
+    }}>
+      {renderCards()}
     </div>
   );
 }
@@ -646,15 +718,14 @@ function ActivityRing({ progress, size, strokeWidth, color }) {
   );
 }
 
-function BentoCard({ task, onClick, gridStyle }) {
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+function BentoCard({ task, onClick, inGroup }) {
   const { subsystem, title, progress, start, span, size = "1x1", state, owner } = task;
   const isFocus = state === "focus";
   const isDone  = state === "done";
   const isLarge = size === "2x2" || size === "3x2";
   const isSmall = size === "1x1";
 
-  const sizeStyle = {
+  const sizeStyle = inGroup ? { flex: 1, width: "100%", margin: 0 } : {
     "1x1": { gridColumn: "span 1", gridRow: "span 1" },
     "2x1": { gridColumn: "span 2", gridRow: "span 1" },
     "2x2": { gridColumn: "span 2", gridRow: "span 2" },
@@ -676,7 +747,7 @@ function BentoCard({ task, onClick, gridStyle }) {
 
   return (
     <div onClick={onClick} className={`tcard large hoverable bento-card-${size || "1x1"}`} style={{
-      ...gridStyle,
+      ...sizeStyle,
       /* 非大卡：左 padding 壓縮讓圈靠近邊界；大卡維持對稱 */
       padding: isLarge ? "14px 16px" : "10px 14px 10px 10px",
       cursor: "pointer", overflow: "hidden",
@@ -720,7 +791,7 @@ function BentoCard({ task, onClick, gridStyle }) {
           <div style={{ position: "relative", flexShrink: 0 }}>
             <ActivityRing
               progress={progress}
-              size={isMobile ? 40 : 68}
+              size={40}
               strokeWidth={3.5}
               color={ringColor}
             />
@@ -730,7 +801,7 @@ function BentoCard({ task, onClick, gridStyle }) {
             }}>
               <span style={{
                 fontFamily: "var(--font-mono)", fontWeight: 700,
-                fontSize: isMobile ? 18 : 28, lineHeight: 1,
+                fontSize: 15, lineHeight: 1,
                 color: textColor,
               }}>{progress}</span>
             </div>
@@ -740,18 +811,16 @@ function BentoCard({ task, onClick, gridStyle }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
               fontWeight: 700, lineHeight: 1.28, letterSpacing: "-0.01em",
-              color: textColor, fontSize: isMobile ? 13 : 16,
+              color: textColor, fontSize: 13,
               display: "-webkit-box",
-              WebkitLineClamp: isSmall && !isMobile ? 3 : 2,
+              WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical", overflow: "hidden",
             }}>{title}</div>
-            {!(isSmall && !isMobile) && (
-              <div style={{
-                fontFamily: "var(--font-mono)", fontSize: 9,
-                letterSpacing: "0.04em", color: mutedColor,
-                marginTop: 4,
-              }}>{daysLabel}</div>
-            )}
+            <div style={{
+              fontFamily: "var(--font-mono)", fontSize: 9,
+              letterSpacing: "0.04em", color: mutedColor,
+              marginTop: 4,
+            }}>{daysLabel}</div>
           </div>
 
         </div>
@@ -888,13 +957,11 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
   const completed = plans.filter(p => p.tag === "已完成").length;
   const pending = plans.filter(p => !p.tag || ["計畫中", "擱置"].includes(p.tag)).length;
 
-  // Filtering for mobile view
-  const filteredPlans = isMobile
-    ? plans.filter(p => {
-        const currentTag = p.tag || "計畫中";
-        return currentTag === filter;
-      })
-    : plans;
+  // Filtering
+  const filteredPlans = plans.filter(p => {
+    const currentTag = p.tag || "計畫中";
+    return currentTag === filter;
+  });
 
   // Lightbox helpers
   const lbIdx  = plans.findIndex(p => p.id === lightboxId);
@@ -908,7 +975,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
     <>
     <div className="plans-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI row — mobile: 一列壓縮 via .kpi-strip */}
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="PROPOSALS" value={total} foot="提案總數" />
         <KPI label="IN PROGRESS" value={inProgress} foot="進行中" />
         <KPI label="COMPLETED" value={completed} foot="已完成" />
@@ -917,7 +984,11 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
 
       {/* Mobile unified single glass pill bar — [status filters] | [view toggle] | [+] */}
       {isMobile && (
-        <div className="plans-mobile-bar">
+        <div className="plans-mobile-bar" style={{
+          display: "inline-flex", alignItems: "center", alignSelf: "flex-end",
+          gap: 0, padding: 2, background: "rgba(120,120,128,0.16)",
+          borderRadius: 999, height: 32, overflowX: "auto", scrollbarWidth: "none", maxWidth: "100%"
+        }}>
           {PLAN_TAGS.map(tag => {
             const active = filter === tag;
             return (
@@ -979,6 +1050,10 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
           title="提案·Plans"
           action={
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <SegmentedFilter className="status-filter" value={filter} onChange={setFilter} options={
+                PLAN_TAGS.map(tag => ({ id: tag, label: tag }))
+              }/>
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
               <SegmentedFilter className="view-toggle" value={view} onChange={setView} options={[
                 { id: "gallery", label: "堆疊", uiIcon: "layers" },
                 { id: "kanban", label: "排列", uiIcon: "filter" },
@@ -1539,7 +1614,7 @@ function KanbanPlanCard({ plan, onDragStart, onClick }) {
       draggable
       onDragStart={onDragStart}
       onClick={onClick}
-      className="tcard tile hoverable"
+      className={`tcard tile hoverable bento-card-${size}`}
       style={{
         padding: 12,
         cursor: "pointer",
@@ -1656,7 +1731,7 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
 
   return (
     <div className="people-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-zone)" }}>
+      <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="STUDENTS" value={studentCount} foot="學生隊員"/>
         <KPI label="ADVISORS" value={advisorCount} foot="專業顧問"/>
         <KPI label="FACULTY"  value={professorCount} foot="指導教授"/>
