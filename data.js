@@ -20,27 +20,27 @@ const MEME_TASK_POOLS = [
     { id: "t7", subsystem: "其他", title: "向贊助商介紹偉大航道計畫",    progress: 42,  start: 6,  span: 4,  owner: "香吉士", size: "1x1", state: "active" },
     { id: "t8", subsystem: "車體", title: "鋼鐵之星車殼製作",            progress: 100, start: 1,  span: 5,  owner: "佛朗基", size: "2x1", state: "done"   },
   ],
-  // 組合 B — 深夜趕工 × 海賊王版 🌙
+  // 組合 B — Minecraft 版 ⛏️
   [
-    { id: "t1", subsystem: "車體", title: "熬夜趕焊 + 貝卡龐克還沒來",  progress: 3,   start: 0,  span: 10, owner: "魯夫",     size: "2x2", state: "focus"  },
-    { id: "t2", subsystem: "引擎", title: "引擎又不動了找喬巴",          progress: 12,  start: 1,  span: 8,  owner: "喬巴",     size: "2x1", state: "active" },
-    { id: "t3", subsystem: "其他", title: "找上週被魯夫吃掉的扳手",      progress: 0,   start: 0,  span: 3,  owner: "全體船員", size: "2x1", state: "active" },
-    { id: "t4", subsystem: "電裝", title: "ECU 被雷擊了（娜美的錯）",   progress: 69,  start: 3,  span: 6,  owner: "娜美",     size: "1x1", state: "active" },
-    { id: "t5", subsystem: "空力", title: "前翼被飛翔大象帶走追回來",    progress: 100, start: 0,  span: 2,  owner: "騙人布",   size: "1x1", state: "done"   },
-    { id: "t6", subsystem: "煞車", title: "煞車皮被香吉士踢飛",          progress: 20,  start: 4,  span: 5,  owner: "香吉士",   size: "1x1", state: "active" },
-    { id: "t7", subsystem: "懸吊", title: "索隆把避震器當啞鈴用了",      progress: 55,  start: 2,  span: 7,  owner: "索隆",     size: "1x1", state: "active" },
-    { id: "t8", subsystem: "其他", title: "訂肉給魯夫（緊急）",          progress: 100, start: 0,  span: 1,  owner: "香吉士",   size: "2x1", state: "done"   },
+    { id: "t1", subsystem: "車體", title: "用圓石蓋底盤（暫時用）",      progress: 8,   start: 0,  span: 10, owner: "Steve",    size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "引擎", title: "紅石引擎電路設計第 47 版",    progress: 33,  start: 1,  span: 8,  owner: "Steve",    size: "2x1", state: "active" },
+    { id: "t3", subsystem: "懸吊", title: "避震器掉進熔岩湖了",          progress: 0,   start: 0,  span: 3,  owner: "Alex",     size: "2x1", state: "active" },
+    { id: "t4", subsystem: "電裝", title: "ECU 接線全用紅石粉",          progress: 55,  start: 2,  span: 6,  owner: "Steve",    size: "1x1", state: "active" },
+    { id: "t5", subsystem: "空力", title: "前翼用木板製作（夠帥）",      progress: 70,  start: 0,  span: 4,  owner: "Alex",     size: "1x1", state: "active" },
+    { id: "t6", subsystem: "煞車", title: "黏液方塊煞車系統完工",        progress: 100, start: 1,  span: 3,  owner: "Alex",     size: "1x1", state: "done"   },
+    { id: "t7", subsystem: "其他", title: "苦力怕炸毀工廠善後",          progress: 20,  start: 4,  span: 5,  owner: "全體",     size: "1x1", state: "active" },
+    { id: "t8", subsystem: "車體", title: "鑽石車殼製作（還在挖礦）",    progress: 5,   start: 0,  span: 12, owner: "Steve",    size: "2x1", state: "active" },
   ],
-  // 組合 C — 比賽前一週 × 海賊王版 😱
+  // 組合 C — F1 版 🏎️
   [
-    { id: "t1", subsystem: "車體", title: "車還沒做完黑鬍子下週來",      progress: 2,   start: 0,  span: 10, owner: "魯夫",   size: "2x2", state: "focus"  },
-    { id: "t2", subsystem: "電裝", title: "電線亂成阿龍的蛇陣",          progress: 30,  start: 0,  span: 8,  owner: "佛朗基", size: "2x1", state: "active" },
-    { id: "t3", subsystem: "空力", title: "尾翼角度是娜美用直覺算的",    progress: 77,  start: 1,  span: 4,  owner: "娜美",   size: "2x1", state: "active" },
-    { id: "t4", subsystem: "引擎", title: "怠速 500rpm 是喬巴在推",      progress: 40,  start: 2,  span: 6,  owner: "喬巴",   size: "1x1", state: "active" },
-    { id: "t5", subsystem: "煞車", title: "煞車距離：大概一島吧",        progress: 88,  start: 0,  span: 3,  owner: "索隆",   size: "1x1", state: "active" },
-    { id: "t6", subsystem: "懸吊", title: "用觀察色硬幹 Camber 角",      progress: 60,  start: 3,  span: 5,  owner: "魯夫",   size: "1x1", state: "active" },
-    { id: "t7", subsystem: "其他", title: "跟海軍說車很帥（沒做完）",    progress: 100, start: 0,  span: 2,  owner: "騙人布", size: "1x1", state: "done"   },
-    { id: "t8", subsystem: "車體", title: "底盤歪了說是 Gear 5 特效",    progress: 95,  start: 1,  span: 7,  owner: "魯夫",   size: "2x1", state: "active" },
+    { id: "t1", subsystem: "空力", title: "地板組效應升級 · DRS 申請中", progress: 72,  start: 0,  span: 8,  owner: "Verstappen", size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "引擎", title: "PU 換新 · 降 5 格起步沒差",   progress: 45,  start: 1,  span: 6,  owner: "Hamilton",   size: "2x1", state: "active" },
+    { id: "t3", subsystem: "煞車", title: "煞車偏差 → 鍋甩給輪胎",       progress: 88,  start: 2,  span: 4,  owner: "Leclerc",    size: "2x1", state: "active" },
+    { id: "t4", subsystem: "懸吊", title: "底板磨損 1mm · FIA 在看",     progress: 60,  start: 0,  span: 5,  owner: "Newey",      size: "1x1", state: "active" },
+    { id: "t5", subsystem: "電裝", title: "MGU-K 又掛了（傳統藝能）",    progress: 30,  start: 3,  span: 7,  owner: "Hamilton",   size: "1x1", state: "active" },
+    { id: "t6", subsystem: "車體", title: "碳纖維單體殼完工 ✓",          progress: 100, start: 0,  span: 3,  owner: "Newey",      size: "1x1", state: "done"   },
+    { id: "t7", subsystem: "其他", title: "無線電喊話：Box Box Box",      progress: 50,  start: 4,  span: 4,  owner: "Lambiase",   size: "1x1", state: "active" },
+    { id: "t8", subsystem: "空力", title: "後翼被 FIA 抗議重新設計",     progress: 15,  start: 1,  span: 9,  owner: "Newey",      size: "2x1", state: "active" },
   ],
   // 組合 D — 佛系 × 科學家版 🧘
   [
