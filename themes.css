@@ -1422,11 +1422,21 @@ header + * .subBar,
   /* ── Active/selected 狀態統一 ── */
   .seg-btn--active,
   .view-toggle-btn.active {
-    background: rgba(255, 255, 255, 0.18) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
-    color: var(--ink) !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08) !important;
+    color: #000000 !important;
     border: none !important;
     transform: none !important;
+  }
+  .seg-btn--active svg,
+  .view-toggle-btn.active svg,
+  .seg-btn--active svg *,
+  .view-toggle-btn.active svg * {
+    stroke: currentColor !important;
+  }
+  .seg-btn--active svg circle[fill],
+  .view-toggle-btn.active svg circle[fill] {
+    fill: currentColor !important;
   }
 
   /* ── CardPreview → 置中圖卡（含左側留白）── */
