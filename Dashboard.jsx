@@ -873,7 +873,6 @@ function BentoPreviewModal({ task, onClose, onEdit, onDelete }) {
       meta={[
         { label: "負責人", value: task.owner || "—" },
         { label: "期程", value: `W${task.start} – W${(task.start || 0) + (task.span || 0)} · ${schedule}` },
-        { label: "優先度", value: task.priority || "—" },
         { label: "狀態", value: stateLabel }
       ]}
       actions={<>

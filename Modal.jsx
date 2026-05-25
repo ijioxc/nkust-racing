@@ -205,11 +205,7 @@ const TASK_SCHEMA = [
   { key: "subsystem", label: "系統", type: "segmented", options: [
     { value: "車體", label: "車體" }, { value: "引擎", label: "引擎" }, { value: "懸吊", label: "懸吊" }, { value: "煞車", label: "煞車" }, { value: "電裝", label: "電裝" }, { value: "空力", label: "空力" }, { value: "其他", label: "其他" }
   ]},
-  { key: "priority", label: "優先度", type: "segmented", options: [
-    { value: "HIGH", label: "高 · HIGH" },
-    { value: "MID", label: "中 · MID" },
-    { value: "LOW", label: "低 · LOW" },
-  ]},
+
   { key: "state", label: "狀態", type: "segmented", options: [
     { value: "active", label: "進行中" },
     { value: "focus", label: "本週焦點" },
@@ -217,10 +213,9 @@ const TASK_SCHEMA = [
   ]},
   { key: "owner", label: "負責人", type: "text", placeholder: "例：陳偉成" },
   { key: "size", label: "Bento 尺寸", type: "segmented", options: [
-    { value: "1x1", label: "1×1" },
-    { value: "2x1", label: "2×1" },
-    { value: "2x2", label: "2×2" },
-    { value: "3x2", label: "3×2" },
+    { value: "1x1", label: "小" },
+    { value: "2x1", label: "中" },
+    { value: "2x2", label: "大" },
   ]},
   { key: "progress", label: "任務進度", type: "slider", sliderLabel: "任務進度" },
   { key: "start", label: "起始週", type: "number", min: 0, max: 20 },
@@ -230,7 +225,7 @@ const TASK_SCHEMA = [
 function TaskModal({ open, onClose, onSave, onDelete, initial }) {
   const blank = {
     subsystem: "車體", title: "", progress: 0, start: 0, span: 7,
-    owner: "", priority: "MID", size: "1x1", state: "active",
+    owner: "", size: "1x1", state: "active",
   };
   return (
     <DynamicEditorModal
