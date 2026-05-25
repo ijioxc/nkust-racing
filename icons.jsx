@@ -83,6 +83,7 @@ function UIIcon({ kind, size = 14, color = "currentColor", strokeWidth = 1.5 }) 
     case "check":    return <svg {...c}><path d="M5 12l5 5L20 7"/></svg>;
     case "external": return <svg {...c}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>;
     case "resize":   return <svg {...c}><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>;
+    case "layers":   return <svg {...c}><path d="M2 12l10 6 10-6M2 17l10 6 10-6M12 2 2 7l10 5 10-5z"/></svg>;
     default: return null;
   }
 }

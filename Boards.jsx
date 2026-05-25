@@ -459,8 +459,29 @@ function ResourcesView({ resources, setResources }) {
 
   return (
     <div className="resources-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      {/* KPI strip */}
+      {/* KPI strip — 4 cards: TOTAL + 3 groups */}
       <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
+        {/* TOTAL */}
+        <div className="tcard tile hoverable" style={{
+          flex: 1, minWidth: 0, padding: "var(--tile-pad)", cursor: "pointer",
+          overflow: "hidden",
+        }} onClick={() => setFilter("all")}>
+          <div className="eyebrow" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <UIIcon kind="layers" size={11}/>
+            ALL
+          </div>
+          <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
+            <DisplayNumber value={resources.length} size={36}/>
+            <span className="resource-kpi-label" style={{
+              fontSize: 13, fontWeight: 600, color: "var(--ink)",
+              letterSpacing: "-0.01em", overflow: "hidden",
+              textOverflow: "ellipsis", whiteSpace: "nowrap",
+            }}>所有資源</span>
+          </div>
+          <div className="resource-kpi-desc" style={{ fontSize: 12, color: "var(--faint)", marginTop: 6, lineHeight: 1.4 }}>
+            賽事 · 工具 · 學習資源總計
+          </div>
+        </div>
         {groups.map(g => {
           const items = resources.filter(r => r.group === g.id);
           return (

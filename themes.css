@@ -1613,6 +1613,10 @@ header + * .subBar,
     gap: 10px !important;
   }
 
+  /* ── Resources KPI 四欄：手機隱藏說明文字和中文標籤，只留數字 ── */
+  .resource-kpi-desc  { display: none !important; }
+  .resource-kpi-label { display: none !important; }
+
   /* ── Gantt chart：橫向可滑動，隱藏捲軸 ── */
   .gantt-scroll {
     scrollbar-width: none;
