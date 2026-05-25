@@ -1015,7 +1015,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
         /* IG-style photo grid — tight 3px gap, square thumbs */
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(220px, 1fr))",
           gap: 3,
           borderRadius: 12,
           overflow: "hidden",
