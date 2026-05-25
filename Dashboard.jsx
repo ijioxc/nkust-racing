@@ -1658,6 +1658,7 @@ function PersonProfilePopup({ person, onClose, onEdit, onDelete }) {
 function PeopleView({ people, editPerson, newPerson, onDelete }) {
   const [filter, setFilter] = React.useState("all");
   const [profileId, setProfileId] = React.useState(null);
+  const [view, setView] = React.useState("list"); // list | grid (小圖卡)
 
   const [isMobile, setIsMobile] = React.useState(typeof window !== "undefined" && window.innerWidth <= 768);
   React.useEffect(() => {
@@ -1674,6 +1675,13 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
   const filtered = filter === "all" ? people : people.filter(p => p.position === filter);
   const profilePerson = people.find(p => p.id === profileId) || null;
 
+  // grid layout configuration
+  const gridCols = view === "grid"
+    ? (isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(180px, 1fr))")
+    : "repeat(auto-fill, minmax(280px, 1fr))";
+
+  const gridGap = view === "grid" && isMobile ? 8 : "var(--gap-card)";
+
   return (
     <div className="people-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
@@ -1683,7 +1691,7 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
         <KPI label="TOTAL"    value={totalPeople} foot="團隊總人數" accent/>
       </div>
 
-      {/* Mobile unified single glass pill bar — [role filters] | [+] */}
+      {/* Mobile unified single glass pill bar — [role filters] | [view toggle] | [+] */}
       {isMobile && (
         <div className="people-mobile-bar">
           {[
@@ -1712,6 +1720,30 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
           {/* Separator */}
           <div style={{ width: 1, alignSelf: "stretch", background: "rgba(120,120,128,0.35)", margin: "4px 3px", flexShrink: 0 }}/>
 
+          {/* View Toggle */}
+          <button onClick={() => setView(v => v === "list" ? "grid" : "list")}
+            className="seg-btn--active"
+            title={view === "list" ? "切換小圖卡" : "切換列表"}
+            style={{
+              padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+              background: "#fff", flexShrink: 0, color: "var(--faint)",
+              display: "inline-flex", alignItems: "center", transition: "all .15s",
+            }}>
+            {view === "list" ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none"/>
+                <rect x="3" y="14" width="7" height="7" rx="1" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none"/>
+                <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+              </svg>
+            ) : (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="2" fill="none"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <line x1="3" y1="16" x2="21" y2="16"/>
+              </svg>
+            )}
+          </button>
+
           {/* Add Button */}
           <button onClick={newPerson} title="新增成員"
             style={{
@@ -1729,7 +1761,7 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
       {!isMobile && (
         <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
           action={
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <SegmentedFilter className="role-filter" value={filter} onChange={setFilter} options={[
                 { id: "all",   label: "全部", shortLabel: "全" },
                 { id: "隊長",  label: "隊長", shortLabel: "長" },
@@ -1738,6 +1770,30 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
                 { id: "成員",  label: "成員", shortLabel: "員" },
                 { id: "教授",  label: "教授", shortLabel: "授" },
               ]}/>
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
+
+              <ViewToggle value={view} onChange={setView} options={[
+                {
+                  value: "list",
+                  title: "大圖卡列表",
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2" fill="none"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                    <line x1="3" y1="16" x2="21" y2="16"/>
+                  </svg>,
+                },
+                {
+                  value: "grid",
+                  title: "雙欄小圖卡",
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none"/>
+                    <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+                  </svg>,
+                },
+              ]} />
+
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
               <Button variant="primary" icon="plus" className="btn-new-task" onClick={newPerson}>
                 <span className="btn-label">新增成員</span>
               </Button>
@@ -1747,11 +1803,11 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
 
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-        gap: "var(--gap-card)",
+        gridTemplateColumns: gridCols,
+        gap: gridGap,
       }}>
         {filtered.map(p => (
-          <PersonCard key={p.id} person={p}
+          <PersonCard key={p.id} person={p} compact={view === "grid"}
             onClick={() => setProfileId(p.id)}/>
         ))}
       </div>
@@ -1767,7 +1823,60 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
   );
 }
 
-function PersonCard({ person, onClick }) {
+function PersonCard({ person, onClick, compact }) {
+  if (compact) {
+    const posColors = {
+      "隊長": "var(--red)",
+      "副隊長": "var(--orange)",
+      "組長": "var(--purple)",
+      "成員": "var(--blue)",
+      "教授": "var(--green)",
+      "指導教授": "var(--green)",
+      "顧問": "var(--indigo)",
+    };
+    const posColor = posColors[person.position] || "var(--muted)";
+    const posBg = posColor + "15";
+
+    return (
+      <div onClick={onClick} className="tcard hoverable large" style={{
+        padding: "16px 12px", cursor: "pointer",
+        position: "relative", display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", textAlign: "center",
+        gap: 10, height: "100%", transition: "all 0.2s ease",
+      }}>
+        {/* Avatar */}
+        <Avatar name={person.name} size={44} dark/>
+        
+        {/* Name */}
+        <div style={{
+          fontFamily: "var(--display-family)",
+          fontSize: 15, fontWeight: 700, color: "var(--ink)",
+          letterSpacing: "-0.01em", lineHeight: 1.2,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          width: "100%",
+        }}>{person.name}</div>
+        
+        {/* Position Badge */}
+        <span style={{
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.04em",
+          color: posColor,
+          background: posBg,
+          padding: "2px 8px", borderRadius: 99, textTransform: "uppercase",
+          border: `0.5px solid ${posColor}25`,
+        }}>{person.position}</span>
+
+        {/* Dept & Grade */}
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: 9.5,
+          color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          width: "100%", marginTop: 2,
+        }}>
+          {person.department} · {person.grade}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div onClick={onClick} className="tcard hoverable large" style={{
       padding: "var(--card-pad)", cursor: "pointer",
