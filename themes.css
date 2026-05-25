@@ -1617,6 +1617,20 @@ header + * .subBar,
   .resource-kpi-desc  { display: none !important; }
   .resource-kpi-label { display: none !important; }
 
+  /* ── Resources KPI：高度對齊 widget-tile（12px 8px padding, 26px 數字） ── */
+  .resources-view .kpi-strip .tcard.tile {
+    padding: 12px 8px !important;
+  }
+  .resource-kpi-num {
+    margin-top: 4px !important;
+  }
+  /* font-size 是 inline style → 需要 !important 覆蓋 */
+  .resource-kpi-num > div {
+    font-size: 26px !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em !important;
+  }
+
   /* ── Gantt chart：橫向可滑動，隱藏捲軸 ── */
   .gantt-scroll {
     scrollbar-width: none;

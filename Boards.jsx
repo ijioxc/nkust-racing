@@ -470,7 +470,7 @@ function ResourcesView({ resources, setResources }) {
             <UIIcon kind="layers" size={11}/>
             ALL
           </div>
-          <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
+          <div className="resource-kpi-num" style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
             <DisplayNumber value={resources.length} size={36}/>
             <span className="resource-kpi-label" style={{
               fontSize: 13, fontWeight: 600, color: "var(--ink)",
@@ -493,7 +493,7 @@ function ResourcesView({ resources, setResources }) {
                 <UIIcon kind={g.icon} size={11}/>
                 {g.en}
               </div>
-              <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
+              <div className="resource-kpi-num" style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
                 <DisplayNumber value={items.length} size={36}/>
                 <span className="resource-kpi-label" style={{
                   fontSize: 13, fontWeight: 600, color: "var(--ink)",
