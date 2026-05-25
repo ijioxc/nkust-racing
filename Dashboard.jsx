@@ -488,40 +488,46 @@ function SegmentedFilter({ options, value, onChange, className }) {
 function GanttChart({ tasks, onTaskClick, onDelete }) {
   const colW = 100 / TOTAL_WEEKS;
   return (
-    <div className="tcard large gantt-chart" style={{ padding: "16px 14px 18px" }}>
-      {/* week ruler */}
-      <div className="gantt-ruler" style={{ display: "flex", paddingLeft: 220, marginBottom: 8 }}>
-        {WEEK_LABELS.map((w, i) => (
-          <div key={w} style={{
-            flex: 1, fontFamily: "var(--font-mono)", fontSize: 9,
-            color: i === 4 ? "var(--accent)" : "var(--muted)",
-            fontWeight: i === 4 ? 700 : 500,
-            letterSpacing: "0.04em", textAlign: "left", paddingLeft: 4,
-            borderLeft: "0.5px solid " + (i === 4 ? "var(--accent-mid)" : "rgba(0,0,0,0.05)"),
-            position: "relative",
-          }}>
-            {w}
-            {i === 4 && <div style={{
-              position: "absolute", top: 14, left: 0, bottom: -8,
-              width: 1, background: "var(--accent)", opacity: 0.5,
-              pointerEvents: "none",
-            }}/>}
-          </div>
-        ))}
-      </div>
+    <div className="tcard large gantt-chart" style={{ padding: "16px 0 18px", overflow: "hidden" }}>
+      {/* scrollable inner — allows horizontal pan on mobile */}
+      <div className="gantt-scroll" style={{
+        overflowX: "auto", WebkitOverflowScrolling: "touch",
+        padding: "0 14px",
+      }}>
+        {/* week ruler */}
+        <div className="gantt-ruler" style={{ display: "flex", paddingLeft: 220, marginBottom: 8, minWidth: 560 }}>
+          {WEEK_LABELS.map((w, i) => (
+            <div key={w} style={{
+              flex: 1, fontFamily: "var(--font-mono)", fontSize: 9,
+              color: i === 4 ? "var(--accent)" : "var(--muted)",
+              fontWeight: i === 4 ? 700 : 500,
+              letterSpacing: "0.04em", textAlign: "left", paddingLeft: 4,
+              borderLeft: "0.5px solid " + (i === 4 ? "var(--accent-mid)" : "rgba(0,0,0,0.05)"),
+              position: "relative",
+            }}>
+              {w}
+              {i === 4 && <div style={{
+                position: "absolute", top: 14, left: 0, bottom: -8,
+                width: 1, background: "var(--accent)", opacity: 0.5,
+                pointerEvents: "none",
+              }}/>}
+            </div>
+          ))}
+        </div>
 
-      {/* rows */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {tasks.map(t => (
-          <GanttRow key={t.id} task={t} colW={colW}
-            onClick={() => onTaskClick(t)} onDelete={() => onDelete(t)}/>
-        ))}
-        {tasks.length === 0 && (
-          <div style={{
-            padding: "30px 20px", textAlign: "center",
-            color: "var(--muted)", fontSize: 12,
-          }}>沒有符合的工作</div>
-        )}
+        {/* rows */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 560 }}>
+          {tasks.map(t => (
+            <GanttRow key={t.id} task={t} colW={colW}
+              onClick={() => onTaskClick(t)} onDelete={() => onDelete(t)}/>
+          ))}
+          {tasks.length === 0 && (
+            <div style={{
+              padding: "30px 20px", textAlign: "center",
+              color: "var(--muted)", fontSize: 12,
+            }}>沒有符合的工作</div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1604,4 +1604,19 @@ header + * .subBar,
   .weekly-focus-row .pill { order: 3 !important; flex-shrink: 0 !important; font-size: 9px !important; padding: 2px 7px !important; }
   /* SectionHead 本週重點卡：在手機隱藏 WEEKLY hint 節省空間 */
   .weekly-focus-card .section-head { display: flex !important; }
+
+  /* ── WorklogView 間距：拉開各 section 與 bento-board 一致 ── */
+  .worklog-view {
+    gap: var(--bento-gap, 14px) !important;
+  }
+  .kpi-strip {
+    gap: 10px !important;
+  }
+
+  /* ── Gantt chart：橫向可滑動，隱藏捲軸 ── */
+  .gantt-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .gantt-scroll::-webkit-scrollbar { display: none; }
 }
