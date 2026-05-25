@@ -963,3 +963,575 @@ header + * .subBar,
   flex-shrink: 0;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Bottom Tab Bar  (iOS-style)
+   只在 max-width: 768px 顯示
+   ═══════════════════════════════════════════════════════════ */
+
+/* Token：底部 Tab 高度（不含 safe area） */
+:root {
+  --bottom-tab-h: 54px;
+}
+
+/* Bottom Tab Bar 容器 */
+.bottom-tab-bar {
+  display: none; /* 桌面隱藏 */
+}
+
+@media (max-width: 768px) {
+  .bottom-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: calc(var(--bottom-tab-h) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--header-bg);
+    backdrop-filter: saturate(180%) blur(28px);
+    -webkit-backdrop-filter: saturate(180%) blur(28px);
+    border-top: 0.5px solid var(--header-border);
+    box-shadow: 0 -1px 0 rgba(0,0,0,0.04);
+  }
+
+  .bottom-tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px 0 0;
+    min-height: 44px;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.01em;
+    color: var(--label-tertiary);
+    font-weight: 400;
+    transition: color 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .bottom-tab-btn.active {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .bottom-tab-btn:active {
+    transform: scale(0.94);
+  }
+
+  /* 圖示 wrapper — 確保 SVG 大小一致 */
+  .bottom-tab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Active tab 圖示：小藍點 pill 背景（iOS 17+ 風格） */
+  .bottom-tab-btn.active .bottom-tab-icon {
+    background: rgba(0, 122, 255, 0.12);
+    border-radius: 8px;
+    width: 36px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Header 精簡（隱藏上方 pageNav）
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* 隱藏上方三個頁面切換按鈕（已移至 Bottom Tab Bar） */
+  .hdr-page-nav {
+    display: none !important;
+  }
+
+  /* Sub-tabs 水平無捲軸 */
+  .hdr-sub-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 1px;
+  }
+  .hdr-sub-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Sub-tab 每個按鈕：防止文字換行 + 觸控回饋 */
+  .hdr-sub-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hdr-sub-tab:active {
+    opacity: 0.6;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Main content 底部 padding（讓 Bottom Tab 不擋內容）
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px 16px calc(var(--bottom-tab-h) + env(safe-area-inset-bottom) + 24px) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Modal → Bottom Sheet
+   手機上 modal 改成從底部滑入的 Sheet
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* 覆蓋層：靠底對齊 */
+  .modal-back {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  /* Sheet 卡片：全寬、圓角只在上方，底部留 tab bar 空間 */
+  .modal-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: var(--radius-large) var(--radius-large) 0 0 !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    animation: sheet-slide-up 0.38s var(--ease-out) !important;
+    padding-bottom: calc(var(--bottom-tab-h, 54px) + env(safe-area-inset-bottom) + 16px) !important;
+  }
+
+  /* Drag handle（視覺提示） */
+  .modal-card::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--fill-secondary);
+    margin: 10px auto -4px;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes sheet-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Sub-tab：手機只顯示圖示，隱藏文字
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* 隱藏 sub-tab 裡的文字 span，保留 SVG icon */
+  .hdr-sub-tab .sub-tab-label {
+    display: none;
+  }
+
+  /* sub-tab 數字 badge 也隱藏，節省空間 */
+  .hdr-sub-tab .sub-tab-count {
+    display: none;
+  }
+
+  /* sub-tab 按鈕縮小：只剩圖示 padding */
+  .hdr-sub-tab {
+    padding: 10px 14px !important;
+    gap: 0 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — BentoBoard：8 欄 → 4 欄
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .bento-board {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  /* 總覽底部 4-up 摘要卡：4 欄 → 2×2 */
+  .overview-summary-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* size 對應：3x2 → span 4（全寬），2x2/2x1/1x1 → span 2（半寬） */
+  .bento-card-3x2 { grid-column: span 4 !important; }
+  .bento-card-2x2 { grid-column: span 2 !important; }
+  .bento-card-2x1 { grid-column: span 2 !important; }
+  .bento-card-1x1 { grid-column: span 2 !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Parts Kanban：水平滾動
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .parts-kanban-container {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+  .parts-kanban-container::-webkit-scrollbar { display: none; }
+
+  .parts-kanban-grid {
+    grid-template-columns: repeat(7, 240px) !important;
+    width: max-content;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Resources 列表：5 欄 grid → 二行卡片
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .resource-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 12px 14px !important;
+  }
+
+  .resource-row-line1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .resource-row-line2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 2px;
+  }
+
+  /* 隱藏序號欄位（手機空間太小） */
+  .resource-row-index {
+    display: none !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — KPI 一列壓縮 + SectionHead wrap + filter 圖示化
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── KPI strip：4 tiles 一列橫排，字型壓縮 ── */
+  .kpi-strip {
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+  }
+  .kpi-strip .widget-tile {
+    flex: 1 1 0 !important;
+    padding: 12px 8px !important;
+    min-width: 0 !important;
+  }
+  .kpi-strip .widget-eyebrow {
+    font-size: 8px !important;
+    letter-spacing: 0.05em !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .kpi-strip .widget-value {
+    font-size: 26px !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em !important;
+  }
+  .kpi-strip .widget-foot {
+    font-size: 9px !important;
+    margin-top: 3px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── SectionHead：title 與 actions 分兩行 ── */
+  .section-head-row {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding-bottom: 4px !important;
+  }
+  .section-head-actions {
+    width: 100% !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+    flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+  }
+  .section-head-actions::-webkit-scrollbar { display: none; }
+
+  /* ── SegmentedFilter shortLabel 模式（子系統 / role / gantt-view-toggle）── */
+  /* 隱藏全名，顯示縮寫 */
+  .subsystem-filter .seg-label,
+  .view-filter .seg-label,
+  .gantt-view-toggle .seg-label,
+  .role-filter .seg-label { display: none; }
+
+  .subsystem-filter .seg-short,
+  .role-filter .seg-short {
+    display: inline;
+    font-size: 11.5px;
+  }
+
+  /* Icon only when no shortLabel (uiIcon / subIcon buttons) */
+  .subsystem-filter button,
+  .view-filter button {
+    padding: 0 9px !important;
+    min-width: 30px;
+  }
+
+  /* ── 新增按鈕：只留圖示 ── */
+  .btn-new-task .btn-label {
+    display: none;
+  }
+  .btn-new-task {
+    padding: 0 10px !important;
+    min-width: 32px;
+  }
+}
+
+/* 桌面：.seg-short 永遠不顯示 */
+@media (min-width: 769px) {
+  .role-filter .seg-short { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Resources KPI：隱藏描述文字、label 不換行
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* 描述文字 + 中文 label 佔太多空間，手機只留 eyebrow + 數字 */
+  .resource-kpi-desc  { display: none !important; }
+  .resource-kpi-label { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Gantt chart：縮短 label 欄，留更多空間給時間軸
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .gantt-ruler { padding-left: 130px !important; }
+  .gantt-label { width: 130px !important; }
+}
+
+/* Mobile unified bars — hidden on desktop */
+.worklog-mobile-bar,
+.resources-mobile-cat { display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE — Header scroll-hide
+   捲下 > 60px 後 header 絲滑收起，往上捲或回頂部即出現
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Fixed positioning — 脫離文件流 */
+  .hdr-wrapper {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transition: transform 0.32s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  }
+  .hdr-wrapper.hdr--hidden {
+    transform: translateY(-100%) !important;
+  }
+  /* main-content 頂部留出 header 實際高度（JS 寫入 --hdr-total-h）*/
+  .main-content {
+    padding-top: calc(var(--hdr-total-h, 94px) + 8px) !important;
+  }
+
+  /* ── Header actions：隱藏搜尋＋匯出，只留頭像 ── */
+  .hdr-btn-search,
+  .hdr-btn-export { display: none !important; }
+
+  /* ── Section-head：移除標題文字與 hint 小字 ── */
+  .section-head { display: none !important; }
+  .section-head-actions .eyebrow { display: none !important; }
+  .section-head-row { justify-content: flex-end !important; }
+
+  /* ── 所有選擇欄統一玻璃質感背景 ── */
+  .subsystem-filter,
+  .view-filter,
+  .view-toggle,
+  .role-filter,
+  .gantt-view-toggle {
+    background: rgba(120, 120, 128, 0.16) !important;
+    border-radius: 999px !important;
+  }
+  /* ── Active/selected 狀態統一 ── */
+  .seg-btn--active,
+  .view-toggle-btn.active {
+    background: rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
+    color: var(--ink) !important;
+    border: none !important;
+    transform: none !important;
+  }
+
+  /* ── CardPreview → 置中圖卡（含左側留白）── */
+  .card-preview-overlay {
+    align-items: center !important;
+    padding: 16px !important;
+  }
+  .card-preview-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    border-radius: 24px !important;
+    animation: modal-pop .35s var(--ease-out) !important;
+    padding-bottom: calc(var(--bottom-tab-h, 54px) + env(safe-area-inset-bottom) + 8px) !important;
+  }
+  .card-preview-card::before { display: none !important; }
+  .card-preview-head {
+    padding: 44px 28px 16px 36px !important;
+  }
+
+  /* ── Gantt row actions — hidden on mobile ── */
+  .gantt-row-actions { display: none !important; }
+
+  /* ── Section-head action buttons — ghost icon only ── */
+  .section-head-actions .btn .btn-label { display: none !important; }
+  .section-head-actions .btn {
+    padding: 0 !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 0 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    color: var(--ink) !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .section-head-actions .btn > svg { width: 20px !important; height: 20px !important; stroke-width: 2.2px !important; }
+
+  /* ── Resources 手機：隱藏分類篩選（左側）只留 圖卡/列表 切換 ── */
+  .section-head-actions .view-filter { display: none !important; }
+
+  /* ── Worklog: subsystem scroll wrapper — left side scrolls, right controls fixed ── */
+  .worklog-sub-scroll {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+  .worklog-sub-scroll::-webkit-scrollbar { display: none; }
+  .worklog-sub-scroll .subsystem-filter { width: max-content; }
+
+  /* Prevent parent from double-scrolling */
+  .worklog-view .section-head-actions { overflow: visible !important; }
+
+  /* ── Worklog mobile unified glass pill bar ── */
+  .worklog-mobile-bar {
+    display: inline-flex !important;
+    align-items: center !important;
+    align-self: flex-start !important;
+    gap: 0 !important;
+    padding: 2px !important;
+    background: rgba(120,120,128,0.16) !important;
+    border-radius: 999px !important;
+    height: 32px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    max-width: 100% !important;
+  }
+  .worklog-mobile-bar::-webkit-scrollbar { display: none; }
+
+  /* ── Resources mobile unified glass pill ── */
+  .resources-mobile-cat {
+    display: inline-flex !important;
+    align-items: center !important;
+    align-self: flex-start !important;
+    gap: 0 !important;
+    padding: 2px !important;
+    background: rgba(120,120,128,0.16) !important;
+    border-radius: 999px !important;
+    height: 32px !important;
+  }
+  .resources-mobile-cat::-webkit-scrollbar { display: none; }
+
+  /* ── Both views: hide section-head-row on mobile (controls in mobile bar) ── */
+  .worklog-view .section-head-row,
+  .resources-view .section-head-row { display: none !important; }
+
+  /* ── Resources view search bar — hidden on mobile ── */
+  .section-search-box { display: none !important; }
+
+  /* ── Bottom tab bar — icon only, no text ── */
+  .bottom-tab-btn > span:not(.bottom-tab-icon) { display: none !important; }
+  .bottom-tab-btn { min-width: 0 !important; padding: 10px 16px !important; }
+
+  /* ════════════════════════════════════════════════════
+     呼吸空間改善 — Breathing Space System
+     ════════════════════════════════════════════════════ */
+
+  /* 1. 收窄 gap tokens：讓各 section 間距更緊湊、有節奏感 */
+  :root {
+    --gap-zone: 14px;
+    --gap-card:  8px;
+  }
+
+  /* 2. KPI strip：固定 8px gap，確保 4 卡等寬對齊 */
+  .kpi-strip {
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+  .kpi-strip > * { flex: 1 1 0 !important; }
+
+  /* KPI 卡：中文/英文保留一個 — 隱藏下方 foot，只留 eyebrow */
+  .widget-foot { display: none !important; }
+
+  /* 3. 頂部 sub-nav — 改為可橫滑，每個 tab 自然呼吸 */
+  .hdr-sub-nav {
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    padding: 5px 14px !important;
+    gap: 2px !important;
+  }
+  .hdr-sub-nav::-webkit-scrollbar { display: none; }
+  .hdr-sub-tab {
+    flex-shrink: 0 !important;
+    padding: 7px 14px !important;
+    min-width: auto !important;
+  }
+
+  /* 4. section-head-row：移除多餘的上下 margin，讓頭部與內容間距由 gap-zone 控制 */
+  .section-head-row {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* 5. 通用卡片：統一 padding 為 14px（稍小於桌面 16px） */
+  .tcard.large { padding: 14px !important; }
+
+  /* 6. 人員頁 person-card grid：單欄全寬 */
+  .people-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+}

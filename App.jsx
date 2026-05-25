@@ -87,7 +87,7 @@ function App() {
         dashTabs={dashTabs}
         appearance={appearance} onAppearanceChange={setAppearance}/>
 
-      <main style={{
+      <main className="main-content" style={{
         maxWidth: 1440, margin: "0 auto",
         padding: "32px 40px 80px",
       }}>

@@ -18,9 +18,71 @@ function GuestAvatar({ size = 28 }) {
   );
 }
 
+function BottomTabBar({ page, onPageChange }) {
+  const tabs = [
+    { id: "dashboard", label: "工作台",   icon: "target"  },
+    { id: "blueprint", label: "車體圖解", icon: "wrench"  },
+    { id: "essay",     label: "技術手冊", icon: "book"    },
+  ];
+  return (
+    <nav className="bottom-tab-bar" aria-label="主要導覽">
+      {tabs.map(tab => {
+        const active = page === tab.id;
+        return (
+          <button
+            key={tab.id}
+            className={`bottom-tab-btn${active ? " active" : ""}`}
+            onClick={() => onPageChange(tab.id)}
+            aria-current={active ? "page" : undefined}
+          >
+            <span className="bottom-tab-icon">
+              <UIIcon kind={tab.icon} size={20} />
+            </span>
+            <span>{tab.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearance = "auto", onAppearanceChange }) {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const menuWrapRef = React.useRef(null);
+  const wrapperRef = React.useRef(null);
+  const [hdrHidden, setHdrHidden] = React.useState(false);
+  const lastScrollY = React.useRef(0);
+
+  // ── Tab 切換時：重設顯示、捲回頂部 ──
+  React.useEffect(() => {
+    setHdrHidden(false);
+    lastScrollY.current = 0;
+    const el = document.querySelector('.main-content');
+    if (el) el.scrollTop = 0;
+  }, [page, subTab]);
+
+  // ── Scroll-hide：捲下隱藏，捲回頂部顯示 ──
+  React.useEffect(() => {
+    const el = document.querySelector('.main-content');
+    if (!el) return;
+    const onScroll = () => {
+      const y = el.scrollTop;
+      const delta = y - lastScrollY.current;
+      if (delta > 6 && y > 60) setHdrHidden(true);
+      else if (delta < -6 || y < 10) setHdrHidden(false);
+      lastScrollY.current = y;
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // ── 把 header 實際高度寫成 CSS 變數，讓 main-content 計算 padding-top ──
+  React.useLayoutEffect(() => {
+    if (!wrapperRef.current) return;
+    const h = wrapperRef.current.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--hdr-total-h', h + 'px');
+  }, [page, dashTabs]);
+
   React.useEffect(() => {
     if (!settingsOpen) return;
     const onDown = (e) => {
@@ -37,7 +99,8 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
     };
   }, [settingsOpen]);
   return (
-    <div style={hdrStyles.bar}>
+    <>
+    <div ref={wrapperRef} className={`hdr-wrapper${hdrHidden ? " hdr--hidden" : ""}`} style={hdrStyles.bar}>
       <header style={{ ...hdrStyles.inner, fontFamily: "-apple-system" }}>
         <div style={hdrStyles.left}>
           <div style={hdrStyles.logoBox}>
@@ -47,7 +110,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           <span style={hdrStyles.sep}>·</span>
           <span style={hdrStyles.season}>S2026</span>
         </div>
-        <nav style={hdrStyles.pageNav}>
+        <nav className="hdr-page-nav" style={hdrStyles.pageNav}>
           {[
           { id: "dashboard", label: "工作台", en: "Dashboard" },
           { id: "blueprint", label: "車體圖解", en: "Blueprint" },
@@ -72,8 +135,8 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           })}
         </nav>
         <div style={hdrStyles.actions}>
-          <button style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
-          <button style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
+          <button className="hdr-btn-search" style={hdrStyles.hdrBtn} title="搜尋"><UIIcon kind="search" size={14} /></button>
+          <button className="hdr-btn-export" style={hdrStyles.hdrBtn} title="匯出"><UIIcon kind="download" size={14} /></button>
 
           {/* Avatar — doubles as the account / settings menu trigger (guest state) */}
           <div ref={menuWrapRef} style={{ position: "relative" }}>
@@ -135,9 +198,10 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
       {page === "dashboard" && dashTabs &&
       <div style={hdrStyles.subBar}>
           <div style={{ ...hdrStyles.subInner, opacity: "1" }}>
-            <nav style={hdrStyles.subNav}>
+            <nav className="hdr-sub-nav" style={{ ...hdrStyles.subNav }}>
               {dashTabs.map((t) =>
             <button key={t.id} onClick={() => onSubTabChange(t.id)}
+            className="hdr-sub-tab"
             style={{
               ...hdrStyles.subTab,
               color: subTab === t.id ? "var(--label-primary)" : "var(--label-secondary)",
@@ -145,8 +209,8 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
               borderBottomColor: subTab === t.id ? "var(--blue)" : "transparent"
             }}>
                   <UIIcon kind={t.icon} size={13} />
-                  {t.label}
-                  {t.count !== undefined && <span style={{
+                  <span className="sub-tab-label">{t.label}</span>
+                  {t.count !== undefined && <span className="sub-tab-count" style={{
                 fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)",
                 marginLeft: 2
               }}>{t.count}</span>}
@@ -156,7 +220,10 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           </div>
         </div>
       }
-    </div>);
+    </div>
+    {/* Bottom Tab Bar — 在 backdrop-filter div 外面，確保 position:fixed 正常作用 */}
+    <BottomTabBar page={page} onPageChange={onPageChange} />
+  </>);
 
 }
 
