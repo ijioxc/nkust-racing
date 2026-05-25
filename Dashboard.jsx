@@ -600,81 +600,19 @@ function GanttRow({ task, colW, onClick, onDelete }) {
 
 // ─── Bento Board ───────────────────────────────────────────
 function BentoBoard({ tasks, onTaskClick }) {
-  // 欄優先排版：大卡 → 填滿第 1 欄 → 第 2 欄 → 第 3 欄 → 第 4 欄
-  // 8 grid-cols = 4 視覺欄，每欄 2 grid-col 寬
-  const positioned = React.useMemo(() => {
-    const getWeight = size => ({ "3x2": 6, "2x2": 4, "2x1": 2 }[size] ?? 1);
-    const sorted = [...tasks].sort((a, b) => getWeight(b.size || "1x1") - getWeight(a.size || "1x1"));
-
-    const VCOLS  = 4;
-    const BAND_H = 2;                           // 每欄固定 2 rows 為一帶
-    const heights  = new Array(VCOLS).fill(0);
-    const halfFill = new Array(VCOLS).fill(null); // 等待配對的 1x1 左半位置
-    let currentVC = 0;
-    let targetH   = BAND_H;
-
-    const results = [];
-
-    for (const task of sorted) {
-      const [gc, gr] = (task.size || "1x1").split("x").map(Number);
-      const is1x1   = gc === 1 && gr === 1;
-      const vcSpan  = is1x1 ? 1 : Math.ceil(gc / 2);
-
-      if (is1x1) {
-        // ── 1x1：兩兩配對共用一個視覺欄的同一 row ──
-        while (true) {
-          if (halfFill[currentVC] !== null) break;   // 左半已等待 → 填右半
-          if (heights[currentVC] < targetH)  break;  // 有空 row
-          currentVC++;
-          if (currentVC >= VCOLS) { currentVC = 0; targetH += BAND_H; }
-        }
-
-        if (halfFill[currentVC] === null) {
-          // 第一張：放左半，預佔 row（heights 先 +1，防止其他卡疊進來）
-          const row = heights[currentVC];
-          halfFill[currentVC] = row;
-          heights[currentVC]  = row + 1;
-          results.push({ task, gridStyle: {
-            gridColumnStart: currentVC * 2 + 1, gridColumnEnd: currentVC * 2 + 2,
-            gridRowStart: row + 1,              gridRowEnd:   row + 2,
-          }});
-        } else {
-          // 第二張：放右半，完成配對
-          const row = halfFill[currentVC];
-          halfFill[currentVC] = null;
-          results.push({ task, gridStyle: {
-            gridColumnStart: currentVC * 2 + 2, gridColumnEnd: currentVC * 2 + 3,
-            gridRowStart: row + 1,              gridRowEnd:   row + 2,
-          }});
-        }
-      } else {
-        // ── 非 1x1：欄優先 + 帶換行 ──
-        while (true) {
-          const h = Math.max(...heights.slice(currentVC, currentVC + vcSpan));
-          if (h + gr <= targetH) break;
-          currentVC++;
-          if (currentVC + vcSpan > VCOLS) { currentVC = 0; targetH += BAND_H; }
-        }
-        const row = Math.max(...heights.slice(currentVC, currentVC + vcSpan));
-        for (let i = 0; i < vcSpan; i++) heights[currentVC + i] = row + gr;
-        results.push({ task, gridStyle: {
-          gridColumnStart: currentVC * 2 + 1,       gridColumnEnd: currentVC * 2 + 1 + gc,
-          gridRowStart:    row + 1,                 gridRowEnd:    row + 1 + gr,
-        }});
-      }
-    }
-
-    return results;
-  }, [tasks]);
-
   return (
-    <div className="bento-board" style={{
-      display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
-      gridAutoRows: "var(--bento-row-h)", gap: "var(--bento-gap, var(--gap-card))",
-    }}>
-      {positioned.map(({ task, gridStyle }) =>
-        <BentoCard key={task.id} task={task} gridStyle={gridStyle} onClick={() => onTaskClick(task)}/>
-      )}
+    <div className="bento-board">
+      {tasks.map(task => {
+        const [gc, gr] = (task.size || "1x1").split("x").map(Number);
+        return (
+          <BentoCard
+            key={task.id}
+            task={task}
+            gridStyle={{ gridColumn: `span ${gc}`, gridRow: `span ${gr}` }}
+            onClick={() => onTaskClick(task)}
+          />
+        );
+      })}
     </div>
   );
 }
