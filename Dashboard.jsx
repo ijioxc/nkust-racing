@@ -626,10 +626,10 @@ function BentoBoard({ tasks, onTaskClick }) {
 
     const getCells = (size) => {
       if (isMobile) {
-        if (size === "3x2") return 8; // 手機版滿寬 (4col) x 2row
-        if (size === "2x2") return 4; // 2col x 2row
-        if (size === "2x1") return 2; // 2col x 1row
-        return 2;                     // 1x1 在手機版也是 2col x 1row
+        if (size === "3x2") return 8;
+        if (size === "2x2") return 4;
+        if (size === "2x1") return 2;
+        return 2;
       }
       if (size === "3x2") return 6;
       if (size === "2x2") return 4;
@@ -637,23 +637,42 @@ function BentoBoard({ tasks, onTaskClick }) {
       return 1;
     };
 
-    for (let i = 0; i < sortedTasks.length; i++) {
-      const t = sortedTasks[i];
-      const taskCells = getCells(t.size || "1x1");
-      
-      // 不看數量，看空間：超過空間就不再塞
-      if (cellsUsed + taskCells > maxCells) {
-        continue;
-      }
-      cellsUsed += taskCells;
+    // 先過濾出放得進的卡
+    const visible = [];
+    let used = 0;
+    for (const t of sortedTasks) {
+      const c = getCells(t.size || "1x1");
+      if (used + c <= maxCells) { visible.push(t); used += c; }
+    }
 
-      if (t.size === "2x1") {
-        elements.push(
-          <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)} />
-        );
-      } else {
-        elements.push(<BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)} />);
+    // 把連續兩張 2x1 配對成一個 2x2 wrapper
+    let i = 0;
+    while (i < visible.length) {
+      const t = visible[i];
+      if (t.size === "2x1" && !isMobile) {
+        // 往後找下一張 2x1
+        const j = visible.findIndex((u, idx) => idx > i && u.size === "2x1");
+        if (j !== -1) {
+          const t2 = visible[j];
+          // 把 j 從陣列拿走，讓它和 t 配對
+          visible.splice(j, 1);
+          elements.push(
+            <div key={`pair-${t.id}-${t2.id}`} style={{
+              gridColumn: "span 2", gridRow: "span 2",
+              display: "grid",
+              gridTemplateRows: "1fr 1fr",
+              gap: "var(--bento-gap, var(--gap-card))",
+            }}>
+              <BentoCard task={t}  onClick={() => onTaskClick(t)}  paired />
+              <BentoCard task={t2} onClick={() => onTaskClick(t2)} paired />
+            </div>
+          );
+          i++;
+          continue;
+        }
       }
+      elements.push(<BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)} />);
+      i++;
     }
 
     return elements;
