@@ -1466,7 +1466,7 @@ header + * .subBar,
     border: none !important;
     box-shadow: none !important;
   }
-  .section-head-actions .btn > svg { width: 20px !important; height: 20px !important; stroke-width: 2.2px !important; }
+  .section-head-actions .btn > svg { width: 13px !important; height: 13px !important; stroke-width: 1.5px !important; stroke: var(--faint) !important; }
 
   /* ── Resources 手機：隱藏分類篩選（左側）只留 圖卡/列表 切換 ── */
   .section-head-actions .view-filter { display: none !important; }
