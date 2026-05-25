@@ -133,15 +133,13 @@ function OverviewView({ tasks, people, plans, openTask, openPlan }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
-      {/* Mini bento preview */}
       <div>
-        <SectionHead title="本週 Bento · This Week" hint={`${tasks.length} TASKS`}/>
         <BentoBoard tasks={tasks} onTaskClick={openTask}/>
       </div>
 
       {/* Roster — own row, scrolls horizontally */}
       <div style={{ minWidth: 0 }}>
-        <SectionHead title="團隊成員" hint={`${people.length} 人 · ROSTER`}/>
+        <div className="overview-section-label">團隊成員 <span className="eyebrow" style={{marginLeft:8}}>{`${people.length} 人 · ROSTER`}</span></div>
         <div style={{
           display: "flex", gap: 8, overflowX: "auto",
           paddingBottom: 6, paddingRight: 4,
@@ -382,10 +380,10 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
     <div className="worklog-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI strip — mobile: 2×2 grid via .kpi-strip */}
       <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
-        <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`}/>
-        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`}/>
-        <KPI label="OVERDUE" value={overdue}/>
-        <KPI label="AVG"     value={donePct} unit="%"/>
+        <KPI label="ACTIVE"  value={active}  unit={`/ ${tasks.length}`} foot="進行中任務"/>
+        <KPI label="ON TIME" value={onTime}  unit={`/ ${active}`} foot="進度正常"/>
+        <KPI label="OVERDUE" value={overdue} foot="已逾期工作"/>
+        <KPI label="AVG"     value={donePct} unit="%" foot="平均完成度"/>
       </div>
 
       {/* Mobile: unified single glass pill — [subsystems] | [view toggle] | [+] */}
@@ -434,22 +432,20 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
       {/* Desktop section head — hidden on mobile */}
       {!isMobile && (
         <SectionHead
-          title={view === "gantt" ? "甘特圖 · Gantt" : "Bento Board"}
-          hint={`${filtered.length} OF ${tasks.length} TASKS`}
+          title="工作·Worklog"
           action={
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <SegmentedFilter className="subsystem-filter" value={filter} onChange={setFilter} options={[
                 { id: "all",  label: "全部", uiIcon: "filter" },
                 ...SUBSYSTEMS.map(s => ({ id: s, label: s, subIcon: s })),
               ]}/>
-              <div style={{ width: 1, background: "var(--rule)" }}/>
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
               <SegmentedFilter className="gantt-view-toggle" value={view} onChange={setView} options={[
-                { id: "gantt", label: "甘特", uiIcon: "calendar" },
-                { id: "bento", label: "Bento", uiIcon: "target" },
+                { id: "bento", label: "堆疊", uiIcon: "layers" },
+                { id: "gantt", label: "排列", uiIcon: "filter" },
               ]}/>
-              <Button variant="primary" icon="plus" className="btn-new-task" onClick={newTask}>
-                <span className="btn-label">新增工作</span>
-              </Button>
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
+              <IconBtn icon="plus" onClick={newTask} title="新增工作" style={{ borderRadius: 999 }} />
             </div>
           }/>
       )}
@@ -465,22 +461,13 @@ function WorklogView({ tasks, openTask, newTask, onDelete }) {
 
 function SegmentedFilter({ options, value, onChange, className }) {
   return (
-    <div className={className || ""} style={{
-      display: "inline-flex", alignItems: "center", gap: 2,
-      padding: 2, background: "rgba(0,0,0,0.04)",
-      borderRadius: 999, height: 28,
-    }}>
+    <div className={`seg-filter-wrap${className ? " " + className : ""}`}>
       {options.map(o => (
-        <button key={o.id} className={value === o.id ? "seg-btn--active" : ""} onClick={() => onChange(o.id)} style={{
-          padding: "0 11px", height: 24, borderRadius: 999,
-          background: value === o.id ? "#fff" : "transparent",
-          border: 0, fontSize: 11.5, color: value === o.id ? "var(--ink)" : "var(--faint)",
-          fontWeight: value === o.id ? 600 : 500, cursor: "pointer",
-          boxShadow: value === o.id ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-          transition: "all .15s", fontFamily: "inherit",
-          display: "inline-flex", alignItems: "center", gap: 4,
-          whiteSpace: "nowrap", flexShrink: 0,
-        }}>
+        <button
+          key={o.id}
+          className={`seg-btn${value === o.id ? " seg-btn--active" : ""}`}
+          onClick={() => onChange(o.id)}
+        >
           {o.uiIcon && <UIIcon kind={o.uiIcon} size={12} />}
           {o.subIcon && <SubsystemIcon kind={o.subIcon} size={12} />}
           {o.shortLabel
@@ -628,7 +615,7 @@ function BentoBoard({ tasks, onTaskClick }) {
   return (
     <div className="bento-board" style={{
       display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
-      gridAutoRows: "var(--bento-row-h)", gap: "var(--bento-gap, 10px)", gridAutoFlow: "dense",
+      gridAutoRows: "var(--bento-row-h)", gap: "var(--gap-zone)", gridAutoFlow: "dense",
     }}>
       {sortedTasks.map(t => <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)}/>)}
     </div>
@@ -692,7 +679,7 @@ function BentoCard({ task, onClick }) {
                   : "var(--blue)";
 
   return (
-    <div onClick={onClick} className={`tcard tile hoverable bento-card-${size || "1x1"}`} style={{
+    <div onClick={onClick} className={`tcard large hoverable bento-card-${size || "1x1"}`} style={{
       ...sizeStyle,
       /* 非大卡：左 padding 壓縮讓圈靠近邊界；大卡維持對稱 */
       padding: isLarge ? "14px 16px" : "10px 14px 10px 10px",
@@ -991,31 +978,15 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
 
       {!isMobile && (
         <SectionHead
-          title="設計提案"
-          hint={`${plans.length} PLANS`}
+          title="提案·Plans"
           action={
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <ViewToggle value={view} onChange={setView} options={[
-                {
-                  value: "gallery",
-                  title: "圖片牆",
-                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none"/>
-                  </svg>,
-                },
-                {
-                  value: "kanban",
-                  title: "工作流看板",
-                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="5" height="18" rx="1" fill="none"/>
-                    <rect x="10" y="3" width="5" height="13" rx="1" fill="none"/>
-                    <rect x="17" y="3" width="5" height="9" rx="1" fill="none"/>
-                  </svg>,
-                },
-              ]} />
+              <SegmentedFilter className="view-toggle" value={view} onChange={setView} options={[
+                { id: "gallery", label: "堆疊", uiIcon: "layers" },
+                { id: "kanban", label: "排列", uiIcon: "filter" },
+              ]}/>
               <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
-              <Button variant="primary" icon="plus" onClick={newPlan}>新增</Button>
+              <IconBtn icon="plus" onClick={newPlan} title="新增計畫" style={{ borderRadius: 999 }} />
             </div>
           }/>
       )}
@@ -1025,7 +996,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
         <div style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: "var(--gap-card)",
+          gap: "var(--gap-zone)",
         }}>
           {filteredPlans.map(p => (
             <PlanThumb key={p.id} plan={p}
@@ -1762,44 +1733,24 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
       )}
 
       {!isMobile && (
-        <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
+        <SectionHead title="成員·Members"
           action={
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <SegmentedFilter className="role-filter" value={filter} onChange={setFilter} options={[
-                { id: "all",   label: "全部", shortLabel: "全" },
-                { id: "隊長",  label: "隊長", shortLabel: "長" },
-                { id: "副隊長", label: "副隊長", shortLabel: "副" },
-                { id: "組長",  label: "組長", shortLabel: "組" },
-                { id: "成員",  label: "成員", shortLabel: "員" },
-                { id: "教授",  label: "教授", shortLabel: "授" },
+                { id: "all",   label: "全部", shortLabel: "全", uiIcon: "filter" },
+                { id: "隊長",  label: "隊長", shortLabel: "長", uiIcon: "users" },
+                { id: "副隊長", label: "副隊長", shortLabel: "副", uiIcon: "user" },
+                { id: "組長",  label: "組長", shortLabel: "組", uiIcon: "wrench" },
+                { id: "成員",  label: "成員", shortLabel: "員", uiIcon: "users" },
+                { id: "教授",  label: "教授", shortLabel: "授", uiIcon: "book" },
               ]}/>
               <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
-
-              <ViewToggle value={view} onChange={setView} options={[
-                {
-                  value: "list",
-                  title: "大圖卡列表",
-                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="16" rx="2" fill="none"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                    <line x1="3" y1="16" x2="21" y2="16"/>
-                  </svg>,
-                },
-                {
-                  value: "grid",
-                  title: "雙欄小圖卡",
-                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none"/>
-                    <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
-                  </svg>,
-                },
-              ]} />
-
+              <SegmentedFilter className="view-toggle" value={view} onChange={setView} options={[
+                { id: "list", label: "堆疊", uiIcon: "layers" },
+                { id: "grid", label: "排列", uiIcon: "filter" },
+              ]}/>
               <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
-              <Button variant="primary" icon="plus" className="btn-new-task" onClick={newPerson}>
-                <span className="btn-label">新增成員</span>
-              </Button>
+              <IconBtn icon="plus" onClick={newPerson} title="新增成員" style={{ borderRadius: 999 }} />
             </div>
           }/>
       )}

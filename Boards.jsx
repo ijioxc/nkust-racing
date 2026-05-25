@@ -43,16 +43,15 @@ function PartsView({ suppliers, setSuppliers }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
-        <KPI label="TOTAL"     value={total}/>
-        <KPI label="HIGH PRIO" value={high}/>
+        <KPI label="TOTAL"     value={total} foot="供應商總數"/>
+        <KPI label="HIGH PRIO" value={high} foot="高優先項目"/>
         <KPI label="ORDERED"   value={ordered} unit={`/ ${total}`} foot="已下單+已收到"/>
         <KPI label="SPONSOR"   value={sponsor} foot="贊助申請中"/>
       </div>
 
       {!isMobile && (
-        <SectionHead title="零件供應商 · Suppliers" hint={`${total} ITEMS · KANBAN BY SYSTEM`}
-          action={<Button variant="primary" icon="plus"
-            onClick={() => setEditing({ open: true, initial: null })}>新增項目</Button>}/>
+        <SectionHead title="零件·Parts"
+          action={<IconBtn icon="plus" onClick={() => setEditing({ open: true, initial: null })} title="新增項目" style={{ borderRadius: 999 }}/>}/>
       )}
 
       {isMobile ? (
@@ -139,7 +138,7 @@ function PartsView({ suppliers, setSuppliers }) {
         <div className="parts-kanban-grid" style={{
           display: "grid",
           gridTemplateColumns: `repeat(${SUBSYSTEMS.length}, 1fr)`,
-          gap: 10, alignItems: "start",
+          gap: "var(--gap-zone)", alignItems: "start",
         }}>
           {SUBSYSTEMS.map(sub => {
             const items = suppliers
@@ -153,7 +152,7 @@ function PartsView({ suppliers, setSuppliers }) {
               <div key={sub}
                 onDragOver={onDragOver(sub)}
                 onDrop={onDrop(sub)}
-                className={`tcard ${isOver ? "drag-over" : ""}`}
+                className={`tcard large ${isOver ? "drag-over" : ""}`}
                 style={{
                   padding: 12, display: "flex", flexDirection: "column", gap: 8,
                   minHeight: 220,
@@ -504,7 +503,7 @@ function ResourcesView({ resources, setResources }) {
       </div>
 
       {!isMobile && (
-        <SectionHead title="資源庫 · Library" hint={`${visible.length} OF ${resources.length} ITEMS`}
+        <SectionHead title="資源·Library"
           action={
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <div className="section-search-box" style={{
@@ -520,20 +519,19 @@ function ResourcesView({ resources, setResources }) {
                     color: "var(--ink)",
                   }}/>
               </div>
-              <SegmentedFilter className="view-filter" value={filter} onChange={setFilter} options={[
-                { id: "all",      label: "全部" },
-                { id: "races",    label: "賽事" },
-                { id: "tools",    label: "工具" },
-                { id: "learning", label: "學習" },
+               <SegmentedFilter className="view-filter" value={filter} onChange={setFilter} options={[
+                { id: "all",      label: "全部", uiIcon: "filter" },
+                { id: "races",    label: "賽事", uiIcon: "flag" },
+                { id: "tools",    label: "工具", uiIcon: "wrench" },
+                { id: "learning", label: "學習", uiIcon: "book" },
               ]}/>
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
               <SegmentedFilter className="view-toggle" value={viewMode} onChange={setViewMode} options={[
-                { id: "card",     label: "圖卡" },
-                { id: "list",     label: "列表" },
+                { id: "card",     label: "堆疊", uiIcon: "layers" },
+                { id: "list",     label: "排列", uiIcon: "filter" },
               ]}/>
-              <Button variant="primary" icon="plus"
-                onClick={() => setEditing({ open: true, initial: { group: filter === "all" ? "races" : filter } })}>
-                新增資源
-              </Button>
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
+              <IconBtn icon="plus" onClick={() => setEditing({ open: true, initial: { group: filter === "all" ? "races" : filter } })} title="新增資源" style={{ borderRadius: 999 }}/>
             </div>
           }/>
       )}

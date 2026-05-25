@@ -1,16 +1,22 @@
 // atoms.jsx — shared low-level components used across pages
 
-function SectionHead({ title, hint, action }) {
+function SectionHead({ title, action }) {
+  const parts = title.split("·");
+  const zh = parts[0]?.trim();
+  const en = parts[1]?.trim();
   return (
-    <div className="section-head-row" style={{
-      display: "flex", justifyContent: "space-between", alignItems: "baseline",
-      marginBottom: "var(--gap-card)", paddingBottom: 8, gap: 12,
-    }}>
-      <div className="section-head">{title}</div>
-      <div className="section-head-actions" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-        {hint && <div className="eyebrow">{hint}</div>}
-        {action}
+    <div className="section-head-row">
+      <div className="section-head-left">
+        <div className="section-head">
+          <span className="section-head-zh">{zh}</span>
+          {en && <><span className="section-head-dot">·</span><span className="section-head-en">{en}</span></>}
+        </div>
       </div>
+      {action && (
+        <div className="section-head-actions">
+          {action}
+        </div>
+      )}
     </div>
   );
 }
@@ -136,8 +142,7 @@ function KPI({ label, value, unit, foot, accent = false, hint, onClick, style })
       <div className="widget-value">
         {value}{unit && <small style={{ fontSize: "0.45em", fontWeight: 600, marginLeft: 4, opacity: 0.6 }}>{unit}</small>}
       </div>
-      {foot && <div className="widget-foot">{foot}</div>}
-      {hint && !foot && <div className="widget-foot">{hint}</div>}
+      <div className="widget-foot">{foot || hint || "\u00A0"}</div>
     </div>
   );
 }
