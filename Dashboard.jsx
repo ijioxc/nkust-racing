@@ -1659,6 +1659,13 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
   const [filter, setFilter] = React.useState("all");
   const [profileId, setProfileId] = React.useState(null);
 
+  const [isMobile, setIsMobile] = React.useState(typeof window !== "undefined" && window.innerWidth <= 768);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const totalPeople = people.length;
   const professorCount = people.filter(p => p.position === "教授").length;
   const advisorCount = people.filter(p => p.position === "顧問").length;
@@ -1675,22 +1682,69 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
         <KPI label="FACULTY"  value={professorCount} foot="指導教授"/>
         <KPI label="TOTAL"    value={totalPeople} foot="團隊總人數" accent/>
       </div>
-      <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
-        action={
-          <div style={{ display: "flex", gap: 8 }}>
-            <SegmentedFilter className="role-filter" value={filter} onChange={setFilter} options={[
-              { id: "all",   label: "全部", shortLabel: "全" },
-              { id: "隊長",  label: "隊長", shortLabel: "長" },
-              { id: "副隊長", label: "副隊長", shortLabel: "副" },
-              { id: "組長",  label: "組長", shortLabel: "組" },
-              { id: "成員",  label: "成員", shortLabel: "員" },
-              { id: "教授",  label: "教授", shortLabel: "授" },
-            ]}/>
-            <Button variant="primary" icon="plus" className="btn-new-task" onClick={newPerson}>
-              <span className="btn-label">新增成員</span>
-            </Button>
-          </div>
-        }/>
+
+      {/* Mobile unified single glass pill bar — [role filters] | [+] */}
+      {isMobile && (
+        <div className="people-mobile-bar">
+          {[
+            { id: "all", label: "全" },
+            { id: "隊長", label: "長" },
+            { id: "副隊長", label: "副" },
+            { id: "組長", label: "組" },
+            { id: "成員", label: "員" },
+            { id: "教授", label: "授" },
+          ].map(tag => {
+            const active = filter === tag.id;
+            return (
+              <button key={tag.id} className={active ? "seg-btn--active" : ""} onClick={() => setFilter(tag.id)}
+                style={{
+                  padding: "0 10px", minWidth: 30, height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+                  background: active ? "#fff" : "transparent", flexShrink: 0,
+                  color: active ? "var(--ink)" : "var(--faint)",
+                  fontSize: 12, fontWeight: active ? 600 : 400,
+                  display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all .15s",
+                }}>
+                <span>{tag.label}</span>
+              </button>
+            );
+          })}
+
+          {/* Separator */}
+          <div style={{ width: 1, alignSelf: "stretch", background: "rgba(120,120,128,0.35)", margin: "4px 3px", flexShrink: 0 }}/>
+
+          {/* Add Button */}
+          <button onClick={newPerson} title="新增成員"
+            style={{
+              padding: "0 10px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+              background: "transparent", color: "var(--ink)", flexShrink: 0,
+              display: "inline-flex", alignItems: "center",
+            }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {!isMobile && (
+        <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
+          action={
+            <div style={{ display: "flex", gap: 8 }}>
+              <SegmentedFilter className="role-filter" value={filter} onChange={setFilter} options={[
+                { id: "all",   label: "全部", shortLabel: "全" },
+                { id: "隊長",  label: "隊長", shortLabel: "長" },
+                { id: "副隊長", label: "副隊長", shortLabel: "副" },
+                { id: "組長",  label: "組長", shortLabel: "組" },
+                { id: "成員",  label: "成員", shortLabel: "員" },
+                { id: "教授",  label: "教授", shortLabel: "授" },
+              ]}/>
+              <Button variant="primary" icon="plus" className="btn-new-task" onClick={newPerson}>
+                <span className="btn-label">新增成員</span>
+              </Button>
+            </div>
+          }/>
+      )}
+
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",

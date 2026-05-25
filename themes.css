@@ -1355,6 +1355,7 @@ header + * .subBar,
 .worklog-mobile-bar,
 .parts-mobile-bar,
 .plans-mobile-bar,
+.people-mobile-bar,
 .resources-mobile-cat { display: none; }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1517,7 +1518,8 @@ header + * .subBar,
   /* ── Worklog mobile unified glass pill bar ── */
   .worklog-mobile-bar,
   .parts-mobile-bar,
-  .plans-mobile-bar {
+  .plans-mobile-bar,
+  .people-mobile-bar {
     display: inline-flex !important;
     align-items: center !important;
     align-self: flex-end !important;
@@ -1532,7 +1534,8 @@ header + * .subBar,
   }
   .worklog-mobile-bar::-webkit-scrollbar,
   .parts-mobile-bar::-webkit-scrollbar,
-  .plans-mobile-bar::-webkit-scrollbar { display: none; }
+  .plans-mobile-bar::-webkit-scrollbar,
+  .people-mobile-bar::-webkit-scrollbar { display: none; }
 
   /* ── Resources mobile unified glass pill ── */
   .resources-mobile-cat {
