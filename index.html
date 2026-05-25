@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NKUST Racing</title>
+
+<!-- SEO / Open Graph -->
+<meta name="description" content="國立高雄科技大學 / 學生方程式車隊">
+
+<!-- Open Graph (Facebook, Line, Discord …) -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="NKUST Racing">
+<meta property="og:title"       content="NKUST Racing">
+<meta property="og:description" content="國立高雄科技大學 / 學生方程式車隊">
+<meta property="og:url"         content="https://nkust-racing.web.app">
+<meta property="og:image"       content="https://nkust-racing.web.app/og-preview.png">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale"      content="zh_TW">
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="NKUST Racing">
+<meta name="twitter:description" content="國立高雄科技大學 / 學生方程式車隊">
+<meta name="twitter:image"       content="https://nkust-racing.web.app/og-preview.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Pre-paint appearance resolver — sets data-appearance before first paint (no FOUC) -->
@@ -35,6 +55,51 @@
   }
   #root { isolation: isolate; }
 
+  /* ── Splash screen ── */
+  #splash {
+    position: fixed; inset: 0; z-index: 99999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 24px;
+    background: #0a0a0a;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  #splash-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 22px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #fff;
+    animation: splash-pulse 2s ease-in-out infinite;
+  }
+  @keyframes splash-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.45; }
+  }
+
+  #splash-bar-track {
+    width: 160px; height: 2px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 99px; overflow: hidden;
+  }
+  #splash-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #e05a1a, #f5a623);
+    border-radius: 99px;
+    animation: splash-bar 2.4s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  @keyframes splash-bar {
+    0%   { width: 0%; }
+    60%  { width: 75%; }
+    90%  { width: 92%; }
+    100% { width: 92%; }
+  }
+
+  #splash-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+  }
+
   /* Suppress view-transition flicker on reduced-motion */
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root),
@@ -56,6 +121,13 @@
 </script>
 </head>
 <body>
+<!-- Splash screen — hidden once React mounts -->
+<div id="splash">
+  <span id="splash-title">NKUST Racing</span>
+  <div id="splash-bar-track"><div id="splash-bar-fill"></div></div>
+  <span id="splash-label">Loading</span>
+</div>
+
 <div id="root"></div>
 
 <!-- Three.js scene manager — must load before React mounts Blueprint -->
@@ -94,6 +166,14 @@
 <script type="text/babel">
   const root = ReactDOM.createRoot(document.getElementById("root"));
   root.render(<App />);
+
+  // 讓 splash 在首次 paint 後淡出
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const splash = document.getElementById('splash');
+      if (splash) splash.classList.add('hidden');
+    });
+  });
 </script>
 
 <!-- 全域診斷錯誤面板 -->
