@@ -107,8 +107,6 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
             <img src="assets/nkust-logo.png" alt="NKUST" style={hdrStyles.logoImg} />
           </div>
           <span style={hdrStyles.wordmark}>高科大賽車隊</span>
-          <span style={hdrStyles.sep}>·</span>
-          <span style={hdrStyles.season}>S2026</span>
         </div>
         <nav className="hdr-page-nav" style={hdrStyles.pageNav}>
           {[

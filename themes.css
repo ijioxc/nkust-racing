@@ -1358,9 +1358,11 @@ header + * .subBar,
     padding-top: calc(var(--hdr-total-h, 94px) + 8px) !important;
   }
 
-  /* ── Header actions：隱藏搜尋＋匯出，只留頭像 ── */
+  /* ── Header actions：隱藏搜尋＋匯出，只留頭像；頭像推至右側 ── */
   .hdr-btn-search,
   .hdr-btn-export { display: none !important; }
+  /* avatar 推至右上角 */
+  .hdr-wrapper header > div:last-child { margin-left: auto !important; }
 
   /* ── Section-head：移除標題文字與 hint 小字 ── */
   .section-head { display: none !important; }
@@ -1447,6 +1449,7 @@ header + * .subBar,
   .worklog-mobile-bar {
     display: inline-flex !important;
     align-items: center !important;
+    align-self: flex-start !important;
     gap: 0 !important;
     padding: 2px !important;
     background: rgba(120,120,128,0.16) !important;
@@ -1454,22 +1457,20 @@ header + * .subBar,
     height: 32px !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    max-width: 100% !important;
   }
   .worklog-mobile-bar::-webkit-scrollbar { display: none; }
 
-  /* ── Resources mobile unified glass pill (same as worklog-mobile-bar) ── */
+  /* ── Resources mobile unified glass pill ── */
   .resources-mobile-cat {
     display: inline-flex !important;
     align-items: center !important;
+    align-self: flex-start !important;
     gap: 0 !important;
     padding: 2px !important;
     background: rgba(120,120,128,0.16) !important;
     border-radius: 999px !important;
     height: 32px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
   }
   .resources-mobile-cat::-webkit-scrollbar { display: none; }
 
