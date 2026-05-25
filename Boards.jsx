@@ -57,7 +57,7 @@ function PartsView({ suppliers, setSuppliers }) {
 
       {isMobile ? (
         /* ── Mobile: system tabs + vertical list ── */
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <>
           {/* Mobile unified single glass pill bar — [subsystems] | [+] */}
           <div className="parts-mobile-bar">
             {SUBSYSTEMS.map(sub => {
@@ -132,7 +132,7 @@ function PartsView({ suppliers, setSuppliers }) {
               </div>
             );
           })()}
-        </div>
+        </>
       ) : (
         /* ── Desktop: original Kanban grid ── */
         <div className="parts-kanban-container">
