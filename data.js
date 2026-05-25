@@ -1,4 +1,4 @@
-// data.js — mock data, mutable in-memory state via React useState in App
+// data.js — mock data  ⚠️ 以下資料純屬娛樂，每次重整隨機換一組，請勿當真
 
 const SUBSYSTEMS = ["車體", "引擎", "懸吊", "煞車", "電裝", "空力", "其他"];
 
@@ -7,16 +7,56 @@ const SUBSYSTEM_COLOR = {
   "煞車": "#2a6b38", "電裝": "#6b21a8", "空力": "#0e7490", "其他": "#444",
 };
 
-const INITIAL_TASKS = [
-  { id: "t1", subsystem: "車體", title: "底盤主環 TIG 焊接",       progress: 62,  start: 0,  span: 10, owner: "陳偉成", priority: "HIGH", size: "2x2", state: "focus" },
-  { id: "t2", subsystem: "懸吊", title: "前 A 臂幾何驗證",         progress: 42,  start: 2,  span: 8,  owner: "王俊宏", priority: "HIGH", size: "2x1", state: "active" },
-  { id: "t3", subsystem: "煞車", title: "前/後輪卡鉗安裝",          progress: 88,  start: 6,  span: 5,  owner: "王俊宏", priority: "MID",  size: "2x1", state: "active" },
-  { id: "t4", subsystem: "引擎", title: "進排氣管詢價",             progress: 28,  start: 4,  span: 9,  owner: "林彥伯", priority: "MID",  size: "1x1", state: "active" },
-  { id: "t5", subsystem: "電裝", title: "ECU 線束打線",             progress: 55,  start: 5,  span: 7,  owner: "李采蓁", priority: "HIGH", size: "1x1", state: "active" },
-  { id: "t6", subsystem: "空力", title: "前翼風洞迭代",             progress: 100, start: 0,  span: 7,  owner: "張雅惠", priority: "MID",  size: "1x1", state: "done"   },
-  { id: "t7", subsystem: "其他", title: "贊助商簡報",               progress: 33,  start: 7,  span: 4,  owner: "蔡明峻", priority: "LOW",  size: "1x1", state: "active" },
-  { id: "t8", subsystem: "車體", title: "側衝撞防護結構驗證",       progress: 100, start: 1,  span: 6,  owner: "陳偉成", priority: "HIGH", size: "2x1", state: "done"   },
+// ── 迷因任務池：每次開網頁隨機抽一組，純屬娛樂請勿當真 ──
+const MEME_TASK_POOLS = [
+  // 組合 A — 正常人版
+  [
+    { id: "t1", subsystem: "車體", title: "底盤主環 TIG 焊接",       progress: 62,  start: 0,  span: 10, owner: "陳偉成", size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "懸吊", title: "前 A 臂幾何驗證",         progress: 42,  start: 2,  span: 8,  owner: "王俊宏", size: "2x1", state: "active" },
+    { id: "t3", subsystem: "煞車", title: "前/後輪卡鉗安裝",         progress: 88,  start: 6,  span: 5,  owner: "王俊宏", size: "2x1", state: "active" },
+    { id: "t4", subsystem: "引擎", title: "進排氣管詢價",             progress: 28,  start: 4,  span: 9,  owner: "林彥伯", size: "1x1", state: "active" },
+    { id: "t5", subsystem: "電裝", title: "ECU 線束打線",             progress: 55,  start: 5,  span: 7,  owner: "李采蓁", size: "1x1", state: "active" },
+    { id: "t6", subsystem: "空力", title: "前翼風洞迭代",             progress: 100, start: 0,  span: 7,  owner: "張雅惠", size: "1x1", state: "done"   },
+    { id: "t7", subsystem: "其他", title: "贊助商簡報",               progress: 33,  start: 7,  span: 4,  owner: "蔡明峻", size: "1x1", state: "active" },
+    { id: "t8", subsystem: "車體", title: "側衝撞防護結構驗證",       progress: 100, start: 1,  span: 6,  owner: "陳偉成", size: "2x1", state: "done"   },
+  ],
+  // 組合 B — 深夜趕工版
+  [
+    { id: "t1", subsystem: "車體", title: "熬夜趕焊接 + 喝到第四罐",  progress: 3,   start: 0,  span: 10, owner: "不知道誰", size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "引擎", title: "引擎又不動了研究中",        progress: 12,  start: 1,  span: 8,  owner: "林彥伯",   size: "2x1", state: "active" },
+    { id: "t3", subsystem: "其他", title: "找上週放哪裡的扳手",        progress: 0,   start: 0,  span: 3,  owner: "全體",     size: "2x1", state: "active" },
+    { id: "t4", subsystem: "電裝", title: "ECU 接反了重來",            progress: 69,  start: 3,  span: 6,  owner: "李采蓁",   size: "1x1", state: "active" },
+    { id: "t5", subsystem: "空力", title: "前翼被風吹跑追回來",        progress: 100, start: 0,  span: 2,  owner: "張雅惠",   size: "1x1", state: "done"   },
+    { id: "t6", subsystem: "煞車", title: "煞車皮去哪了",              progress: 20,  start: 4,  span: 5,  owner: "王俊宏",   size: "1x1", state: "active" },
+    { id: "t7", subsystem: "懸吊", title: "避震調太硬屁股快爛掉",      progress: 55,  start: 2,  span: 7,  owner: "王俊宏",   size: "1x1", state: "active" },
+    { id: "t8", subsystem: "其他", title: "訂珍珠奶茶給大家",          progress: 100, start: 0,  span: 1,  owner: "蔡明峻",   size: "2x1", state: "done"   },
+  ],
+  // 組合 C — 比賽前一週版
+  [
+    { id: "t1", subsystem: "車體", title: "車還沒做完比賽下週",        progress: 2,   start: 0,  span: 10, owner: "陳偉成",   size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "電裝", title: "電線亂到像義大利麵",        progress: 30,  start: 0,  span: 8,  owner: "李采蓁",   size: "2x1", state: "active" },
+    { id: "t3", subsystem: "空力", title: "尾翼角度是猜的",            progress: 77,  start: 1,  span: 4,  owner: "張雅惠",   size: "2x1", state: "active" },
+    { id: "t4", subsystem: "引擎", title: "怠速 500rpm 正常的",        progress: 40,  start: 2,  span: 6,  owner: "林彥伯",   size: "1x1", state: "active" },
+    { id: "t5", subsystem: "煞車", title: "煞車距離：大概啦",          progress: 88,  start: 0,  span: 3,  owner: "王俊宏",   size: "1x1", state: "active" },
+    { id: "t6", subsystem: "懸吊", title: "Camber 角用眼睛校正",       progress: 60,  start: 3,  span: 5,  owner: "王俊宏",   size: "1x1", state: "active" },
+    { id: "t7", subsystem: "其他", title: "跟贊助商說車很帥（還沒做完）", progress: 100, start: 0, span: 2, owner: "蔡明峻",  size: "1x1", state: "done"   },
+    { id: "t8", subsystem: "車體", title: "底盤歪了說是設計特色",      progress: 95,  start: 1,  span: 7,  owner: "陳偉成",   size: "2x1", state: "active" },
+  ],
+  // 組合 D — 佛系版
+  [
+    { id: "t1", subsystem: "其他", title: "等零件到貨（已等 3 週）",   progress: 0,   start: 0,  span: 14, owner: "全體",     size: "2x2", state: "focus"  },
+    { id: "t2", subsystem: "空力", title: "CFD 跑了 8 小時結果發散",   progress: 5,   start: 0,  span: 6,  owner: "張雅惠",   size: "2x1", state: "active" },
+    { id: "t3", subsystem: "電裝", title: "示波器讀數看不懂但沒事",    progress: 50,  start: 1,  span: 5,  owner: "李采蓁",   size: "2x1", state: "active" },
+    { id: "t4", subsystem: "引擎", title: "引擎聲音怪怪的佛系處理",    progress: 33,  start: 2,  span: 8,  owner: "林彥伯",   size: "1x1", state: "active" },
+    { id: "t5", subsystem: "車體", title: "圖面跟實體對不起來",        progress: 70,  start: 0,  span: 4,  owner: "陳偉成",   size: "1x1", state: "active" },
+    { id: "t6", subsystem: "懸吊", title: "前輪跑跑歪歪我不管了",      progress: 44,  start: 3,  span: 6,  owner: "王俊宏",   size: "1x1", state: "active" },
+    { id: "t7", subsystem: "煞車", title: "煞車油管沒漏就好",          progress: 85,  start: 0,  span: 3,  owner: "王俊宏",   size: "1x1", state: "active" },
+    { id: "t8", subsystem: "其他", title: "吃飯睡覺打零件",            progress: 100, start: 0,  span: 2,  owner: "蔡明峻",   size: "2x1", state: "done"   },
+  ],
 ];
+
+// 每次載入隨機抽一組
+const INITIAL_TASKS = MEME_TASK_POOLS[Math.floor(Math.random() * MEME_TASK_POOLS.length)];
 
 const INITIAL_PEOPLE = [
   { id: "p1", name: "陳偉成", position: "隊長",   email: "chen.w@gmail.com",   department: "機械系", grade: "大四", workTypes: ["車體", "空力"] },
