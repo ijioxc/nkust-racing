@@ -791,8 +791,8 @@ function BentoCard({ task, onClick, inGroup }) {
           <div style={{ position: "relative", flexShrink: 0 }}>
             <ActivityRing
               progress={progress}
-              size={40}
-              strokeWidth={3.5}
+              size={48}
+              strokeWidth={4.5}
               color={ringColor}
             />
             <div style={{
@@ -800,8 +800,8 @@ function BentoCard({ task, onClick, inGroup }) {
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <span style={{
-                fontFamily: "var(--font-mono)", fontWeight: 700,
-                fontSize: 15, lineHeight: 1,
+                fontFamily: "var(--display-family)", fontWeight: 700,
+                fontSize: 18, lineHeight: 1, letterSpacing: "-0.03em",
                 color: textColor,
               }}>{progress}</span>
             </div>
