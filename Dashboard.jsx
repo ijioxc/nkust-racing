@@ -824,9 +824,9 @@ function BentoPreviewModal({ task, onClose, onEdit, onDelete }) {
 // ═══════════════════════════════════════════════════════════
 //  PLANS — IG-style gallery + lightbox + detail popup + Kanban
 // ═══════════════════════════════════════════════════════════
-const PLAN_TAGS = ["討論中", "進行中", "已完成", "擱置"];
+const PLAN_TAGS = ["計畫中", "進行中", "已完成", "擱置"];
 const PLAN_TAG_COLORS = {
-  "討論中": "#0071e3",
+  "計畫中": "#0071e3",
   "進行中": "#b83025",
   "已完成": "#2a6b38",
   "擱置": "#86868b",
@@ -838,6 +838,15 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
   const [over, setOver] = React.useState(null);
   const [kanbanDraggedId, setKanbanDraggedId] = React.useState(null);
   const [lightboxId, setLightboxId] = React.useState(null); // open lightbox for this plan
+  
+  const [isMobile, setIsMobile] = React.useState(typeof window !== "undefined" && window.innerWidth <= 768);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const [filter, setFilter] = React.useState("計畫中");
 
   // Blueprint sorting handlers
   const onDragStart = (id) => () => setDrag(id);
@@ -883,7 +892,15 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
   const total = plans.length;
   const inProgress = plans.filter(p => p.tag === "進行中").length;
   const completed = plans.filter(p => p.tag === "已完成").length;
-  const pending = plans.filter(p => !p.tag || ["討論中", "擱置"].includes(p.tag)).length;
+  const pending = plans.filter(p => !p.tag || ["計畫中", "擱置"].includes(p.tag)).length;
+
+  // Filtering for mobile view
+  const filteredPlans = isMobile
+    ? plans.filter(p => {
+        const currentTag = p.tag || "計畫中";
+        return currentTag === filter;
+      })
+    : plans;
 
   // Lightbox helpers
   const lbIdx  = plans.findIndex(p => p.id === lightboxId);
@@ -901,37 +918,98 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
         <KPI label="PROPOSALS" value={total} foot="提案總數" />
         <KPI label="IN PROGRESS" value={inProgress} foot="進行中" />
         <KPI label="COMPLETED" value={completed} foot="已完成" />
-        <KPI label="PENDING" value={pending} foot="待討論" />
+        <KPI label="PENDING" value={pending} foot="待計畫" />
       </div>
 
-      <SectionHead
-        title="設計提案"
-        hint={`${plans.length} PLANS`}
-        action={
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <ViewToggle value={view} onChange={setView} options={[
-              {
-                value: "gallery",
-                title: "圖片牆",
-                icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                  <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-                </svg>,
-              },
-              {
-                value: "kanban",
-                title: "工作流看板",
-                icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="5" height="18" rx="1"/>
-                  <rect x="10" y="3" width="5" height="13" rx="1"/>
-                  <rect x="17" y="3" width="5" height="9" rx="1"/>
-                </svg>,
-              },
-            ]} />
-            <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
-            <Button variant="primary" icon="plus" onClick={newPlan}>新增</Button>
-          </div>
-        }/>
+      {/* Mobile unified single glass pill bar — [status filters] | [view toggle] | [+] */}
+      {isMobile && (
+        <div className="plans-mobile-bar">
+          {PLAN_TAGS.map(tag => {
+            const active = filter === tag;
+            return (
+              <button key={tag} className={active ? "seg-btn--active" : ""} onClick={() => setFilter(tag)}
+                style={{
+                  padding: "0 10px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+                  background: active ? "#fff" : "transparent", flexShrink: 0,
+                  color: active ? "var(--ink)" : "var(--faint)",
+                  fontSize: 12, fontWeight: active ? 600 : 400,
+                  display: "inline-flex", alignItems: "center", transition: "all .15s",
+                }}>
+                <span>{tag}</span>
+              </button>
+            );
+          })}
+
+          {/* Separator */}
+          <div style={{ width: 1, alignSelf: "stretch", background: "rgba(120,120,128,0.35)", margin: "4px 3px", flexShrink: 0 }}/>
+
+          {/* View Toggle */}
+          <button onClick={() => setView(v => v === "gallery" ? "kanban" : "gallery")}
+            className="seg-btn--active"
+            title={view === "gallery" ? "切換看板" : "切換圖片牆"}
+            style={{
+              padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+              background: "#fff", flexShrink: 0, color: "var(--faint)",
+              display: "inline-flex", alignItems: "center", transition: "all .15s",
+            }}>
+            {view === "gallery" ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none"/>
+                <rect x="3" y="14" width="7" height="7" rx="1" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none"/>
+              </svg>
+            ) : (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="5" height="18" rx="1" fill="none"/>
+                <rect x="10" y="3" width="5" height="13" rx="1" fill="none"/>
+                <rect x="17" y="3" width="5" height="9" rx="1" fill="none"/>
+              </svg>
+            )}
+          </button>
+
+          {/* Add Button */}
+          <button onClick={newPlan} title="新增計畫"
+            style={{
+              padding: "0 10px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+              background: "transparent", color: "var(--ink)", flexShrink: 0,
+              display: "inline-flex", alignItems: "center",
+            }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {!isMobile && (
+        <SectionHead
+          title="設計提案"
+          hint={`${plans.length} PLANS`}
+          action={
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <ViewToggle value={view} onChange={setView} options={[
+                {
+                  value: "gallery",
+                  title: "圖片牆",
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none"/>
+                  </svg>,
+                },
+                {
+                  value: "kanban",
+                  title: "工作流看板",
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="5" height="18" rx="1" fill="none"/>
+                    <rect x="10" y="3" width="5" height="13" rx="1" fill="none"/>
+                    <rect x="17" y="3" width="5" height="9" rx="1" fill="none"/>
+                  </svg>,
+                },
+              ]} />
+              <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
+              <Button variant="primary" icon="plus" onClick={newPlan}>新增</Button>
+            </div>
+          }/>
+      )}
 
       {view === "gallery" ? (
         /* IG-style photo grid — tight 3px gap, square thumbs */
@@ -942,7 +1020,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
           borderRadius: 12,
           overflow: "hidden",
         }}>
-          {plans.map(p => (
+          {filteredPlans.map(p => (
             <PlanThumb key={p.id} plan={p}
               dragging={drag === p.id}
               dragOver={over === p.id && drag !== p.id}
@@ -958,14 +1036,14 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
         /* 工作流看板 */
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)",
           gap: 12,
           alignItems: "start",
           minHeight: 460,
         }}>
-          {PLAN_TAGS.map(columnTag => {
+          {PLAN_TAGS.filter(tag => !isMobile || tag === filter).map(columnTag => {
             const columnPlans = plans.filter(p => {
-              const currentTag = p.tag || "討論中";
+              const currentTag = p.tag || "計畫中";
               return currentTag === columnTag;
             });
             const tagColor = PLAN_TAG_COLORS[columnTag];

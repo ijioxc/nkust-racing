@@ -307,7 +307,7 @@ const PLAN_SCHEMA = [
     { value: "車體", label: "車體" }, { value: "引擎", label: "引擎" }, { value: "懸吊", label: "懸吊" }, { value: "煞車", label: "煞車" }, { value: "電裝", label: "電裝" }, { value: "空力", label: "空力" }, { value: "其他", label: "其他" }
   ]},
   { key: "tag", label: "進度狀態", type: "segmented", options: [
-    { value: "討論中", label: "討論中" },
+    { value: "計畫中", label: "計畫中" },
     { value: "進行中", label: "進行中" },
     { value: "已完成", label: "已完成" },
     { value: "擱置",   label: "擱置" },
@@ -326,7 +326,7 @@ function PlanModal({ open, onClose, onSave, onDelete, initial }) {
     return lines.join('\n');
   };
 
-  const blank = { content: "", sub: "車體", layout: "landscape", tag: "討論中", cover: null };
+  const blank = { content: "", sub: "車體", layout: "landscape", tag: "計畫中", cover: null };
   const [initialState, setInitialState] = React.useState(() => initial ? { ...blank, ...initial, content: toContent(initial) } : blank);
   React.useEffect(() => {
     setInitialState(initial ? { ...blank, ...initial, content: toContent(initial) } : blank);

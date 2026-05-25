@@ -1353,6 +1353,8 @@ header + * .subBar,
 
 /* Mobile unified bars — hidden on desktop */
 .worklog-mobile-bar,
+.parts-mobile-bar,
+.plans-mobile-bar,
 .resources-mobile-cat { display: none; }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1486,7 +1488,8 @@ header + * .subBar,
 
   /* ── Worklog mobile unified glass pill bar ── */
   .worklog-mobile-bar,
-  .parts-mobile-bar {
+  .parts-mobile-bar,
+  .plans-mobile-bar {
     display: inline-flex !important;
     align-items: center !important;
     align-self: flex-end !important;
@@ -1500,7 +1503,8 @@ header + * .subBar,
     max-width: 100% !important;
   }
   .worklog-mobile-bar::-webkit-scrollbar,
-  .parts-mobile-bar::-webkit-scrollbar { display: none; }
+  .parts-mobile-bar::-webkit-scrollbar,
+  .plans-mobile-bar::-webkit-scrollbar { display: none; }
 
   /* ── Resources mobile unified glass pill ── */
   .resources-mobile-cat {
