@@ -1485,7 +1485,8 @@ header + * .subBar,
   .worklog-view .section-head-actions { overflow: visible !important; }
 
   /* ── Worklog mobile unified glass pill bar ── */
-  .worklog-mobile-bar {
+  .worklog-mobile-bar,
+  .parts-mobile-bar {
     display: inline-flex !important;
     align-items: center !important;
     align-self: flex-end !important;
@@ -1498,7 +1499,8 @@ header + * .subBar,
     scrollbar-width: none !important;
     max-width: 100% !important;
   }
-  .worklog-mobile-bar::-webkit-scrollbar { display: none; }
+  .worklog-mobile-bar::-webkit-scrollbar,
+  .parts-mobile-bar::-webkit-scrollbar { display: none; }
 
   /* ── Resources mobile unified glass pill ── */
   .resources-mobile-cat {

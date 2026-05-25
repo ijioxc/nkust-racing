@@ -58,82 +58,40 @@ function PartsView({ suppliers, setSuppliers }) {
       {isMobile ? (
         /* ── Mobile: system tabs + vertical list ── */
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {/* System picker + add button 同一列 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {/* System picker — 所有 7 個系統一排顯示，active 改文字 */}
-          <div className="hdr-sub-nav" style={{
-            display: "flex", gap: 12, flex: 1,
-            marginInline: -16,
-            paddingInline: 16,
-          }}>
+          {/* Mobile unified single glass pill bar — [subsystems] | [+] */}
+          <div className="parts-mobile-bar">
             {SUBSYSTEMS.map(sub => {
-              const cnt = suppliers.filter(s => s.sub === sub).length;
               const active = mobileSub === sub;
-              const color = SUBSYSTEM_COLOR[sub];
               return (
-                <button key={sub} onClick={() => setMobileSub(sub)}
+                <button key={sub} onClick={() => setMobileSub(sub)} title={sub}
+                  className={active ? "seg-btn--active" : ""}
                   style={{
-                    flex: active ? "0 0 48px" : "0 0 38px",
-                    height: active ? 48 : 38,
-                    display: "flex", flexDirection: "column",
-                    alignItems: "center", justifyContent: "center",
-                    gap: 0,
-                    borderRadius: active ? 13 : 10,
-                    border: active
-                      ? `1.5px solid ${color}88`
-                      : "0.5px solid var(--separator)",
-                    background: active ? color + "1a" : "var(--card-fill)",
-                    cursor: "pointer", position: "relative",
-                    transition: "all .18s", overflow: "hidden",
+                    padding: "0 9px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+                    background: active ? "#fff" : "transparent", flexShrink: 0,
+                    color: active ? "var(--ink)" : "var(--faint)",
+                    boxShadow: active ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                    display: "inline-flex", alignItems: "center", transition: "all .15s",
                   }}>
-                  {/* Colored top accent bar */}
-                  <div style={{
-                    position: "absolute", top: 0, left: 0, right: 0,
-                    height: active ? 2.5 : 1.5,
-                    background: active ? color : color + "44",
-                    borderRadius: "10px 10px 0 0",
-                  }}/>
-                  {/* Count badge — inactive only */}
-                  {cnt > 0 && !active && (
-                    <div style={{
-                      position: "absolute", top: 3, right: 3,
-                      minWidth: 13, height: 13, borderRadius: 99,
-                      background: "rgba(120,120,128,0.22)",
-                      color: "var(--muted)",
-                      fontSize: 8, fontWeight: 800,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      padding: "0 2px",
-                    }}>{cnt}</div>
-                  )}
-                  {/* inactive → icon / active → text label */}
-                  {active ? (
-                    <span style={{
-                      fontSize: 11, fontWeight: 700, letterSpacing: "-0.02em",
-                      color: color, lineHeight: 1,
-                    }}>{sub}</span>
-                  ) : (
-                    <SubsystemIcon kind={sub} size={16} color={color + "99"}/>
-                  )}
+                  <SubsystemIcon kind={sub} size={13} color={active ? "var(--ink)" : "var(--faint)"}/>
                 </button>
               );
             })}
-          {/* + button 直接置入滾動列的最後一個元素，避免左右分裂與對齊跑掉 */}
-          <button onClick={() => setEditing({ open: true, initial: { sub: mobileSub, status: "詢價" } })}
-            style={{
-              flexShrink: 0, width: 38, height: 38, borderRadius: 10,
-              background: "var(--card-fill)",
-              border: "0.5px solid var(--separator)",
-              color: "var(--faint)", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all .18s",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = "var(--ink)"; e.currentTarget.style.borderColor = "var(--blue)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "var(--faint)"; e.currentTarget.style.borderColor = "var(--separator)"; }}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-          </button>
+            
+            {/* Separator */}
+            <div style={{ width: 1, alignSelf: "stretch", background: "rgba(120,120,128,0.35)", margin: "4px 3px", flexShrink: 0 }}/>
+
+            {/* + add button */}
+            <button onClick={() => setEditing({ open: true, initial: { sub: mobileSub, status: "詢價" } })}
+              title="新增項目"
+              style={{
+                padding: "0 10px", height: 28, borderRadius: 999, border: 0, cursor: "pointer",
+                background: "transparent", color: "var(--ink)", flexShrink: 0,
+                display: "inline-flex", alignItems: "center",
+              }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+            </button>
           </div>
           </div>{/* end picker + add row */}
 
