@@ -1530,11 +1530,12 @@ header + * .subBar,
 
   /* 3. 頂部 sub-nav — 改為可橫滑，每個 tab 自然呼吸 */
   .hdr-sub-nav {
-    justify-content: flex-start !important;
+    justify-content: flex-end !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
     padding: 5px 14px !important;
     gap: 2px !important;
+    width: 100% !important;
   }
   .hdr-sub-nav::-webkit-scrollbar { display: none; }
   .hdr-sub-tab {
