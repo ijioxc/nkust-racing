@@ -1517,6 +1517,61 @@ header + * .subBar,
   .worklog-view .section-head-row,
   .resources-view .section-head-row { display: none !important; }
 
+  /* ── People & Plans: unify section-head-actions into a glass pill, right-aligned ── */
+  /* Override global width:100% / flex-start on section-head-actions for these two views */
+  .people-view .section-head-actions,
+  .plans-view  .section-head-actions {
+    width: auto !important;
+    justify-content: flex-end !important;
+    overflow-x: visible !important;
+    padding-bottom: 0 !important;
+  }
+  /* Outer wrapper of the action buttons (last-child avoids eyebrow hint div) → inline-flex pill */
+  .people-view .section-head-actions > div:last-child,
+  .plans-view  .section-head-actions > div:last-child {
+    display: inline-flex !important;
+    align-items: center !important;
+    background: rgba(120,120,128,0.16) !important;
+    border-radius: 999px !important;
+    padding: 2px !important;
+    height: 32px !important;
+    gap: 0 !important;
+  }
+  /* Remove nested pill from role-filter / view-toggle inside the outer pill */
+  .people-view .role-filter,
+  .plans-view  .view-toggle {
+    background: transparent !important;
+    padding: 0 !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    gap: 0 !important;
+  }
+  /* Tighten SegmentedFilter button padding inside people pill */
+  .people-view .role-filter button {
+    padding: 0 7px !important;
+    height: 28px !important;
+    font-size: 11px !important;
+  }
+  /* Add (+) button inside pill: icon-only ghost */
+  .people-view .section-head-actions .btn,
+  .plans-view  .section-head-actions .btn {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 999px !important;
+    border: none !important;
+    color: var(--ink) !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+  }
+  /* Active state — white pill matching worklog bars */
+  .people-view .seg-btn--active,
+  .plans-view  .view-toggle-btn.active {
+    background: #fff !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.10) !important;
+  }
+
   /* ── Resources view search bar — hidden on mobile ── */
   .section-search-box { display: none !important; }
 

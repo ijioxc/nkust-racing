@@ -895,7 +895,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
 
   return (
     <>
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
+    <div className="plans-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI row — mobile: 一列壓縮 via .kpi-strip */}
       <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
         <KPI label="PROPOSALS" value={total} foot="提案總數" />
@@ -1585,7 +1585,7 @@ function PeopleView({ people, editPerson, newPerson, onDelete }) {
   const profilePerson = people.find(p => p.id === profileId) || null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
+    <div className="people-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       <SectionHead title="團隊成員" hint={`${filtered.length} OF ${people.length} 人`}
         action={
           <div style={{ display: "flex", gap: 8 }}>
