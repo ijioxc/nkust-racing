@@ -613,7 +613,7 @@ function BentoBoard({ tasks, onTaskClick }) {
   return (
     <div className="bento-board" style={{
       display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
-      gridAutoRows: "var(--bento-row-h)", gap: 10, gridAutoFlow: "dense",
+      gridAutoRows: "var(--bento-row-h)", gap: "var(--bento-gap, 10px)", gridAutoFlow: "dense",
     }}>
       {sortedTasks.map(t => <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)}/>)}
     </div>
@@ -654,7 +654,6 @@ function BentoCard({ task, onClick }) {
   const isFocus = state === "focus";
   const isDone  = state === "done";
   const isLarge = size === "2x2" || size === "3x2";
-  const isWide  = size === "2x1";
   const isSmall = size === "1x1";
 
   const sizeStyle = {
@@ -670,67 +669,92 @@ function BentoCard({ task, onClick }) {
 
   const subColor   = window.SUBSYSTEM_COLOR?.[subsystem] || "var(--blue)";
   const textColor  = isFocus ? "#fff" : "var(--ink)";
-  const mutedColor = isFocus ? "rgba(255,255,255,0.65)" : "var(--muted)";
+  const mutedColor = isFocus ? "rgba(255,255,255,0.55)" : "var(--muted)";
 
-  // 依大小給更多留白
-  const pad = isLarge ? "16px 18px" : isWide ? "14px 16px" : "13px 14px";
+  // 簡化：只用 2 種環色 — 完成=綠，其他=藍（focus 卡用半透明白）
+  const ringColor = isFocus ? "rgba(255,255,255,0.85)"
+                  : isDone  ? "var(--green)"
+                  : "var(--blue)";
 
   return (
     <div onClick={onClick} className={`tcard tile hoverable bento-card-${size || "1x1"}`} style={{
       ...sizeStyle,
-      padding: pad, cursor: "pointer", overflow: "hidden",
+      padding: isLarge ? "14px 16px" : "11px 14px",
+      cursor: "pointer", overflow: "hidden",
       display: "flex", flexDirection: "column",
       background: isFocus ? "var(--accent)" : "var(--card-fill)",
       borderColor: isFocus ? "var(--accent)" : undefined,
-      opacity: isDone ? 0.66 : 1,
+      opacity: isDone ? 0.7 : 1,
     }}>
 
-      {/* ── TOP：系統色點 ＋ 完成度%（large 除外，用大數字代替）── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{
-          width: 6, height: 6, borderRadius: 99, flexShrink: 0,
-          background: isFocus ? "rgba(255,255,255,0.7)" : subColor,
-          display: "inline-block",
-        }}/>
-        {!isLarge && (
+      {isLarge ? (
+        /* ══ LARGE (2x2 / 3x2)：大數字 + 名稱 + 條 + 時間 — 保持不變 ══ */
+        <>
           <span style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: isWide ? 13 : 11,
-            fontWeight: 700, letterSpacing: "0.02em",
-            color: isDone ? "var(--green)" : mutedColor,
-          }}>{progress}%</span>
-        )}
-      </div>
+            width: 6, height: 6, borderRadius: 99,
+            background: isFocus ? "rgba(255,255,255,0.7)" : subColor,
+            display: "inline-block",
+          }}/>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 5, marginTop: 8 }}>
+            <DisplayNumber value={progress} unit="%" size={44} color={textColor}/>
+            <div style={{
+              fontWeight: 700, lineHeight: 1.25, letterSpacing: "-0.01em",
+              color: textColor, fontSize: 15,
+              display: "-webkit-box", WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical", overflow: "hidden",
+            }}>{title}</div>
+            <ProgressBar value={progress} height={2} dark={isFocus}/>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 8, letterSpacing: "0.04em", color: mutedColor, display: "flex", justifyContent: "space-between" }}>
+              <span>{daysLabel}</span><span>{owner}</span>
+            </div>
+          </div>
+        </>
+      ) : (
+        /* ══ SMALL / WIDE (1x1 / 2x1)：進度圈 + 名稱/時間
+              Apple Control Center widget 排版:
+              [ 圈 ]  名稱（粗體，2行）
+                      T-xW（小字）
+        ══ */
+        <div style={{ display: "flex", alignItems: "center", gap: 12, height: "100%" }}>
 
-      {/* ── MAIN：名稱（最重要）＋ 大%（large only）─── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 5, marginTop: 6 }}>
-        {isLarge && (
-          <DisplayNumber value={progress} unit="%" size={44} color={textColor}/>
-        )}
+          {/* ── 左：ActivityRing，數字在圈心（大字） ── */}
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <ActivityRing
+              progress={progress}
+              size={40}
+              strokeWidth={3.5}
+              color={ringColor}
+            />
+            <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <span style={{
+                fontFamily: "var(--font-mono)", fontWeight: 700,
+                fontSize: 15, lineHeight: 1,
+                color: textColor,
+              }}>{progress}</span>
+            </div>
+          </div>
 
-        {/* 1x1: 小卡只顯示名稱，給 3 行 */}
-        <div style={{
-          fontWeight: 700, lineHeight: 1.25, letterSpacing: "-0.01em",
-          color: textColor,
-          fontSize: isLarge ? 15 : isWide ? 13.5 : 12,
-          display: "-webkit-box",
-          WebkitLineClamp: isSmall ? 4 : 2,
-          WebkitBoxOrient: "vertical", overflow: "hidden",
-        }}>{title}</div>
+          {/* ── 右：名稱（主角）＋ 剩餘天數 ── */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontWeight: 700, lineHeight: 1.28, letterSpacing: "-0.01em",
+              color: textColor, fontSize: 13,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical", overflow: "hidden",
+            }}>{title}</div>
+            <div style={{
+              fontFamily: "var(--font-mono)", fontSize: 9,
+              letterSpacing: "0.04em", color: mutedColor,
+              marginTop: 4,
+            }}>{daysLabel}</div>
+          </div>
 
-        {/* 進度條 */}
-        <ProgressBar value={progress} height={2} dark={isFocus}/>
-
-        {/* ── BOTTOM：時間 ＋ (large) 負責人
-              小卡(1x1)桌面太擠故隱藏，但手機 CSS 會 span 2 故加 class 回應 ── */}
-        <div className={isSmall ? "bento-small-foot" : ""} style={{
-          fontFamily: "var(--font-mono)", fontSize: 8, letterSpacing: "0.04em",
-          color: mutedColor, display: "flex", justifyContent: "space-between",
-        }}>
-          <span>{daysLabel}</span>
-          {isLarge && <span>{owner}</span>}
         </div>
-      </div>
+      )}
     </div>
   );
 }

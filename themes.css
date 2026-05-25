@@ -1164,11 +1164,19 @@ header + * .subBar,
     grid-template-columns: repeat(4, 1fr) !important;
   }
 
-  /* 總覽底部 4-up 摘要卡：4 欄 → 2×2（中等手機），≤430px → 1欄 */
+  /* ── 真實 2:2 / 2:1 比例
+     4 col, 16px side-padding, 10px gap → col ≈ 78px
+     2x2: 2cols+gap = 166px wide, 2rows+gap = 166px tall → ≈ 1:1 ✓
+     2x1: 166px wide × 78px tall → ≈ 2:1 ✓  */
+  :root {
+    --bento-row-h: 78px;
+    --bento-gap:   10px;
+  }
+
+  /* 總覽底部 4-up 摘要卡：4 欄 → 2×2 */
   .overview-summary-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
-
 
   /* size 對應：3x2 → span 4（全寬），2x2/2x1/1x1 → span 2（半寬） */
   .bento-card-3x2 { grid-column: span 4 !important; }
