@@ -1016,9 +1016,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
         <div style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 3,
-          borderRadius: 12,
-          overflow: "hidden",
+          gap: "var(--gap-card)",
         }}>
           {filteredPlans.map(p => (
             <PlanThumb key={p.id} plan={p}
@@ -1131,6 +1129,7 @@ function PlanThumb({ plan, draggable, dragging, dragOver, onDragStart, onDragOve
   const [hov, setHov] = React.useState(false);
   return (
     <div
+      className="tcard tile hoverable"
       draggable={draggable}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
@@ -1151,11 +1150,6 @@ function PlanThumb({ plan, draggable, dragging, dragOver, onDragStart, onDragOve
           : `linear-gradient(135deg, ${color}cc, ${color}55)`,
       }}
     >
-      {/* Subsystem color bar at top */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 3,
-        background: color, zIndex: 2,
-      }}/>
 
       {/* Hover overlay */}
       <div style={{
