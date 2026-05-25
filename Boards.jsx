@@ -234,7 +234,7 @@ function SupplierCard({ supplier, draggable, dragging, onDragStart, onDragEnd, o
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onClick={onClick}
-      className={`tcard tile hoverable ${dragging ? "dragging" : ""}`}
+      className={`tcard large hoverable ${dragging ? "dragging" : ""}`}
       style={{
         padding: 12, cursor: "pointer",
         background: "var(--bg-secondary)",
