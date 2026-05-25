@@ -189,7 +189,7 @@ function Blueprint() {
         padding: 0, overflow: "hidden", position: "relative",
         background: mode3d
           ? "linear-gradient(160deg, #0e0f11 0%, #1a1c22 100%)"
-          : "linear-gradient(180deg, #fafafa 0%, #ededef 100%)",
+          : "var(--fill-secondary)",
         cursor: mode3d ? "grab" : (addingMode ? "crosshair" : "default"),
         transition: "background .4s",
       }}>
@@ -908,7 +908,7 @@ function PartModal({ open, onClose, onSave, onDelete, initial, currentViewId, vi
           onTouchEnd={() => dragRef.current = false}
           style={{
             position: "relative", borderRadius: 10, overflow: "hidden",
-            background: "linear-gradient(180deg, #fafafa 0%, #ededef 100%)",
+            background: "var(--fill-secondary)",
             border: "0.5px solid var(--rule)",
             aspectRatio: "16/9", cursor: "crosshair",
             userSelect: "none", touchAction: "none",

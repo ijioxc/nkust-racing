@@ -621,9 +621,8 @@ function BentoBoard({ tasks, onTaskClick }) {
 
   const renderCards = () => {
     const elements = [];
-    let pending2x1 = null;
     let cellsUsed = 0;
-    const maxCells = isMobile ? 16 : 24; // 8x3 on desktop, 4x4 on mobile
+    const maxCells = isMobile ? 16 : 24;
 
     const getCells = (size) => {
       if (isMobile) {
@@ -649,31 +648,12 @@ function BentoBoard({ tasks, onTaskClick }) {
       cellsUsed += taskCells;
 
       if (t.size === "2x1") {
-        if (pending2x1) {
-          elements.push(
-            <div key={`group-${pending2x1.id}-${t.id}`} className="group-wrapper-2x2" style={{
-              gridColumn: "span 2", gridRow: "span 2",
-              display: "flex", flexDirection: "column", gap: "var(--bento-gap, var(--gap-card))"
-            }}>
-              <BentoCard task={pending2x1} onClick={() => onTaskClick(pending2x1)} inGroup />
-              <BentoCard task={t} onClick={() => onTaskClick(t)} inGroup />
-            </div>
-          );
-          pending2x1 = null;
-        } else {
-          pending2x1 = t;
-        }
+        elements.push(
+          <BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)} />
+        );
       } else {
-        if (pending2x1) {
-          elements.push(<BentoCard key={pending2x1.id} task={pending2x1} onClick={() => onTaskClick(pending2x1)} />);
-          pending2x1 = null;
-        }
         elements.push(<BentoCard key={t.id} task={t} onClick={() => onTaskClick(t)} />);
       }
-    }
-
-    if (pending2x1) {
-      elements.push(<BentoCard key={pending2x1.id} task={pending2x1} onClick={() => onTaskClick(pending2x1)} />);
     }
 
     return elements;
@@ -718,14 +698,13 @@ function ActivityRing({ progress, size, strokeWidth, color }) {
   );
 }
 
-function BentoCard({ task, onClick, inGroup }) {
+function BentoCard({ task, onClick }) {
   const { subsystem, title, progress, start, span, size = "1x1", state, owner } = task;
   const isFocus = state === "focus";
   const isDone  = state === "done";
   const isLarge = size === "2x2" || size === "3x2";
-  const isSmall = size === "1x1";
 
-  const sizeStyle = inGroup ? { flex: 1, width: "100%", margin: 0 } : {
+  const sizeStyle = {
     "1x1": { gridColumn: "span 1", gridRow: "span 1" },
     "2x1": { gridColumn: "span 2", gridRow: "span 1" },
     "2x2": { gridColumn: "span 2", gridRow: "span 2" },
@@ -908,7 +887,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [filter, setFilter] = React.useState("計畫中");
+  const [filter, setFilter] = React.useState("全部");
 
   // Blueprint sorting handlers
   const onDragStart = (id) => () => setDrag(id);
@@ -957,10 +936,12 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
   const pending = plans.filter(p => !p.tag || ["計畫中", "擱置"].includes(p.tag)).length;
 
   // Filtering
-  const filteredPlans = plans.filter(p => {
-    const currentTag = p.tag || "計畫中";
-    return currentTag === filter;
-  });
+  const filteredPlans = filter === "全部"
+    ? plans
+    : plans.filter(p => {
+        const currentTag = p.tag || "計畫中";
+        return currentTag === filter;
+      });
 
   // Lightbox helpers
   const lbIdx  = plans.findIndex(p => p.id === lightboxId);
@@ -988,7 +969,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
           gap: 0, padding: 2, background: "rgba(120,120,128,0.16)",
           borderRadius: 999, height: 32, overflowX: "auto", scrollbarWidth: "none", maxWidth: "100%"
         }}>
-          {PLAN_TAGS.map(tag => {
+          {["全部", ...PLAN_TAGS].map(tag => {
             const active = filter === tag;
             return (
               <button key={tag} className={active ? "seg-btn--active" : ""} onClick={() => setFilter(tag)}
@@ -1050,7 +1031,7 @@ function PlansView({ plans, setPlans, openPlan, editPlan, newPlan, onDelete }) {
           action={
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <SegmentedFilter className="status-filter" value={filter} onChange={setFilter} options={
-                PLAN_TAGS.map(tag => ({ id: tag, label: tag }))
+                [{ id: "全部", label: "全部" }, ...PLAN_TAGS.map(tag => ({ id: tag, label: tag }))]
               }/>
               <div style={{ width: 0.5, height: 20, background: "var(--rule)" }} />
               <SegmentedFilter className="view-toggle" value={view} onChange={setView} options={[

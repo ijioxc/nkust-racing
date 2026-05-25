@@ -10,12 +10,12 @@ function WidgetFrame({ title, caption, readouts, children, height = 320 }) {
     <figure style={{
       margin: "32px 0",
       padding: 18,
-      background: "rgba(255,255,255,0.78)",
-      backdropFilter: "blur(20px) saturate(160%)",
-      WebkitBackdropFilter: "blur(20px) saturate(160%)",
-      border: "0.5px solid rgba(0,0,0,0.06)",
+      background: "var(--card-fill)",
+      backdropFilter: "var(--card-blur)",
+      WebkitBackdropFilter: "var(--card-blur)",
+      border: "0.5px solid var(--separator)",
       borderRadius: 16,
-      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 24px rgba(0,0,0,0.04)",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
     }}>
       <div style={{
         display: "flex", alignItems: "baseline",
