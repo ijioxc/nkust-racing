@@ -1335,12 +1335,13 @@ header + * .subBar,
 }
 
 /* ═══════════════════════════════════════════════════════════
-   MOBILE — Resources KPI：隱藏描述文字、label 不換行
+   MOBILE — Resources KPI：隱藏描述文字、label 不換行、隱藏分組標題
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   /* 描述文字 + 中文 label 佔太多空間，手機只留 eyebrow + 數字 */
   .resource-kpi-desc  { display: none !important; }
   .resource-kpi-label { display: none !important; }
+  .resource-group-header { display: none !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════

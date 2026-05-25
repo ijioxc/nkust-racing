@@ -564,7 +564,7 @@ function ResourcesView({ resources, setResources }) {
           if (items.length === 0) return null;
           return (
             <div key={g.id}>
-              <div style={{
+              <div className="resource-group-header" style={{
                 display: "flex", alignItems: "baseline", gap: 12, marginBottom: 10,
                 paddingBottom: 6,
               }}>
