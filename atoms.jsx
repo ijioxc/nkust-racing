@@ -122,9 +122,14 @@ function DisplayNumber({ value, unit, size = 48, weight = 700, color, style }) {
   );
 }
 
-function KPI({ label, value, unit, foot, accent = false, hint }) {
+function KPI({ label, value, unit, foot, accent = false, hint, onClick, style }) {
+  const pointerStyle = onClick ? { cursor: "pointer", transition: "transform 0.22s var(--ease-out), background 0.22s, box-shadow 0.22s" } : {};
   return (
-    <div className={`widget-tile${accent ? " accent" : ""}`} style={{ flex: 1, minWidth: 0 }}>
+    <div
+      onClick={onClick}
+      className={`widget-tile${accent ? " accent" : ""}${onClick ? " hoverable" : ""}`}
+      style={{ flex: 1, minWidth: 0, ...pointerStyle, ...style }}
+    >
       {/* EYEBROW — 11px sans uppercase, HIG widget pattern */}
       <div className="widget-eyebrow">{label}</div>
       {/* VALUE — 34px tabular bold */}

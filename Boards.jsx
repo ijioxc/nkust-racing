@@ -424,50 +424,24 @@ function ResourcesView({ resources, setResources }) {
     <div className="resources-view" style={{ display: "flex", flexDirection: "column", gap: "var(--gap-zone)" }}>
       {/* KPI strip — 4 cards: TOTAL + 3 groups */}
       <div className="kpi-strip" style={{ display: "flex", gap: "var(--gap-card)" }}>
-        {/* TOTAL */}
-        <div className="tcard tile hoverable" style={{
-          flex: 1, minWidth: 0, padding: "var(--tile-pad)", cursor: "pointer",
-          overflow: "hidden",
-        }} onClick={() => setFilter("all")}>
-          <div className="eyebrow" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <UIIcon kind="layers" size={11}/>
-            ALL
-          </div>
-          <div className="resource-kpi-num" style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
-            <DisplayNumber value={resources.length} size={36}/>
-            <span className="resource-kpi-label" style={{
-              fontSize: 13, fontWeight: 600, color: "var(--ink)",
-              letterSpacing: "-0.01em", overflow: "hidden",
-              textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>所有資源</span>
-          </div>
-          <div className="resource-kpi-desc" style={{ fontSize: 12, color: "var(--faint)", marginTop: 6, lineHeight: 1.4 }}>
-            賽事 · 工具 · 學習資源總計
-          </div>
-        </div>
+        <KPI
+          label="ALL"
+          value={resources.length}
+          foot="所有資源"
+          onClick={() => setFilter("all")}
+          accent={filter === "all"}
+        />
         {groups.map(g => {
           const items = resources.filter(r => r.group === g.id);
           return (
-            <div key={g.id} className="tcard tile hoverable" style={{
-              flex: 1, minWidth: 0, padding: "var(--tile-pad)", cursor: "pointer",
-              overflow: "hidden",
-            }} onClick={() => setFilter(g.id)}>
-              <div className="eyebrow" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <UIIcon kind={g.icon} size={11}/>
-                {g.en}
-              </div>
-              <div className="resource-kpi-num" style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
-                <DisplayNumber value={items.length} size={36}/>
-                <span className="resource-kpi-label" style={{
-                  fontSize: 13, fontWeight: 600, color: "var(--ink)",
-                  letterSpacing: "-0.01em", overflow: "hidden",
-                  textOverflow: "ellipsis", whiteSpace: "nowrap",
-                }}>{g.label}</span>
-              </div>
-              <div className="resource-kpi-desc" style={{ fontSize: 12, color: "var(--faint)", marginTop: 6, lineHeight: 1.4 }}>
-                {g.desc}
-              </div>
-            </div>
+            <KPI
+              key={g.id}
+              label={g.en.toUpperCase()}
+              value={items.length}
+              foot={g.label}
+              onClick={() => setFilter(g.id)}
+              accent={filter === g.id}
+            />
           );
         })}
       </div>
