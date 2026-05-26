@@ -42,6 +42,12 @@ function App() {
         ? (mq.matches ? "dark" : "light")
         : appearance;
       root.setAttribute("data-appearance", resolved);
+
+      // 即時同步至 Digital Twin iframe
+      const iframe = document.querySelector('iframe[src*="localhost:5173"], iframe[src*="twin.nkust-racing"]');
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage({ type: "appearance", value: resolved }, "*");
+      }
     };
     apply();
     try { localStorage.setItem("appearance", appearance); } catch {}
@@ -49,7 +55,7 @@ function App() {
       mq.addEventListener("change", apply);
       return () => mq.removeEventListener("change", apply);
     }
-  }, [appearance]);
+  }, [appearance, page]);
 
   // Live data state — synced to Firebase RTDB, live across devices/users
   const [tasks,     setTasks]     = useRtdbState("tasks",     INITIAL_TASKS);
@@ -102,6 +108,29 @@ function App() {
         )}
         {page === "blueprint" && <Blueprint/>}
         {page === "essay"     && <Essay/>}
+        {page === "twin"      && (
+          <div style={{
+            position: "fixed",
+            inset: 0,
+            paddingTop: "var(--hdr-total-h, 52px)",
+            zIndex: 10,
+            background: "var(--bg-primary)",
+            boxSizing: "border-box"
+          }}>
+            <iframe
+              src={window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5173'
+                : 'https://twin.nkust-racing.web.app'}
+              style={{ width: "100%", height: "100%", border: "none" }}
+              onLoad={(e) => {
+                const resolvedAppearance = appearance === "auto"
+                  ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+                  : appearance;
+                e.target.contentWindow.postMessage({ type: "appearance", value: resolvedAppearance }, "*");
+              }}
+            />
+          </div>
+        )}
       </main>
 
       <TweaksPanel title="Tweaks · 統一視覺">
@@ -121,6 +150,7 @@ function App() {
             { value: "dashboard", label: "工作台" },
             { value: "blueprint", label: "車體圖解" },
             { value: "essay",     label: "技術手冊" },
+            { value: "twin",      label: "數位雙生" },
           ]}
           onChange={v => setPage(v)}/>
         {page === "dashboard" && (

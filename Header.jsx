@@ -105,7 +105,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
       <header style={{ ...hdrStyles.inner, fontFamily: "-apple-system" }}>
         <div style={hdrStyles.left} className="hdr-left">
           <div style={hdrStyles.logoBox} className="hdr-logo-box">
-            <img src="assets/nkust-logo.png" alt="NKUST" style={hdrStyles.logoImg} className="hdr-logo-img" />
+            <img src="assets/logo/nkust-logo.png" alt="NKUST" style={hdrStyles.logoImg} className="hdr-logo-img" />
           </div>
           <span style={hdrStyles.wordmark} className="hdr-wordmark">高科大賽車隊</span>
         </div>

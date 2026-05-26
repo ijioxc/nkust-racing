@@ -7,26 +7,21 @@
 // ─── Shared shell ─────────────────────────────────────────
 function WidgetFrame({ title, caption, readouts, children, height = 320 }) {
   return (
-    <figure style={{
-      margin: "32px 0",
-      padding: 18,
-      background: "var(--card-fill)",
-      backdropFilter: "var(--card-blur)",
-      WebkitBackdropFilter: "var(--card-blur)",
-      border: "0.5px solid var(--separator)",
-      borderRadius: 16,
-      boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+    <div style={{
+      margin: 0,
+      padding: 0,
+      background: "transparent",
+      border: "none",
     }}>
       <div style={{
         display: "flex", alignItems: "baseline",
         justifyContent: "space-between", marginBottom: 14,
-        paddingBottom: 10, borderBottom: "0.5px solid var(--rule)",
+        paddingBottom: 6,
       }}>
         <div>
-          <div className="eyebrow" style={{ marginBottom: 4 }}>INTERACTIVE</div>
           <div style={{
             fontFamily: "var(--font-sans)",
-            fontSize: 14, fontWeight: 600, color: "var(--ink)",
+            fontSize: 14, fontWeight: 700, color: "var(--label-primary)",
             letterSpacing: "-0.01em",
           }}>{title}</div>
         </div>
@@ -40,30 +35,34 @@ function WidgetFrame({ title, caption, readouts, children, height = 320 }) {
       </div>
       <div style={{ minHeight: height }}>{children}</div>
       {caption && (
-        <figcaption style={{
-          fontFamily: "var(--font-mono)", fontSize: 10,
-          color: "var(--muted)", letterSpacing: "0.06em",
-          textTransform: "uppercase", marginTop: 12,
-          paddingTop: 10, borderTop: "0.5px solid var(--rule)",
-        }}>{caption}</figcaption>
+        <div style={{
+          fontFamily: "var(--font-sans)", fontSize: 11,
+          color: "var(--label-tertiary)", marginTop: 12,
+          paddingTop: 6,
+          lineHeight: 1.4,
+        }}>{caption}</div>
       )}
-    </figure>
+    </div>
   );
 }
 
 function Readout({ label, value, unit, accent }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
-      <span className="eyebrow">{label}</span>
+      <span style={{
+        fontFamily: "var(--font-mono)", fontSize: 9,
+        color: "var(--label-tertiary)", letterSpacing: "0.12em",
+        textTransform: "uppercase"
+      }}>{label}</span>
       <span style={{
         fontFamily: "var(--font-mono)",
         fontSize: 18, fontWeight: 700,
-        color: accent ? "var(--accent)" : "var(--ink)",
+        color: accent ? "var(--orange)" : "var(--label-primary)",
         letterSpacing: "-0.01em", lineHeight: 1,
         fontFeatureSettings: "'tnum'",
       }}>
         {value}
-        {unit && <span style={{ fontSize: 11, color: "var(--muted)", marginLeft: 2 }}>{unit}</span>}
+        {unit && <span style={{ fontSize: 11, color: "var(--label-tertiary)", marginLeft: 2 }}>{unit}</span>}
       </span>
     </div>
   );
@@ -77,17 +76,21 @@ function Slider({ label, value, min, max, step = 0.01, unit, onChange, format })
         display: "flex", justifyContent: "space-between",
         alignItems: "baseline",
       }}>
-        <span className="eyebrow">{label}</span>
+        <span style={{
+          fontFamily: "var(--font-mono)", fontSize: 9,
+          color: "var(--label-tertiary)", letterSpacing: "0.12em",
+          textTransform: "uppercase"
+        }}>{label}</span>
         <span style={{
           fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600,
-          color: "var(--ink)", fontFeatureSettings: "'tnum'",
+          color: "var(--label-primary)", fontFeatureSettings: "'tnum'",
         }}>
-          {display}{unit && <span style={{ color: "var(--muted)", marginLeft: 2 }}>{unit}</span>}
+          {display}{unit && <span style={{ color: "var(--label-tertiary)", marginLeft: 2 }}>{unit}</span>}
         </span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={e => onChange(parseFloat(e.target.value))}
-        style={{ accentColor: "var(--accent)", width: "100%" }}/>
+        style={{ accentColor: "var(--orange)", width: "100%", cursor: "pointer" }}/>
     </div>
   );
 }
@@ -258,16 +261,16 @@ function WeightDistribution() {
         { label: "BALANCE", value: `${front}:${100-front}`, unit: "F:R" },
         { label: "LT @ 1g", value: loadTransferPct, unit: "%", accent: cgH > 320 },
       ]}
-      height={380}>
+      height={320}>
       <div style={{
         display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24,
         alignItems: "center",
       }}>
         <div style={{
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
         }}>
           {/* Top-down view */}
-          <svg width={340} height={200} viewBox="0 0 340 200">
+          <svg width={289} height={170} viewBox="0 0 340 200">
             {/* Track */}
             <rect x={10} y={10} width={320} height={180} rx={12}
               fill="rgba(0,113,227,0.04)" stroke="rgba(0,113,227,0.15)" strokeWidth="0.5"
@@ -284,13 +287,13 @@ function WeightDistribution() {
             <line x1={81} y1={170} x2={259} y2={170}
               stroke="var(--muted)" strokeWidth="0.5"/>
             <text x={170} y={186} textAnchor="middle"
-              fontFamily="var(--font-mono)" fontSize="9" fill="var(--muted)"
+              fontFamily="var(--font-mono)" fontSize="10" fill="var(--muted)"
               letterSpacing="0.06em">WHEELBASE · {wb}mm</text>
             {/* Front / Rear axle labels */}
             <text x={81} y={32} textAnchor="middle"
-              fontFamily="var(--font-mono)" fontSize="8" fill="var(--muted)" letterSpacing="0.06em">FRONT</text>
+              fontFamily="var(--font-mono)" fontSize="9" fill="var(--muted)" letterSpacing="0.06em">FRONT</text>
             <text x={259} y={32} textAnchor="middle"
-              fontFamily="var(--font-mono)" fontSize="8" fill="var(--muted)" letterSpacing="0.06em">REAR</text>
+              fontFamily="var(--font-mono)" fontSize="9" fill="var(--muted)" letterSpacing="0.06em">REAR</text>
             {/* CG marker — interpolate position */}
             {(() => {
               const cgX = 81 + (cgFromFront / wb) * (259 - 81);
@@ -306,7 +309,7 @@ function WeightDistribution() {
                   <circle cx={cgX} cy={100} r={3.5} fill="var(--accent)"/>
                   <text x={cgX} y={75}
                     textAnchor="middle" fontFamily="var(--font-mono)"
-                    fontSize="9" fill="var(--accent)" fontWeight="700"
+                    fontSize="10" fill="var(--accent)" fontWeight="700"
                     letterSpacing="0.06em">CG</text>
                 </g>
               );
@@ -314,7 +317,7 @@ function WeightDistribution() {
           </svg>
 
           {/* Side view bar showing CG height */}
-          <svg width={340} height={90} viewBox="0 0 340 90">
+          <svg width={289} height={76} viewBox="0 0 340 90">
             {/* Ground */}
             <line x1={10} y1={75} x2={330} y2={75}
               stroke="var(--ink)" strokeWidth="1.5"/>
@@ -334,13 +337,13 @@ function WeightDistribution() {
                     stroke="var(--accent)" strokeWidth="1" strokeDasharray="2,2"/>
                   <circle cx={cgX} cy={cgYTop} r={4} fill="var(--accent)"/>
                   <text x={cgX + 8} y={cgYTop + 3}
-                    fontFamily="var(--font-mono)" fontSize="9" fill="var(--accent)" fontWeight="700"
+                    fontFamily="var(--font-mono)" fontSize="10" fill="var(--accent)" fontWeight="700"
                     letterSpacing="0.06em">{cgH}mm</text>
                 </g>
               );
             })()}
             <text x={170} y={88} textAnchor="middle"
-              fontFamily="var(--font-mono)" fontSize="8" fill="var(--muted)"
+              fontFamily="var(--font-mono)" fontSize="9" fill="var(--muted)"
               letterSpacing="0.06em">SIDE VIEW</text>
           </svg>
         </div>
@@ -398,7 +401,7 @@ function DownforceCurve() {
 
   return (
     <WidgetFrame title="下壓力曲線 · Downforce vs Speed"
-      caption="L = ½·ρ·v²·S·CL — 二次曲線意味著速度翻倍，下壓力變 4 倍。"
+      caption="調整 CL、翼面面積與車速，觀察下壓力隨車速攀升的指數級成長趨勢。"
       readouts={[
         { label: "@ SLIDER",  value: currentDown.toFixed(0), unit: "N", accent: true },
         { label: "= MASS",    value: (currentDown / 9.81).toFixed(1), unit: "kg" },
@@ -487,7 +490,7 @@ function BrakeEnergy() {
 
   return (
     <WidgetFrame title="煞車能量 · Kinetic Energy Dissipation"
-      caption="ΔKE = ½m(v₁² − v₂²)。所有動能幾乎全部變成碟盤的熱 — 煞車設計的本質是熱管理。"
+      caption="調整車重與速差，計算單次煞車所產生的動能變化量與碟盤溫升預估值。"
       readouts={[
         { label: "ENERGY", value: kJ.toFixed(1), unit: "kJ", accent: true },
         { label: "ΔT 預估", value: dT.toFixed(0), unit: "°C", accent: dT > 200 },
