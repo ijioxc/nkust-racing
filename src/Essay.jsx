@@ -213,22 +213,16 @@ function Essay() {
           const scale = 3.5 / maxDim;
           root.scale.setScalar(scale);
 
-          // 1. 先套用原本 Debug 面板出現時的初始狀態
-          root.rotation.y = -Math.PI / 2;
-          
-          // 2. 在這個狀態下置中 (這也是你剛開始調整時的基準點)
+          // 套用旋轉（Blender 匯出 Y-up 已正確，僅微調朝向）
+          root.rotation.y = Math.PI; // 車頭朝向正面
+
+          // 套用旋轉後重新計算 bounding box 並置中
           root.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(root);
           const center = box.getCenter(new THREE.Vector3());
           root.position.x -= center.x;
           root.position.z -= center.z;
-          root.position.y -= box.min.y;
-
-          // 3. 套用你在 Debug 面板輸入的數值 (直接覆蓋旋轉並增加位移)
-          root.rotation.x = 90 * Math.PI / 180;
-          root.rotation.y = 0;
-          root.rotation.z = 100 * Math.PI / 180;
-          root.position.z += 0.40;
+          root.position.y -= box.min.y; // 車底貼地
 
           scene.add(root);
 
