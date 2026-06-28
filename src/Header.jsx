@@ -46,7 +46,7 @@ function BottomTabBar({ page, onPageChange }) {
   );
 }
 
-function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearance = "auto", onAppearanceChange }) {
+function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearance = "auto", onAppearanceChange, theme = "glass", onThemeChange }) {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const menuWrapRef = React.useRef(null);
   const wrapperRef = React.useRef(null);
@@ -195,6 +195,37 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
                           {opt.id === "light" && <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>}
                           {opt.id === "dark" && <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>}
                           {opt.id === "auto" && <><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></>}
+                        </svg>
+                      </span>
+                      <span style={{ flex: 1, textAlign: "left", fontSize: 14, fontWeight: 400, color: "var(--label-primary)" }}>{opt.label}</span>
+                      {active && (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
+
+                <div style={hdrStyles.menuDivider}/>
+
+                <div style={hdrStyles.menuSectionLabel}>設計風格</div>
+                {[
+                  { id: "glass", label: "Glass" },
+                  { id: "flat",  label: "Flat" },
+                  { id: "editorial", label: "Editorial" },
+                ].map(opt => {
+                  const active = theme === opt.id;
+                  return (
+                    <button key={opt.id} onClick={() => onThemeChange?.(opt.id)}
+                      style={hdrStyles.menuRow}
+                      onMouseEnter={e => e.currentTarget.style.background = "var(--fill-tertiary)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      <span style={hdrStyles.menuRowIcon}>
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                          {opt.id === "glass" && <><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>}
+                          {opt.id === "flat" && <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>}
+                          {opt.id === "editorial" && <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></>}
                         </svg>
                       </span>
                       <span style={{ flex: 1, textAlign: "left", fontSize: 14, fontWeight: 400, color: "var(--label-primary)" }}>{opt.label}</span>

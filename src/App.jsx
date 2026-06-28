@@ -91,7 +91,8 @@ function App() {
         page={page} onPageChange={setPage}
         subTab={subTab} onSubTabChange={setSubTab}
         dashTabs={dashTabs}
-        appearance={appearance} onAppearanceChange={setAppearance}/>
+        appearance={appearance} onAppearanceChange={setAppearance}
+        theme={t.theme} onThemeChange={v => setTweak("theme", v)}/>
 
       <main className="main-content" style={{
         maxWidth: 1440, margin: "0 auto",
