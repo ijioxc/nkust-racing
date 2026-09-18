@@ -67,8 +67,17 @@
   document.head.appendChild(s);
 })();
 
+// 手機直式版面：3D 在上、章節在下（桌面維持左 3D 右文字）
+const essayMobileQuery = window.matchMedia("(max-width: 768px)");
+
 // ─── Main component ───────────────────────────────────────────
 function Essay() {
+  const [isMobile, setIsMobile] = React.useState(essayMobileQuery.matches);
+  React.useEffect(() => {
+    const onChange = () => setIsMobile(essayMobileQuery.matches);
+    essayMobileQuery.addEventListener("change", onChange);
+    return () => essayMobileQuery.removeEventListener("change", onChange);
+  }, []);
   const canvasRef   = React.useRef(null);
   const sceneRef    = React.useRef(null);   // { THREE, camera, controls, renderer, nodes, origPos, camTarget, nodeTargets }
   const [activeId,  setActiveId]  = React.useState("intro");
@@ -113,6 +122,7 @@ function Essay() {
     let dead = false;
     let raf;
     let cleanupRO;
+    setLoaded(false);
 
     (async () => {
       const THREE             = await import("three");
@@ -363,7 +373,7 @@ function Essay() {
       const s = sceneRef.current;
       if (s?.renderer) s.renderer.dispose();
     };
-  }, []);
+  }, [isMobile]);   // 手機／桌面版面切換時 canvas 換了一個，要重建
 
   // ── Apply chapter state to 3D ──────────────────────────────
   React.useEffect(() => {
@@ -373,8 +383,10 @@ function Essay() {
     const c  = CAM[activeId]    || CAM.intro;
     const anim = CHAPTER_ANIMATIONS[activeId] || CHAPTER_ANIMATIONS.intro;
 
-    s.camTarget.pos.set(...c.pos);
     s.camTarget.lookAt.set(...c.at);
+    // 手機上方 3D 區塊又寬又矮：鏡頭沿視線往後拉，整台車才放得下
+    const pull = isMobile ? 1.35 : 1;
+    s.camTarget.pos.set(...c.pos.map((v, i) => c.at[i] + (v - c.at[i]) * pull));
     s.isAnimatingCamera = true;
     setCamTag(c.tag);
 
@@ -406,7 +418,7 @@ function Essay() {
         };
       }
     });
-  }, [activeId, loaded]);
+  }, [activeId, loaded, isMobile]);
 
   // ── Fullpage Scroll Logic ──────────────────────────────────
   React.useEffect(() => {
@@ -457,6 +469,7 @@ function Essay() {
     };
     
     const handleTouchMove = (e) => {
+      if (e.target.closest?.('svg, input')) return;   // 拖曳互動圖、滑桿時不翻章
       const section = e.target.closest('section');
       const deltaY = touchStartY - e.touches[0].clientY;
 
@@ -489,7 +502,61 @@ function Essay() {
 
   const idx = CHAPTERS.findIndex(c => c.id === activeId);
 
-  // ── Render ─────────────────────────────────────────────────
+  const chapterSections = (
+    <div style={{
+      transform: `translateY(-${idx * 100}%)`,
+      transition: "transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)",
+      height: "100%"
+    }}>
+      <EssaySection id="intro"><IntroBento /></EssaySection>
+      <EssaySection id="tire"><TireBento /></EssaySection>
+      <EssaySection id="weight"><WeightBento /></EssaySection>
+      <EssaySection id="aero"><AeroBento /></EssaySection>
+      <EssaySection id="brake"><BrakeBento /></EssaySection>
+      <EssaySection id="power"><PowerBento /></EssaySection>
+    </div>
+  );
+
+  // 手機：目前章節的標籤捲到看得到的位置
+  React.useEffect(() => {
+    if (!isMobile) return;
+    document.querySelector(".essay-mobile-chip.is-active")
+      ?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }, [activeId, isMobile]);
+
+  // ── Render：手機 ──────────────────────────────────────────
+  // 上方 3D（固定），下方章節：滑到底再往上滑＝下一章；章節標籤可直接點選跳章
+  if (isMobile) {
+    const cur = CHAPTERS[idx];
+    return (
+      <div className="essay-mobile">
+        <div className="essay-mobile-stage">
+          <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }}/>
+          {!loaded && (
+            <div className="essay-mobile-loading"><div className="essay-spin-ring" /></div>
+          )}
+        </div>
+        <nav className="essay-mobile-chapters" aria-label="章節">
+          {CHAPTERS.map((c, i) => (
+            <button key={c.id} type="button"
+              className={`essay-mobile-chip${i === idx ? " is-active" : ""}`}
+              aria-current={i === idx ? "step" : undefined}
+              onClick={() => setActiveId(c.id)}>
+              <span className="essay-mobile-chip-num">{c.num}</span>{c.label}
+            </button>
+          ))}
+        </nav>
+        <div className="bento-column essay-mobile-body">
+          {chapterSections}
+        </div>
+        <div className="essay-mobile-next" aria-hidden="true">
+          {idx < CHAPTERS.length - 1 ? `滑到底再往上滑 · 下一章 ${CHAPTERS[idx + 1].label}` : `${cur.num} · 最後一章`}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Render：桌面 ──────────────────────────────────────────
   return (
     <div style={{
       display:               "grid",
@@ -572,37 +639,7 @@ function Essay() {
         zIndex: 2,
         pointerEvents: "auto", 
       }}>
-        <div style={{
-          transform: `translateY(-${idx * 100}%)`,
-          transition: "transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)",
-          height: "100%"
-        }}>
-
-        <EssaySection id="intro">
-          <IntroBento />
-        </EssaySection>
-
-        <EssaySection id="tire">
-          <TireBento />
-        </EssaySection>
-
-        <EssaySection id="weight">
-          <WeightBento />
-        </EssaySection>
-
-        <EssaySection id="aero">
-          <AeroBento />
-        </EssaySection>
-
-        <EssaySection id="brake">
-          <BrakeBento />
-        </EssaySection>
-
-        <EssaySection id="power">
-          <PowerBento />
-        </EssaySection>
-
-        </div>
+        {chapterSections}
       </div>
     </div>
   );
@@ -614,6 +651,7 @@ function EssaySection({ id, children }) {
   return (
     <section
       data-essay={id}
+      className="essay-section"
       style={{
         height: "100%", 
         padding: "32px 44px 40px 40px", // 減少上方 padding (從 56px -> 32px)，把整體往上拉
@@ -659,7 +697,7 @@ function BCard({ span = 1, variant, children, style }) {
 
 function BEye({ children, color, style }) {
   return (
-    <div contentEditable suppressContentEditableWarning style={{
+    <div contentEditable={!essayMobileQuery.matches} suppressContentEditableWarning style={{
       fontFamily: "var(--font-mono)",
       fontSize: 9,
       fontWeight: 600,
@@ -677,7 +715,7 @@ function BEye({ children, color, style }) {
 
 function BTitle({ size = 32, children, style }) {
   return (
-    <h2 contentEditable suppressContentEditableWarning style={{
+    <h2 className="essay-title" contentEditable={!essayMobileQuery.matches} suppressContentEditableWarning style={{
       fontFamily: "var(--font-sans)",
       fontSize: size,
       fontWeight: 800,
@@ -695,7 +733,7 @@ function BTitle({ size = 32, children, style }) {
 
 function BLead({ children, style }) {
   return (
-    <p contentEditable suppressContentEditableWarning style={{
+    <p contentEditable={!essayMobileQuery.matches} suppressContentEditableWarning style={{
       fontFamily: "var(--font-sans)",
       fontSize: 16,
       lineHeight: 1.55,
@@ -712,7 +750,7 @@ function BLead({ children, style }) {
 
 function BBody({ children, style }) {
   return (
-    <p contentEditable suppressContentEditableWarning style={{
+    <p contentEditable={!essayMobileQuery.matches} suppressContentEditableWarning style={{
       fontFamily: "var(--font-sans)",
       fontSize: 13.5,
       lineHeight: 1.6,

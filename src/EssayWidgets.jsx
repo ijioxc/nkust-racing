@@ -107,8 +107,9 @@ function FrictionCircle() {
   const update = (e) => {
     const rect = svgRef.current.getBoundingClientRect();
     const ev = e.touches ? e.touches[0] : e;
-    let x = ev.clientX - rect.left - cx;
-    let y = ev.clientY - rect.top - cy;
+    const k = 320 / rect.width;   // 手機上 SVG 會縮小，換算回 320 座標
+    let x = (ev.clientX - rect.left) * k - cx;
+    let y = (ev.clientY - rect.top) * k - cy;
     const r = Math.sqrt(x*x + y*y);
     if (r > R) { // clamp to circle edge
       x = (x / r) * R; y = (y / r) * R;

@@ -178,14 +178,14 @@ function Blueprint() {
 
   return (
     <>
-    <div style={{
+    <div className="bp-layout" style={{
       display: "grid", gridTemplateColumns: "1fr 340px",
       gap: "var(--gap-card)",
       height: "calc(100vh - 92px - 80px)",
       minHeight: 560, maxHeight: 900,
     }}>
       {/* Viewer */}
-      <div className="tcard large" style={{
+      <div className="tcard large bp-viewer" style={{
         padding: 0, overflow: "hidden", position: "relative",
         background: mode3d
           ? "linear-gradient(160deg, #0e0f11 0%, #1a1c22 100%)"
@@ -194,14 +194,14 @@ function Blueprint() {
         transition: "background .4s",
       }}>
         {/* Top controls bar */}
-        <div style={{
+        <div className="bp-topbar" style={{
           position: "absolute", top: 16, left: 16, right: 16, zIndex: 5,
           display: "flex", justifyContent: "space-between", gap: 10,
           alignItems: "flex-start",
         }}>
           {/* View selector (photo mode) / group tags (3D mode) */}
           {mode3d ? (
-            <div style={{
+            <div className="bp-groups" style={{
               display: "flex", gap: 4, flexWrap: "wrap", maxWidth: "72%",
             }}>
               {glGroups.length > 0 && glGroups.map(g => {
@@ -238,7 +238,7 @@ function Blueprint() {
           )}
 
           {/* Right controls */}
-          <div style={{
+          <div className="bp-controls" style={{
             display: "flex", gap: 4, padding: 4,
             background: mode3d ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.78)",
             backdropFilter: "blur(14px) saturate(160%)",
@@ -319,7 +319,8 @@ function Blueprint() {
                 color: "rgba(255,255,255,0.5)", letterSpacing: "0.08em",
                 whiteSpace: "nowrap",
               }}>
-                拖曳旋轉 · 滾輪縮放 · 點擊高亮零件群組
+                <span className="bp-hint-desktop">拖曳旋轉 · 滾輪縮放 · 點擊高亮零件群組</span>
+                <span className="bp-hint-touch">單指旋轉 · 雙指縮放 · 點零件高亮</span>
               </div>
             )}
           </div>
@@ -370,11 +371,11 @@ function Blueprint() {
             </div>
 
             {/* Bottom bar (2D only) */}
-            <div style={{
+            <div className="bp-bottombar" style={{
               position: "absolute", bottom: 16, left: 16, right: 16, zIndex: 5,
               display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
             }}>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              <div className="bp-subtags" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {[...new Set(viewParts.map(p => p.sub))].map(s => (
                   <SubsystemTag key={s} kind={s} size="sm"/>
                 ))}
@@ -465,7 +466,7 @@ function Blueprint() {
 // ─── View selector ────────────────────────────────────────
 function ViewStrip({ views, viewId, onChange, onEditView, onAddView }) {
   return (
-    <div style={{
+    <div className="bp-viewstrip" style={{
       display: "flex", gap: 4, padding: 4,
       background: "rgba(255,255,255,0.78)",
       backdropFilter: "blur(14px) saturate(160%)",

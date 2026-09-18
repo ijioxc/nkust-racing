@@ -138,23 +138,28 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
         <div style={hdrStyles.actions}>
 
 
-          {/* Mobile-only page cycle button — cycles essay ↔ blueprint ↔ dashboard */}
-          {(() => {
-            const pages = ["dashboard", "essay", "blueprint", "deck"];
-            const nextPage = pages[(pages.indexOf(page) + 1) % pages.length];
-            const icons = { dashboard: "target", essay: "book", blueprint: "wrench", deck: "layers" };
-            const labels = { dashboard: "工作台", essay: "技術手冊", blueprint: "車體圖解", deck: "簡報" };
-            return (
-              <button
-                className="hdr-page-cycle-btn"
-                style={hdrStyles.hdrBtn}
-                title={`切換至 ${labels[nextPage]}`}
-                onClick={() => onPageChange(nextPage)}
-              >
-                <UIIcon kind={icons[nextPage]} size={16} />
-              </button>
-            );
-          })()}
+          {/* 手機：四個頁面各一顆圖示，直接切換（桌面用上方文字導覽） */}
+          <nav className="hdr-page-icons" aria-label="頁面">
+            {[
+              { id: "dashboard", label: "工作台",   icon: "target" },
+              { id: "blueprint", label: "車體圖解", icon: "wrench" },
+              { id: "essay",     label: "技術手冊", icon: "book"   },
+              { id: "deck",      label: "簡報",     icon: "layers" },
+            ].map(p => {
+              const active = page === p.id;
+              return (
+                <button key={p.id}
+                  className={`hdr-page-icon-btn${active ? " is-active" : ""}`}
+                  style={hdrStyles.hdrBtn}
+                  title={p.label}
+                  aria-label={p.label}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => onPageChange(p.id)}>
+                  <UIIcon kind={p.icon} size={17} />
+                </button>
+              );
+            })}
+          </nav>
 
           {/* Avatar — doubles as the account / settings menu trigger (guest state) */}
           <div ref={menuWrapRef} style={{ position: "relative" }}>

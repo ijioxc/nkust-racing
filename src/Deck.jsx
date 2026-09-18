@@ -35,7 +35,8 @@ const DECK_SLIDES = [
     eyebrow: "車隊組別",
     title: "四個技術組，拼成一台車",
     body: "車體、底盤、動力、電力，各管一塊；再加上行銷與財務後勤，讓車隊跑得下去。",
-    car: { x: 0.68, y: 0.62, w: 0.56, zoom: 1.4, explode: 1, labels: true, spin: 0.35, tone: "dark" },
+    car: { x: 0.68, y: 0.62, w: 0.56, zoom: 1.4, explode: 1, labels: true, spin: 0.35, tone: "dark",
+           portrait: { zoom: 1.45 } },
   },
   {
     layout: "grid",
@@ -81,7 +82,7 @@ const DECK_SLIDES = [
   {
     layout: "split",
     image: "public/car-snapshots/untitled.17.jpg",
-    car: { x: 0.71, w: 0.56, focus: "車體", zoom: 0.78 },
+    car: { x: 0.71, w: 0.56, focus: "車體", zoom: 0.78, portrait: { zoom: 0.55 } },
     eyebrow: "從模型到實車",
     title: "每一根管件，都先在電腦裡跑過",
     body: "我們用 CAD 建模、CAE 模擬驗證強度，再進工廠加工焊接。你在課本上學的力學，會變成真的能跑的零件。",
@@ -308,8 +309,15 @@ function loadDeckCar() {
 //   tone："dark" 時底下鋪深色背景（封面／結尾）
 //   explode：1＝爆炸圖（進場後散開，離開時組回去）；labels：散開時在各系統上標名稱
 //   spin：自轉速度倍率（預設 1）
+//   portrait：手機直拿時覆寫上面的值（省略＝置中、依版型放到空白處，見 DECK_PORTRAIT_Y）
 // 沒有 car 欄位的投影片，車會淡出並停止繪製。
-const DECK_DETAIL_CAR = { x: 0.23, w: 0.46 };   // 組別卡片展開時：左側 46% 區域
+const DECK_DETAIL_CAR = { x: 0.23, w: 0.46, portrait: { zoom: 0.7 } };   // 組別卡片展開時：左側 46% 區域
+
+// 手機直拿：版面改上下堆疊，車水平置中，垂直放到該版型的空白處
+const DECK_PORTRAIT_Y = { cover: 0.3, closing: 0.2, stage: 0.62, split: 0.66, grid: 0.17 };
+function deckPortraitPose(pose, layout) {
+  return { ...pose, x: 0.5, w: 0.86, y: DECK_PORTRAIT_Y[layout] ?? pose.y, ...pose.portrait };
+}
 
 function DeckStageCar({ pose, onStatus }) {
   const canvasRef = React.useRef(null);
@@ -779,6 +787,8 @@ function DeckSlide({ slide, openCell, onOpenCell, carStatus }) {
 
 // ── 播放器 ──────────────────────────────────────────────
 
+const portraitQuery = window.matchMedia("(max-width: 768px) and (orientation: portrait)");
+
 function Deck() {
   const total = DECK_SLIDES.length;
   const [index, setIndex] = React.useState(() => {
@@ -791,7 +801,10 @@ function Deck() {
   const [pseudoFull, setPseudoFull] = React.useState(false);   // 不支援 Fullscreen API（iPhone Safari）時改用 CSS 鋪滿
   const [openCell, setOpenCell] = React.useState(null);   // 格狀投影片展開的卡片
   const [carStatus, setCarStatus] = React.useState("loading");
+  const [isPortrait, setIsPortrait] = React.useState(() => portraitQuery.matches);   // 手機直拿：直式排版
   const rootRef = React.useRef(null);
+  const stageRef = React.useRef(null);
+  const frameRefs = React.useRef([]);
   const touchX = React.useRef(null);
 
   const go = React.useCallback((i) => {
@@ -803,15 +816,22 @@ function Deck() {
     setOpenCell(null);
   }, [index]);
 
+  React.useEffect(() => {
+    const onChange = () => setIsPortrait(portraitQuery.matches);
+    portraitQuery.addEventListener("change", onChange);
+    return () => portraitQuery.removeEventListener("change", onChange);
+  }, []);
+
   // 3D 車這一刻該在哪：組別卡片展開時跟著系統走，其他投影片看 car 欄位
   const carPose = React.useMemo(() => {
     const s = DECK_SLIDES[index];
+    let pose = s.car || null;
     if (s.layout === "grid") {
       const cell = openCell != null ? s.cells[openCell] : null;
-      return cell && cell.car !== false ? { ...DECK_DETAIL_CAR, focus: cell.kind } : null;
+      pose = cell && cell.car !== false ? { ...DECK_DETAIL_CAR, focus: cell.kind } : null;
     }
-    return s.car || null;
-  }, [index, openCell]);
+    return pose && isPortrait ? deckPortraitPose(pose, s.layout) : pose;
+  }, [index, openCell, isPortrait]);
 
   const canFullscreen = typeof document !== "undefined" &&
     !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -859,26 +879,54 @@ function Deck() {
     return () => window.removeEventListener("keydown", onKey);
   }, [total, toggleFullscreen, openCell, pseudoFull]);
 
+  // 手機直拿：整份簡報改成上下捲動，目前這張＝跨過畫面中線的那張
+  React.useEffect(() => {
+    if (!isPortrait) return;
+    const io = new IntersectionObserver(entries => {
+      for (const en of entries) if (en.isIntersecting) setIndex(frameRefs.current.indexOf(en.target));
+    }, { root: stageRef.current, rootMargin: "-49% 0px -49% 0px" });
+    frameRefs.current.forEach(el => el && io.observe(el));
+    return () => io.disconnect();
+  }, [isPortrait]);
+
+  // 直拿時 index 由鍵盤、計數器或讀取進度改變 → 捲到那張（已在畫面中就不動）
+  const didScroll = React.useRef(false);
+  React.useEffect(() => {
+    const stage = stageRef.current, el = frameRefs.current[index];
+    if (!isPortrait) { didScroll.current = false; return; }
+    if (!stage || !el) return;
+    const mid = stage.scrollTop + stage.clientHeight / 2;
+    if (mid >= el.offsetTop && mid < el.offsetTop + el.offsetHeight) return;
+    stage.scrollTo({ top: el.offsetTop, behavior: didScroll.current ? "smooth" : "instant" });
+    didScroll.current = true;
+  }, [index, isPortrait]);
+
   const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
   const onTouchEnd = (e) => {
-    if (touchX.current == null) return;
+    if (touchX.current == null || isPortrait) return;
     const dx = e.changedTouches[0].clientX - touchX.current;
     touchX.current = null;
     if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
   };
 
   return (
-    <div ref={rootRef} className={`deck-root${isFull || pseudoFull ? " is-fullscreen" : ""}${pseudoFull ? " is-pseudo-full" : ""}${carStatus === "ready" ? " is-car-ready" : ""}`}>
+    <div ref={rootRef} className={`deck-root${isFull || pseudoFull ? " is-fullscreen" : ""}${pseudoFull ? " is-pseudo-full" : ""}${isPortrait ? " is-portrait" : ""}${carStatus === "ready" ? " is-car-ready" : ""}`}>
       <div className="deck-stage-wrap">
-        <div className="deck-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+        <div ref={stageRef} className="deck-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
              role="region" aria-roledescription="簡報" aria-label={`第 ${index + 1} 張，共 ${total} 張`}>
           <DeckStageCar pose={carPose} onStatus={setCarStatus}/>
           {DECK_SLIDES.map((s, i) => (
-            <div key={i} className={`deck-frame${i === index ? " is-active" : ""}`} aria-hidden={i !== index}>
+            <div key={i} ref={el => { frameRefs.current[i] = el; }}
+                 className={`deck-frame${i === index ? " is-active" : ""}`} aria-hidden={!isPortrait && i !== index}>
               <DeckSlide slide={s}
                          openCell={i === index ? openCell : null}
                          onOpenCell={setOpenCell}
                          carStatus={carStatus}/>
+              {isPortrait && i === 0 && (
+                <div className="deck-scroll-hint" aria-hidden="true">
+                  往下滑<UIIcon kind="chevron-down" size={16} strokeWidth={2}/>
+                </div>
+              )}
             </div>
           ))}
           <div className="deck-progress">
@@ -890,10 +938,9 @@ function Deck() {
         </div>
       </div>
 
-      <div className="deck-rotate-hint">手機橫放觀看效果較好</div>
 
       <div className="deck-controls">
-        <button className="deck-ctrl-btn" onClick={() => go(index - 1)} disabled={index === 0} aria-label="上一張">
+        <button className="deck-ctrl-btn deck-ctrl-btn--prev" onClick={() => go(index - 1)} disabled={index === 0} aria-label="上一張">
           <UIIcon kind="chevron-right" size={18} strokeWidth={2}/>
         </button>
         <div className="deck-dots">

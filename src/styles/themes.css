@@ -1059,8 +1059,8 @@ header + * .subBar,
 .bottom-tab-bar {
   display: none; /* 桌面隱藏 */
 }
-/* 頁面切換按鈕：桌面隱藏，手機顯示 */
-.hdr-page-cycle-btn { display: none; }
+/* 頁面圖示導覽：桌面隱藏，手機顯示 */
+.hdr-page-icons { display: none; }
 
 @media (max-width: 768px) {
   .bottom-tab-bar {
@@ -1501,8 +1501,14 @@ header + * .subBar,
   }
   /* 底部導覽列改為頭像左側一鍵切換，隱藏 bottom tab bar */
   .bottom-tab-bar { display: none !important; }
-  /* 頁面切換按鈕：手機顯示 */
-  .hdr-page-cycle-btn { display: flex !important; }
+  /* 頁面圖示導覽：手機顯示，目前頁面標藍 */
+  .hdr-page-icons { display: flex; align-items: center; gap: 2px; margin-right: 10px; }
+  .hdr-page-icon-btn.is-active {
+    color: var(--blue) !important;
+    background: rgba(0, 122, 255, 0.12) content-box !important;   /* 只填內框：比 44px 觸控區小一圈 */
+    padding: 8px 4px !important;
+    border-radius: 12px !important;
+  }
 
   /* ── Section-head：移除 hint 小字，但保留標題 ── */
   /* .section-head { display: none !important; } */
@@ -1949,9 +1955,11 @@ header + * .subBar,
 
 /* ═══════════════════════════════════════════════════════════
    DECK — 簡報頁（Deck.jsx）
-   16:9 舞台 + container query：字級用 cqw，縮放時比例不變
+   16:9 舞台 + container query：字級用 --u（預設 1cqw），縮放時比例不變
+   手機直拿（.is-portrait）：舞台改直式鋪滿，--u 放大、版型改成上下堆疊
    ═══════════════════════════════════════════════════════════ */
 .deck-root {
+  --u: 1cqw;                             /* 簡報字級／間距的單位：舞台寬的 1% */
   --deck-on-photo: #F5F5F7;              /* 照片上的文字：固定柔白（底下有深色 scrim） */
   --deck-on-photo-dim: rgba(245,245,247,0.72);
   position: fixed;
@@ -2029,15 +2037,15 @@ header + * .subBar,
   font-family: var(--font-system);
   box-sizing: border-box;
 }
-.deck-slide--pad { padding: 6.5cqw 7cqw; }
+.deck-slide--pad { padding: calc(6.5 * var(--u)) calc(7 * var(--u)); }
 .deck-slide--center { justify-content: center; }
 
 .deck-eyebrow {
-  font-size: 1.35cqw;
+  font-size: calc(1.35 * var(--u));
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--label-secondary);
-  margin-bottom: 1.4cqw;
+  margin-bottom: calc(1.4 * var(--u));
 }
 .deck-title-xl, .deck-title-lg, .deck-title-md {
   margin: 0;
@@ -2045,21 +2053,21 @@ header + * .subBar,
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
-.deck-title-xl { font-size: 7.2cqw; }
-.deck-title-lg { font-size: 4.6cqw; }
-.deck-title-md { font-size: 3.4cqw; margin-bottom: 3.2cqw; }
+.deck-title-xl { font-size: calc(7.2 * var(--u)); }
+.deck-title-lg { font-size: calc(4.6 * var(--u)); }
+.deck-title-md { font-size: calc(3.4 * var(--u)); margin-bottom: calc(3.2 * var(--u)); }
 .deck-subtitle {
-  margin: 1.6cqw 0 0;
-  font-size: 2cqw;
+  margin: calc(1.6 * var(--u)) 0 0;
+  font-size: calc(2 * var(--u));
   font-weight: 500;
 }
 .deck-body {
   margin: 0;
-  font-size: 1.75cqw;
+  font-size: calc(1.75 * var(--u));
   line-height: 1.7;
   color: var(--label-secondary);
 }
-.deck-body--wide { margin-top: 2.4cqw; max-width: 62cqw; }
+.deck-body--wide { margin-top: calc(2.4 * var(--u)); max-width: calc(62 * var(--u)); }
 
 /* ── 照片版（封面／結尾） ── */
 .deck-slide--photo { justify-content: flex-end; }
@@ -2077,7 +2085,7 @@ header + * .subBar,
 }
 .deck-photo-text {
   position: relative;
-  padding: 0 7cqw 6.5cqw;
+  padding: 0 calc(7 * var(--u)) calc(6.5 * var(--u));
   color: var(--deck-on-photo);
 }
 .deck-slide--photo .deck-eyebrow,
@@ -2085,50 +2093,50 @@ header + * .subBar,
 
 .deck-contacts {
   display: flex;
-  gap: 3.2cqw;
-  margin-top: 3.2cqw;
+  gap: calc(3.2 * var(--u));
+  margin-top: calc(3.2 * var(--u));
 }
-.deck-contact { display: flex; flex-direction: column; gap: 0.5cqw; }
-.deck-contact-label { font-size: 1.15cqw; color: var(--deck-on-photo-dim); letter-spacing: 0.04em; }
-.deck-contact-value { font-size: 1.8cqw; font-weight: 600; }
+.deck-contact { display: flex; flex-direction: column; gap: calc(0.5 * var(--u)); }
+.deck-contact-label { font-size: calc(1.15 * var(--u)); color: var(--deck-on-photo-dim); letter-spacing: 0.04em; }
+.deck-contact-value { font-size: calc(1.8 * var(--u)); font-weight: 600; }
 
 /* ── 卡片（欄位／格狀） ── */
 .deck-card {
   background: var(--bg-primary);
   border: 0.5px solid var(--separator);
-  border-radius: 1.6cqw;
-  padding: 2.4cqw;
+  border-radius: calc(1.6 * var(--u));
+  padding: calc(2.4 * var(--u));
 }
 .deck-card-head {
-  font-size: 1.9cqw;
+  font-size: calc(1.9 * var(--u));
   font-weight: 600;
-  margin-bottom: 0.8cqw;
+  margin-bottom: calc(0.8 * var(--u));
 }
 .deck-columns {
-  min-height: 24cqw;
+  min-height: calc(24 * var(--u));
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.4cqw;
+  gap: calc(2.4 * var(--u));
 }
 .deck-bullets {
-  margin: 1cqw 0 0;
+  margin: calc(1 * var(--u)) 0 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 1.3cqw;
+  gap: calc(1.3 * var(--u));
 }
 .deck-bullets li {
-  font-size: 1.75cqw;
+  font-size: calc(1.75 * var(--u));
   color: var(--label-primary);
-  padding-left: 2cqw;
+  padding-left: calc(2 * var(--u));
   position: relative;
 }
 .deck-bullets li::before {
   content: "";
   position: absolute;
   left: 0; top: 0.7em;
-  width: 0.7cqw; height: 0.7cqw;
+  width: calc(0.7 * var(--u)); height: calc(0.7 * var(--u));
   border-radius: 50%;
   background: var(--label-tertiary);
 }
@@ -2138,7 +2146,7 @@ header + * .subBar,
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr 1fr;
-  gap: 1.8cqw;
+  gap: calc(1.8 * var(--u));
 }
 .deck-cell {
   display: flex;
@@ -2160,12 +2168,12 @@ header + * .subBar,
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 2cqw;
+  gap: calc(2 * var(--u));
 }
 .deck-grid-hint {
-  font-size: 1.3cqw;
+  font-size: calc(1.3 * var(--u));
   color: var(--label-tertiary);
-  margin-bottom: 3.4cqw;
+  margin-bottom: calc(3.4 * var(--u));
 }
 
 /* 展開的系統介紹（覆蓋在格狀投影片上）：左側透明，露出底下常駐的 3D 車 */
@@ -2196,12 +2204,12 @@ header + * .subBar,
   justify-content: center;
   color: var(--label-quaternary);
 }
-.deck-detail-emblem svg { width: 12cqw; height: 12cqw; }
+.deck-detail-emblem svg { width: calc(12 * var(--u)); height: calc(12 * var(--u)); }
 .deck-detail-figure {   /* 去背人像：貼齊底部，完整顯示 */
   position: absolute;
-  inset: 3cqw 2cqw 0;
-  width: calc(100% - 4cqw);
-  height: calc(100% - 3cqw);
+  inset: calc(3 * var(--u)) calc(2 * var(--u)) 0;
+  width: calc(100% - calc(4 * var(--u)));
+  height: calc(100% - calc(3 * var(--u)));
   object-fit: contain;
   object-position: center bottom;
 }
@@ -2236,10 +2244,10 @@ header + * .subBar,
   opacity: 0;
   display: flex;
   align-items: center;
-  gap: 0.6cqw;
-  padding: 0.45cqw 1.1cqw;
+  gap: calc(0.6 * var(--u));
+  padding: calc(0.45 * var(--u)) calc(1.1 * var(--u));
   border-radius: 999px;
-  font-size: 1.25cqw;
+  font-size: calc(1.25 * var(--u));
   font-weight: 600;
   white-space: nowrap;
   color: #F5F5F7;
@@ -2251,7 +2259,7 @@ header + * .subBar,
 }
 .deck-car-label::before {
   content: "";
-  width: 0.55cqw; height: 0.55cqw;
+  width: calc(0.55 * var(--u)); height: calc(0.55 * var(--u));
   border-radius: 50%;
   background: var(--orange);
 }
@@ -2260,7 +2268,7 @@ header + * .subBar,
 .deck-stage-slide { color: var(--deck-on-photo); }
 .deck-stage-slide .deck-eyebrow,
 .deck-stage-slide .deck-body { color: var(--deck-on-photo-dim); }
-.deck-stage-body { max-width: 34cqw; margin-top: 1.6cqw; }
+.deck-stage-body { max-width: calc(34 * var(--u)); margin-top: calc(1.6 * var(--u)); }
 .deck-root:not(.is-car-ready) .deck-stage-slide { background: #111214; }
 
 /* 模型載好後，有 car 的投影片把照片淡掉，換成 3D 車（載入失敗就一直顯示照片） */
@@ -2272,59 +2280,59 @@ header + * .subBar,
   position: absolute;
   left: 0; right: 0;
   text-align: center;
-  font-size: 1.2cqw;
+  font-size: calc(1.2 * var(--u));
   color: var(--label-tertiary);
 }
 .deck-car-status { top: 50%; transform: translateY(-50%); }
-.deck-car-note { bottom: 3cqw; }
+.deck-car-note { bottom: calc(3 * var(--u)); }
 .deck-detail-title {
   display: flex;
   align-items: center;
-  gap: 1.4cqw;
-  margin-bottom: 2.4cqw;
+  gap: calc(1.4 * var(--u));
+  margin-bottom: calc(2.4 * var(--u));
 }
 .deck-detail-title .deck-title-md { margin: 0; }
 .deck-detail-icon { color: var(--label-secondary); display: flex; }
-.deck-detail-icon svg { width: 3cqw; height: 3cqw; }
-.deck-detail-what { margin-bottom: 2.6cqw; }
+.deck-detail-icon svg { width: calc(3 * var(--u)); height: calc(3 * var(--u)); }
+.deck-detail-what { margin-bottom: calc(2.6 * var(--u)); }
 .deck-detail-label {
-  font-size: 1.2cqw;
+  font-size: calc(1.2 * var(--u));
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--label-tertiary);
-  margin-bottom: 1cqw;
+  margin-bottom: calc(1 * var(--u));
 }
 .deck-detail-main {
-  padding: 5cqw 6cqw 4cqw 4.5cqw;
+  padding: calc(5 * var(--u)) calc(6 * var(--u)) calc(4 * var(--u)) calc(4.5 * var(--u));
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .deck-steps {
   list-style: none;
-  margin: 0.6cqw 0 0;
+  margin: calc(0.6 * var(--u)) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.4cqw;
+  gap: calc(1.4 * var(--u));
 }
 .deck-steps li {
   display: flex;
-  gap: 1.4cqw;
+  gap: calc(1.4 * var(--u));
   align-items: baseline;
-  font-size: 1.6cqw;
+  font-size: calc(1.6 * var(--u));
   line-height: 1.5;
 }
 .deck-detail-pager {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8cqw;
-  margin-top: 3cqw;
+  gap: calc(0.8 * var(--u));
+  margin-top: calc(3 * var(--u));
 }
 .deck-detail-tab {
   font: inherit;
-  font-size: 1.25cqw;
-  padding: 0.6cqw 1.4cqw;
+  font-size: calc(1.25 * var(--u));
+  padding: calc(0.6 * var(--u)) calc(1.4 * var(--u));
   border-radius: var(--radius-full);
   border: 0.5px solid var(--separator);
   background: transparent;
@@ -2336,7 +2344,7 @@ header + * .subBar,
 .deck-detail-tab.is-active { background: var(--blue); border-color: var(--blue); color: #fff; }
 .deck-detail-close {
   position: absolute;
-  top: 2cqw; right: 2cqw;
+  top: calc(2 * var(--u)); right: calc(2 * var(--u));
   min-width: 44px; min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -2354,8 +2362,8 @@ header + * .subBar,
   margin-bottom: auto;
   display: flex;
 }
-.deck-cell-icon svg { width: 2.6cqw; height: 2.6cqw; }
-.deck-cell-text { font-size: 1.5cqw; color: var(--label-secondary); line-height: 1.5; }
+.deck-cell-icon svg { width: calc(2.6 * var(--u)); height: calc(2.6 * var(--u)); }
+.deck-cell-text { font-size: calc(1.5 * var(--u)); color: var(--label-secondary); line-height: 1.5; }
 
 /* ── 左文右圖 ── */
 .deck-split {
@@ -2363,7 +2371,7 @@ header + * .subBar,
 }
 .deck-split-text {
   flex: 0 0 42%;
-  padding: 6.5cqw 3cqw 6.5cqw 7cqw;
+  padding: calc(6.5 * var(--u)) calc(3 * var(--u)) calc(6.5 * var(--u)) calc(7 * var(--u));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2385,12 +2393,12 @@ header + * .subBar,
 .deck-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.4cqw 4cqw;
+  gap: calc(2.4 * var(--u)) calc(4 * var(--u));
   align-content: center;
 }
-.deck-list-row { display: flex; gap: 1.8cqw; align-items: baseline; }
+.deck-list-row { display: flex; gap: calc(1.8 * var(--u)); align-items: baseline; }
 .deck-list-num {
-  font-size: 1.5cqw;
+  font-size: calc(1.5 * var(--u));
   font-weight: 600;
   font-feature-settings: var(--num-features);
   color: var(--label-tertiary);
@@ -2398,34 +2406,34 @@ header + * .subBar,
 
 /* ── 團隊管理：旗號（沿用 columns）／水線（沿用 split） ── */
 .deck-flags { grid-template-columns: repeat(3, 1fr); min-height: 0; }
-.deck-flags .deck-bullets { margin-top: 1.4cqw; gap: 0.9cqw; }
-.deck-flags .deck-bullets li { font-size: 1.5cqw; line-height: 1.45; }
+.deck-flags .deck-bullets { margin-top: calc(1.4 * var(--u)); gap: calc(0.9 * var(--u)); }
+.deck-flags .deck-bullets li { font-size: calc(1.5 * var(--u)); line-height: 1.45; }
 .deck-flags .deck-bullets li::before { top: 0.62em; }
-.deck-flags-foot { margin-top: 2.2cqw; font-size: 1.6cqw; }
+.deck-flags-foot { margin-top: calc(2.2 * var(--u)); font-size: calc(1.6 * var(--u)); }
 
-.deck-lamp-head { display: flex; align-items: center; gap: 1cqw; }
+.deck-lamp-head { display: flex; align-items: center; gap: calc(1 * var(--u)); }
 .deck-lamp {   /* 燈號：實心圓＋同色淡光暈 */
-  width: 1.5cqw; height: 1.5cqw;
+  width: calc(1.5 * var(--u)); height: calc(1.5 * var(--u));
   flex-shrink: 0;
   border-radius: var(--radius-full);
   background: var(--lamp);
-  box-shadow: 0 0 0 0.45cqw color-mix(in srgb, var(--lamp) 22%, transparent);
+  box-shadow: 0 0 0 calc(0.45 * var(--u)) color-mix(in srgb, var(--lamp) 22%, transparent);
 }
-.deck-flow-arrow { font-size: 1.6cqw; color: var(--label-tertiary); margin: 0.8cqw 0; }
+.deck-flow-arrow { font-size: calc(1.6 * var(--u)); color: var(--label-tertiary); margin: calc(0.8 * var(--u)) 0; }
 .deck-flow-facts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2.4cqw;
-  margin-top: 2.8cqw;
-  padding-top: 2cqw;
+  gap: calc(2.4 * var(--u));
+  margin-top: calc(2.8 * var(--u));
+  padding-top: calc(2 * var(--u));
   border-top: 0.5px solid var(--separator);
 }
-.deck-flow-fact-head { font-size: 1.5cqw; font-weight: 600; margin-bottom: 0.4cqw; }
+.deck-flow-fact-head { font-size: calc(1.5 * var(--u)); font-weight: 600; margin-bottom: calc(0.4 * var(--u)); }
 .deck-title--lines { white-space: pre-line; }
-.deck-aside { margin-top: 2.4cqw; padding: 1.8cqw 2cqw; }
-.deck-aside .deck-card-head { font-size: 1.5cqw; }
-.deck-aside .deck-cell-text { font-size: 1.3cqw; }
-.deck-wl-media { display: flex; align-items: center; padding: 0 7cqw 0 2cqw; }
+.deck-aside { margin-top: calc(2.4 * var(--u)); padding: calc(1.8 * var(--u)) calc(2 * var(--u)); }
+.deck-aside .deck-card-head { font-size: calc(1.5 * var(--u)); }
+.deck-aside .deck-cell-text { font-size: calc(1.3 * var(--u)); }
+.deck-wl-media { display: flex; align-items: center; padding: 0 calc(7 * var(--u)) 0 calc(2 * var(--u)); }
 .deck-wl { width: 100%; height: auto; display: block; font-family: var(--font-system); }
 .deck-wl-water { fill: var(--fill-quaternary); }
 .deck-wl-line { stroke: var(--separator-opaque); stroke-width: 1.5; }
@@ -2528,30 +2536,167 @@ header + * .subBar,
   }
 }
 
+/* 很窄的手機：藏起隊名文字，讓出空間給頁面圖示 */
+@media (max-width: 359px) {
+  .hdr-wordmark { display: none !important; }
+}
+
 @media (max-width: 768px) {
   .deck-root { padding: 16px 16px calc(12px + env(safe-area-inset-bottom)); gap: 8px; }
   .deck-stage { border-radius: var(--radius-md); }
   .deck-dots { display: none; }
 }
-.deck-rotate-hint { display: none; }
-@media (max-width: 768px) and (orientation: portrait) {
-  .deck-rotate-hint {
-    display: block;
-    text-align: center;
-    font-size: 13px;
-    color: var(--label-tertiary);
-  }
-  .deck-root.is-fullscreen .deck-rotate-hint { display: none; }
+
+/* ── 手機直拿：整份簡報改成上下捲動，每張一個畫面；版型改成上下堆疊 ── */
+.deck-root.is-portrait { --u: 2.6cqw; padding: 0 0 env(safe-area-inset-bottom); gap: 0; }
+/* 舞台貼齊螢幕邊緣，不留外框 */
+.deck-root.is-portrait .deck-stage {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
 }
+/* 標題只在標點處換行，避免「加／入」這種斷法；太長才硬斷 */
+.deck-root.is-portrait :is(.deck-title-xl, .deck-title-lg, .deck-title-md) {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.deck-root.is-portrait .deck-stage {
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.deck-root.is-portrait .deck-stage::-webkit-scrollbar { display: none; }
+/* 3D 車固定在畫面上，投影片從它上面捲過去 */
+.deck-root.is-portrait .deck-car-layer {
+  position: sticky;
+  top: 0;
+  height: 100cqh;
+  margin-bottom: -100cqh;
+}
+.deck-root.is-portrait .deck-frame {
+  position: relative;
+  inset: auto;
+  min-height: 100cqh;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition: none;
+  scroll-snap-align: start;
+}
+.deck-root.is-portrait .deck-slide { position: relative; inset: auto; min-height: 100cqh; }
+/* 捲動時內容已經看得到，不再播進場動畫（避免閃一下） */
+.deck-root.is-portrait .deck-frame * { animation: none !important; }
+/* 翻頁點擊區、進度條、左右箭頭與圓點都不需要 */
+.deck-root.is-portrait :is(.deck-hit, .deck-progress, .deck-dots, .deck-ctrl-btn--prev, .deck-ctrl-btn--next) { display: none; }
+.deck-root.is-portrait .deck-detail-main { overflow-y: auto; scrollbar-width: none; }
+/* 右下角浮動小膠囊：第幾張／全螢幕 */
+.deck-root.is-portrait .deck-controls {
+  position: absolute;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  gap: 0;
+  padding: 0 2px 0 12px;
+  border-radius: var(--radius-full);
+  background: var(--header-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 0.5px solid var(--header-border);
+  opacity: 1;
+  left: auto;
+  transform: none;
+  z-index: 6;
+}
+.deck-root.is-portrait .deck-counter { min-width: 0; }
+/* 封面底部：提示往下滑 */
+.deck-scroll-hint {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: calc(2.4 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--deck-on-photo-dim);
+  pointer-events: none;
+}
+.deck-root.is-portrait .deck-slide > * { flex-shrink: 0; }
+/* 置中版型：內容超過一頁時從頂端開始捲，不往上溢出 */
+.deck-root.is-portrait .deck-slide--center { justify-content: flex-start; }
+.deck-root.is-portrait .deck-slide--center > :first-child { margin-top: auto; }
+.deck-root.is-portrait .deck-slide--center > :last-child { margin-bottom: auto; }
+.deck-root.is-portrait { --deck-bottom: calc(4 * var(--u) + 56px); }   /* 底部留給浮動計數器 */
+.deck-root.is-portrait .deck-slide--pad { padding: calc(6 * var(--u)) calc(4.5 * var(--u)) var(--deck-bottom); }
+.deck-root.is-portrait .deck-title-xl { font-size: calc(5.2 * var(--u)); }
+.deck-root.is-portrait .deck-title-lg { font-size: calc(3.6 * var(--u)); }
+.deck-root.is-portrait .deck-title-md { font-size: calc(2.9 * var(--u)); margin-bottom: calc(2.4 * var(--u)); }
+.deck-root.is-portrait .deck-body--wide { max-width: none; }
+
+/* 封面／結尾：車在上半，文字壓在下半的深色漸層上 */
+.deck-root.is-portrait .deck-scrim {
+  background: linear-gradient(0deg, rgba(10,10,12,0.9) 0%, rgba(10,10,12,0.6) 42%, rgba(10,10,12,0.05) 70%);
+}
+.deck-root.is-portrait .deck-photo-text { padding: 0 calc(4.5 * var(--u)) var(--deck-bottom); }
+.deck-root.is-portrait .deck-contacts { flex-direction: column; gap: calc(1.6 * var(--u)); }
+
+/* 爆炸圖：文字在上，車在下 */
+.deck-root.is-portrait .deck-stage-body { max-width: none; }
+
+/* 欄位／燈號／流程／清單：一欄 */
+.deck-root.is-portrait .deck-columns,
+.deck-root.is-portrait .deck-flags,
+.deck-root.is-portrait .deck-list,
+.deck-root.is-portrait .deck-flow-facts { grid-template-columns: 1fr; min-height: 0; }
+.deck-root.is-portrait .deck-columns { gap: calc(1.6 * var(--u)); }
+.deck-root.is-portrait .deck-list { gap: calc(1.8 * var(--u)); }
+.deck-root.is-portrait .deck-flow-facts { gap: calc(1.2 * var(--u)); }
+.deck-root.is-portrait .deck-card { padding: calc(1.8 * var(--u)); }
+.deck-root.is-portrait .deck-bullets { gap: calc(0.8 * var(--u)); }
+
+/* 組別卡片：兩欄三列 */
+.deck-root.is-portrait .deck-grid {
+  flex: 0 0 auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: none;
+  grid-auto-rows: minmax(calc(14 * var(--u)), auto);
+  gap: calc(1.2 * var(--u));
+}
+.deck-root.is-portrait .deck-grid-head { flex-direction: column; align-items: flex-start; gap: 0; }
+.deck-root.is-portrait .deck-grid-hint { margin-bottom: calc(1.6 * var(--u)); }
+.deck-root.is-portrait .deck-cell-icon { margin-bottom: calc(1.2 * var(--u)); }
+/* 展開：上方 34% 給 3D 車／圖，下方文字可捲動 */
+.deck-root.is-portrait .deck-detail { grid-template-columns: 1fr; grid-template-rows: 34% 1fr; }
+.deck-root.is-portrait .deck-detail-main {
+  justify-content: flex-start;
+  overflow-y: auto;
+  padding: calc(2 * var(--u)) calc(4.5 * var(--u)) var(--deck-bottom);
+}
+.deck-root.is-portrait .deck-detail-emblem svg { width: calc(8 * var(--u)); height: calc(8 * var(--u)); }
+
+/* 左文右圖 → 上文下圖 */
+.deck-root.is-portrait .deck-split { flex-direction: column; }
+.deck-root.is-portrait .deck-split-text {
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  padding: calc(6 * var(--u)) calc(4.5 * var(--u)) calc(2 * var(--u));
+}
+.deck-root.is-portrait .deck-split-media { flex: 1 0 calc(40 * var(--u)); }
+.deck-root.is-portrait .deck-wl-media { flex: 0 0 auto; padding: 0 calc(4.5 * var(--u)) var(--deck-bottom); }
 
 /* ── DECK 動效：進場、封面緩慢推近、進度條 ───────────────── */
 
 @keyframes deck-rise {
-  from { opacity: 0; transform: translateY(1.6cqw); }
+  from { opacity: 0; transform: translateY(calc(1.6 * var(--u))); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes deck-pop {
-  from { opacity: 0; transform: translateY(1.2cqw) scale(0.985); }
+  from { opacity: 0; transform: translateY(calc(1.2 * var(--u))) scale(0.985); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes deck-kenburns {
@@ -2607,7 +2752,7 @@ header + * .subBar,
 .deck-progress {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 0.3cqw;
+  height: calc(0.3 * var(--u));
   min-height: 2px;
   background: var(--fill-quaternary);
   z-index: 5;
@@ -2623,4 +2768,141 @@ header + * .subBar,
   .deck-frame.is-active *,
   .deck-detail * { animation: none !important; }
   .deck-progress-fill { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ESSAY（技術手冊）— 手機直式：上方 3D、章節標籤、下方單欄內容
+   ═══════════════════════════════════════════════════════════ */
+.essay-mobile {
+  position: fixed;
+  inset: var(--hdr-total-h, 52px) 0 0 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+.essay-mobile-stage {
+  position: relative;
+  flex: 0 0 34%;
+  min-height: 180px;
+  background: radial-gradient(ellipse 70% 90% at 50% 55%, #24272c 0%, #121316 70%, #0a0a0c 100%);
+}
+.essay-mobile-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.essay-mobile-chapters {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 16px;
+  scrollbar-width: none;
+  border-bottom: 0.5px solid var(--separator);
+  background: var(--bg-primary);
+}
+.essay-mobile-chapters::-webkit-scrollbar { display: none; }
+.essay-mobile-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  border: 0.5px solid var(--separator);
+  background: transparent;
+  color: var(--label-secondary);
+  font: 500 13px var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.essay-mobile-chip-num { font-family: var(--font-mono); font-size: 11px; color: var(--label-tertiary); }
+.essay-mobile-chip.is-active { background: var(--orange); border-color: var(--orange); color: #fff; font-weight: 600; }
+.essay-mobile-chip.is-active .essay-mobile-chip-num { color: rgba(255,255,255,0.75); }
+.essay-mobile-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  border-left: 0 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: transparent !important;
+}
+.essay-mobile .essay-section {
+  padding: 20px 16px 56px !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.essay-mobile-next {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 18px 16px calc(8px + env(safe-area-inset-bottom));
+  text-align: center;
+  font-size: 11px;
+  color: var(--label-tertiary);
+  background: linear-gradient(transparent, var(--bg-primary) 55%);
+  pointer-events: none;
+}
+/* 內容單欄：桌面的兩欄網格、固定寬度的圖都改成跟著螢幕寬 */
+.essay-mobile .essay-title { font-size: 30px !important; }
+.essay-mobile [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+.essay-mobile [style*="grid-column"] { grid-column: auto !important; }
+.essay-mobile .essay-section svg[width] { max-width: 100%; height: auto; }
+.essay-mobile .essay-section br { display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   BLUEPRINT（車體圖解）— 手機直式：上方圖／3D，下方零件資訊（整頁捲動）
+   ═══════════════════════════════════════════════════════════ */
+.bp-hint-touch { display: none; }
+@media (max-width: 768px) {
+  .bp-layout {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    gap: 12px !important;
+  }
+  .bp-viewer {
+    height: 56svh;
+    min-height: 340px;
+    margin: 0 -16px;              /* 圖貼齊螢幕左右邊 */
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+  }
+  /* 上方：視圖切換（左右滑）在上一列，模式切換在下一列靠右 */
+  .bp-topbar {
+    top: 10px !important; left: 10px !important; right: 10px !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .bp-viewstrip {
+    overflow-x: auto;
+    scrollbar-width: none;
+    align-self: flex-start;
+    max-width: 100%;
+  }
+  .bp-viewstrip::-webkit-scrollbar { display: none; }
+  .bp-viewstrip > button { flex-shrink: 0; min-width: 56px !important; padding: 4px 8px !important; }
+  .bp-groups {
+    max-width: none !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bp-groups::-webkit-scrollbar { display: none; }
+  .bp-groups > button { flex-shrink: 0; min-height: 32px; }
+  .bp-controls { align-self: flex-end; }
+  .bp-controls button { min-height: 32px; }
+  /* 下方：子系統標籤在手機上太擠，只留新增與計數 */
+  .bp-bottombar { left: 10px !important; right: 10px !important; bottom: 10px !important; justify-content: flex-end !important; }
+  .bp-subtags { display: none !important; }
+  .bp-hint-desktop { display: none; }
+  .bp-hint-touch { display: inline; }
 }
