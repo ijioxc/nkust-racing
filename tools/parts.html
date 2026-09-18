@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>零件標記工具 — NKUST Racing</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #17171a; color: #f5f5f7;
+         font-family: -apple-system, "PingFang TC", sans-serif; display: flex; height: 100vh; }
+  #view { flex: 1; position: relative; }
+  canvas { width: 100%; height: 100%; display: block; }
+  #side { width: 300px; border-left: 1px solid #2e2e34; padding: 16px; overflow: auto; font-size: 13px; }
+  h1 { font-size: 15px; margin: 0 0 12px; }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  button { font: inherit; background: #2a2a30; color: #f5f5f7; border: 1px solid #3a3a42;
+           border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+  button.on { background: #0a84ff; border-color: #0a84ff; }
+  #info { color: #a0a0a8; line-height: 1.6; white-space: pre-wrap; }
+  #legend { margin: 14px 0; display: grid; gap: 4px; }
+  #legend div { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  #legend div.hidden { opacity: 0.4; text-decoration: line-through; }
+  #legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  #legend span:last-child { margin-left: auto; color: #8e8e93; font-variant-numeric: tabular-nums; }
+  kbd { background: #2a2a30; border: 1px solid #3a3a42; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
+  #saved { color: #30d158; height: 16px; font-size: 12px; }
+  #hud { position: absolute; left: 12px; top: 12px; font-size: 12px; color: #a0a0a8; }
+</style>
+</head>
+<body>
+<div id="view"><canvas id="c"></canvas><div id="hud">載入中…</div></div>
+<div id="side">
+  <h1>零件標記工具</h1>
+  <div class="row" id="views"></div>
+  <div class="row" id="subsystems"></div>
+  <div id="legend"></div>
+  <div id="saved"></div>
+  <div id="info">點零件選取（Shift 多選）→ 按系統按鈕或數字鍵指派。
+<kbd>1</kbd>–<kbd>7</kbd> 指派　<kbd>Z</kbd> 復原　<kbd>Esc</kbd> 取消選取
+沒選零件時按系統按鈕＝只看該系統。
+點左邊色塊＝暫時隱藏該系統（被擋住的零件就點得到）。
+<kbd>Alt</kbd>+點＝在重疊零件間輪流切換。</div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script src="../src/model-parts.js"></script>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const SUBSYSTEMS = ["車體", "引擎", "懸吊", "煞車", "電裝", "空力", "其他"];
+const COLORS = {
+  "車體": 0xff453a, "引擎": 0xff9f0a, "懸吊": 0xbf5af2, "煞車": 0x0a84ff,
+  "電裝": 0xffd60a, "空力": 0x64d2ff, "其他": 0x8e8e93, "": 0x9a9ea4,
+};
+
+const canvas = document.getElementById("c");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x17171a);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.3); sun.position.set(4, 8, 5); scene.add(sun);
+const camera = new THREE.PerspectiveCamera(35, 1, 0.05, 200);
+const controls = new OrbitControls(camera, canvas);
+
+const pivot = new THREE.Group();
+scene.add(pivot);
+let radius = 2, parts = [], assign = {};   // assign["group:id"] = 系統
+
+const gltf = await new GLTFLoader().loadAsync("../public/models/chassis_final.glb");
+const root = gltf.scene;
+const size0 = new THREE.Box3().setFromObject(root).getSize(new THREE.Vector3());
+root.scale.setScalar(3.2 / Math.max(size0.x, size0.y, size0.z));
+root.updateMatrixWorld(true);
+const center = new THREE.Box3().setFromObject(root).getCenter(new THREE.Vector3());
+root.position.sub(center);
+pivot.add(root);
+radius = new THREE.Box3().setFromObject(pivot).getBoundingSphere(new THREE.Sphere()).radius;
+
+// 依散件拆成獨立 Mesh，方便單獨上色與點選
+const meshes = [];
+root.traverse(o => { if (o.isMesh) meshes.push(o); });
+for (const mesh of meshes) {
+  const geo = mesh.geometry;
+  const { partOfTri, count } = window.splitLooseParts(geo);
+  const idx = geo.index;
+  const buckets = Array.from({ length: count }, () => []);
+  for (let t = 0; t < partOfTri.length; t++) {
+    const p = buckets[partOfTri[t]];
+    p.push(idx.getX(t * 3), idx.getX(t * 3 + 1), idx.getX(t * 3 + 2));
+  }
+  buckets.forEach((indices, id) => {
+    const g = geo.clone();
+    g.setIndex(indices);
+    const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({
+      color: COLORS[""], metalness: 0.5, roughness: 0.4, transparent: true, side: THREE.DoubleSide,
+    }));
+    m.userData = { group: mesh.name, id, key: mesh.name + ":" + id };
+    mesh.parent.add(m);
+    parts.push(m);
+  });
+  mesh.visible = false;
+}
+
+// 預設指派：沿用 GLB 原本的群組
+const DEFAULT = { chassis: "車體", bodywork: "車體", drivetrain: "引擎",
+                  suspension: "懸吊", wheel: "懸吊", brake: "煞車", aero: "空力" };
+try {
+  const saved = await fetch("../public/models/chassis_final.parts.json").then(r => r.ok ? r.json() : null);
+  if (saved?.assign) assign = saved.assign;
+} catch {}
+parts.forEach(p => { if (!assign[p.userData.key]) assign[p.userData.key] = DEFAULT[p.userData.group] || "其他"; });
+
+let selected = new Set();
+let filter = null;          // 只顯示某個系統
+const hidden = new Set();   // 暫時隱藏的系統（也不會被點到）
+let mirrorMode = true;      // 選取時自動帶上左右對稱的另一件
+const undoStack = [];
+
+// 左右對稱面（z）與對稱件對照
+const zs = parts.map(p => boxOf(p).getCenter(new THREE.Vector3()).z);
+const MIRROR_Z = zs.reduce((a, b) => a + b, 0) / zs.length;
+function boxOf(p) {
+  if (!p.userData.box) p.userData.box = new THREE.Box3().setFromObject(p);
+  return p.userData.box;
+}
+function twinOf(part) {
+  const c = boxOf(part).getCenter(new THREE.Vector3());
+  if (Math.abs(c.z - MIRROR_Z) < 0.02) return null;          // 位於中線，本身對稱
+  const m = new THREE.Vector3(c.x, c.y, 2 * MIRROR_Z - c.z);
+  let best = null, bestD = 0.06;
+  for (const q of parts) {
+    if (q === part) continue;
+    const d = boxOf(q).getCenter(new THREE.Vector3()).distanceTo(m);
+    if (d < bestD) { bestD = d; best = q; }
+  }
+  return best;
+}
+function paint() {
+  parts.forEach(p => {
+    const sub = assign[p.userData.key];
+    const sel = selected.has(p.userData.key);
+    const dim = filter && sub !== filter;
+    p.visible = !hidden.has(sub);
+    p.material.color.setHex(sel ? 0xffffff : COLORS[sub] ?? COLORS[""]);
+    p.material.emissive.setHex(sel ? 0x444444 : 0x000000);
+    p.material.opacity = dim ? 0.08 : 1;
+    p.material.depthWrite = !dim;
+  });
+  document.getElementById("hud").textContent =
+    `零件 ${parts.length}　選取 ${selected.size}` + (filter ? `　只看 ${filter}` : "");
+
+  const count = {};
+  parts.forEach(p => { const s = assign[p.userData.key]; count[s] = (count[s] || 0) + 1; });
+  const legend = document.getElementById("legend");
+  legend.innerHTML = SUBSYSTEMS.map(s =>
+    `<div data-sub="${s}" class="${hidden.has(s) ? "hidden" : ""}" title="點一下隱藏／顯示">` +
+    `<i style="background:#${(COLORS[s] ?? 0x888888).toString(16).padStart(6, "0")}"></i>` +
+    `<span>${s}</span><span>${count[s] || 0}</span></div>`).join("");
+  legend.querySelectorAll("div").forEach(el => el.onclick = () => {
+    const s = el.dataset.sub;
+    hidden.has(s) ? hidden.delete(s) : hidden.add(s);
+    paint();
+  });
+}
+
+// 指派（可復原）
+function apply(keys, sub) {
+  if (!keys.length) return;
+  undoStack.push(keys.map(k => [k, assign[k]]));
+  keys.forEach(k => assign[k] = sub);
+  paint(); save();
+}
+function undo() {
+  const last = undoStack.pop();
+  if (!last) return;
+  last.forEach(([k, sub]) => assign[k] = sub);
+  paint(); save();
+}
+
+const VIEWS = {
+  iso:   [ 1.0,  0.55,  1.0],
+  side:  [ 0,    0.12,  1.0],
+  front: [ 1.0,  0.12,  0],
+  top:   [ 0.01, 1.0,   0.01],
+  rear:  [-1.0,  0.12,  0],
+};
+function setView(name) {
+  const v = new THREE.Vector3(...(VIEWS[name] || VIEWS.iso)).normalize();
+  const vHalf = THREE.MathUtils.degToRad(camera.fov / 2);
+  const hHalf = Math.atan(Math.tan(vHalf) * camera.aspect);
+  camera.position.copy(v).multiplyScalar((radius * 0.95) / Math.sin(Math.min(vHalf, hHalf)));
+  camera.lookAt(0, 0, 0);
+  controls.target.set(0, 0, 0);
+  controls.update();
+}
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas);
+resize();
+setView("iso");
+renderer.setAnimationLoop(() => renderer.render(scene, camera));
+
+// ── 側欄 UI ──
+const viewsEl = document.getElementById("views");
+Object.keys(VIEWS).forEach(n => {
+  const b = document.createElement("button");
+  b.textContent = n; b.onclick = () => setView(n);
+  viewsEl.appendChild(b);
+});
+const mirrorBtn = document.createElement("button");
+mirrorBtn.textContent = "含對稱件";
+mirrorBtn.className = "on";
+mirrorBtn.title = "選一件時自動連左右對稱的另一件一起選";
+mirrorBtn.onclick = () => { mirrorMode = !mirrorMode; mirrorBtn.className = mirrorMode ? "on" : ""; };
+document.getElementById("views").appendChild(mirrorBtn);
+
+const subEl = document.getElementById("subsystems");
+SUBSYSTEMS.forEach(s => {
+  const b = document.createElement("button");
+  b.textContent = s;
+  b.onclick = () => assignOrFilter(s);
+  subEl.appendChild(b);
+});
+
+function assignOrFilter(sub) {
+  if (selected.size) { apply([...selected], sub); selected.clear(); paint(); }
+  else { filter = filter === sub ? null : sub; paint(); }
+}
+
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { selected.clear(); paint(); }
+  else if (e.key === "z" || e.key === "Z") undo();
+  else if (/^[1-7]$/.test(e.key)) assignOrFilter(SUBSYSTEMS[+e.key - 1]);
+});
+
+// 點選零件（Alt＋點：在重疊的零件之間輪流切換）
+const ray = new THREE.Raycaster();
+let lastHits = [], lastHitIdx = 0;
+canvas.addEventListener("click", (e) => {
+  const r = canvas.getBoundingClientRect();
+  ray.setFromCamera(new THREE.Vector2(
+    ((e.clientX - r.left) / r.width) * 2 - 1,
+    -((e.clientY - r.top) / r.height) * 2 + 1), camera);
+  const hits = ray.intersectObjects(parts.filter(p => p.visible), false);
+  if (!hits.length) { selected.clear(); lastHits = []; paint(); return; }
+
+  const keys = hits.map(h => h.object.userData.key);
+  let pick;
+  if (e.altKey && lastHits.length && keys[0] === lastHits[0]) {
+    lastHitIdx = (lastHitIdx + 1) % keys.length;
+    pick = hits[lastHitIdx].object;
+  } else {
+    lastHits = keys; lastHitIdx = 0; pick = hits[0].object;
+  }
+
+  const k = pick.userData.key;
+  if (!e.shiftKey) selected.clear();
+  if (selected.has(k)) selected.delete(k);
+  else {
+    selected.add(k);
+    const twin = mirrorMode ? twinOf(pick) : null;
+    if (twin) selected.add(twin.userData.key);
+  }
+  document.getElementById("info").textContent =
+    `${k}　目前：${assign[k]}` +
+    (hits.length > 1 ? `　（此處疊了 ${hits.length} 件，Alt＋點切換）` : "") +
+    `\n按系統按鈕或數字鍵指派`;
+  paint();
+});
+
+// 存檔（給 tools/serve.py 接收）
+let saveTimer = 0;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    fetch("/__save-parts", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assign }, null, 1),
+    }).then(() => {
+      const el = document.getElementById("saved");
+      el.textContent = "已存檔 " + new Date().toLocaleTimeString("zh-TW", { hour12: false });
+    }).catch(() => { document.getElementById("saved").textContent = "存檔失敗（請用 tools/serve.py 開啟）"; });
+  }, 400);
+}
+
+paint();
+Object.assign(window, { PARTS: { parts, assign, paint, setView, save,
+  setFilter: (s) => { filter = s; paint(); },
+  select: (keys) => { selected = new Set(keys); paint(); },
+  assignKeys: (keys, sub) => { keys.forEach(k => assign[k] = sub); paint(); save(); },
+  list: () => parts.map(p => ({ key: p.userData.key, sub: assign[p.userData.key] })),
+} });
+</script>
+</body>
+</html>

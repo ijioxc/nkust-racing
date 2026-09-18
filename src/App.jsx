@@ -109,6 +109,7 @@ function App() {
         )}
         {page === "blueprint" && <Blueprint/>}
         {page === "essay"     && <Essay/>}
+        {page === "deck"      && <Deck/>}
         {page === "twin"      && (
           <div style={{
             position: "fixed",
@@ -151,6 +152,7 @@ function App() {
             { value: "dashboard", label: "工作台" },
             { value: "blueprint", label: "車體圖解" },
             { value: "essay",     label: "技術手冊" },
+            { value: "deck",      label: "簡報" },
             { value: "twin",      label: "數位雙生" },
           ]}
           onChange={v => setPage(v)}/>

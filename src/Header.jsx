@@ -23,6 +23,7 @@ function BottomTabBar({ page, onPageChange }) {
     { id: "dashboard", label: "工作台",   icon: "target"  },
     { id: "blueprint", label: "車體圖解", icon: "wrench"  },
     { id: "essay",     label: "技術手冊", icon: "book"    },
+    { id: "deck",      label: "簡報",     icon: "layers"  },
   ];
   return (
     <nav className="bottom-tab-bar" aria-label="主要導覽">
@@ -113,7 +114,8 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
           {[
           { id: "dashboard", label: "工作台", en: "Dashboard" },
           { id: "blueprint", label: "車體圖解", en: "Blueprint" },
-          { id: "essay", label: "技術手冊", en: "First Principles" }].
+          { id: "essay", label: "技術手冊", en: "First Principles" },
+          { id: "deck", label: "簡報", en: "Presentation" }].
           map((p) => {
             const active = page === p.id;
             return (
@@ -138,10 +140,10 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
 
           {/* Mobile-only page cycle button — cycles essay ↔ blueprint ↔ dashboard */}
           {(() => {
-            const pages = ["dashboard", "essay", "blueprint"];
+            const pages = ["dashboard", "essay", "blueprint", "deck"];
             const nextPage = pages[(pages.indexOf(page) + 1) % pages.length];
-            const icons = { dashboard: "target", essay: "book", blueprint: "wrench" };
-            const labels = { dashboard: "工作台", essay: "技術手冊", blueprint: "車體圖解" };
+            const icons = { dashboard: "target", essay: "book", blueprint: "wrench", deck: "layers" };
+            const labels = { dashboard: "工作台", essay: "技術手冊", blueprint: "車體圖解", deck: "簡報" };
             return (
               <button
                 className="hdr-page-cycle-btn"
