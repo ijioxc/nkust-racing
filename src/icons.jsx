@@ -1,4 +1,4 @@
-// icons.jsx — SubsystemIcon (7 hand-drawn) + UIIcon (Lucide style)
+// icons.jsx — SubsystemIcon (9 hand-drawn) + UIIcon (Lucide style)
 
 function SubsystemIcon({ kind, size = 16, color = "currentColor" }) {
   const c = {
@@ -38,6 +38,17 @@ function SubsystemIcon({ kind, size = 16, color = "currentColor" }) {
         <path d="M3 8h13a3 3 0 1 0-3-3"/>
         <path d="M3 12h17a3 3 0 1 1-3 3"/>
         <path d="M3 16h11"/>
+      </svg>);
+    case "行銷": return (
+      <svg {...c}>
+        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/>
+        <path d="M15.8 9.2a2.5 2.5 0 0 0-3.5 0l-.3.4-.35-.3a2.42 2.42 0 1 0-3.2 3.6l3.6 3.5 3.6-3.5c1.2-1.2 1.1-2.7.2-3.7"/>
+      </svg>);
+    case "財務後勤": return (
+      <svg {...c}>
+        <path d="M3 8l9-4 9 4-9 4-9-4z"/>
+        <path d="M3 8v8l9 4 9-4V8"/>
+        <path d="M12 12v8"/>
       </svg>);
     default: return (
       <svg {...c}>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nkust-racing-v104';
+const CACHE_NAME = 'nkust-racing-v105';
 
 // Install event: skip waiting
 self.addEventListener('install', event => {
@@ -48,8 +48,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // 2. Network-First for React JSX components to prevent cache lag React crashes
-  if (url.pathname.endsWith('.jsx')) {
+  // 2. Network-First for React JSX + JSON config (prevents stale components / part mapping)
+  if (url.pathname.endsWith('.jsx') || url.pathname.endsWith('.json')) {
     event.respondWith(
       fetch(event.request).then(networkResponse => {
         if (networkResponse && networkResponse.status === 200 && (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
