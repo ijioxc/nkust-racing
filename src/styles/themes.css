@@ -2511,6 +2511,22 @@ header + * .subBar,
   transition: opacity 0.2s ease;
 }
 .deck-root.is-fullscreen:hover .deck-controls { opacity: 1; }
+/* 模擬全螢幕（iPhone Safari 沒有 Fullscreen API）：蓋過頂部工具列、鋪滿視窗 */
+.deck-root.is-pseudo-full {
+  z-index: 180;
+  height: 100dvh;
+}
+/* 全螢幕時避開瀏海與主畫面指示條 */
+.deck-root.is-fullscreen {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+/* 觸控裝置沒有 hover：控制列常駐（半透明），才能翻頁與離開全螢幕 */
+@media (hover: none) {
+  .deck-root.is-fullscreen .deck-controls {
+    opacity: 0.85;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+}
 
 @media (max-width: 768px) {
   .deck-root { padding: 16px 16px calc(12px + env(safe-area-inset-bottom)); gap: 8px; }
