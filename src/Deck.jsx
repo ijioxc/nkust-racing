@@ -788,6 +788,7 @@ function Deck() {
     } catch { return 0; }
   });
   const [isFull, setIsFull] = React.useState(false);
+  const [pseudoFull, setPseudoFull] = React.useState(false);   // 不支援 Fullscreen API（iPhone Safari）時改用 CSS 鋪滿
   const [openCell, setOpenCell] = React.useState(null);   // 格狀投影片展開的卡片
   const [carStatus, setCarStatus] = React.useState("loading");
   const rootRef = React.useRef(null);
@@ -818,13 +819,14 @@ function Deck() {
   const toggleFullscreen = React.useCallback(() => {
     const el = rootRef.current;
     if (!el) return;
+    if (!canFullscreen) { setPseudoFull(v => !v); return; }
     const current = document.fullscreenElement || document.webkitFullscreenElement;
     if (current) {
       (document.exitFullscreen || document.webkitExitFullscreen)?.call(document)?.catch?.(() => {});
     } else {
       (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el)?.catch?.(() => {});
     }
-  }, []);
+  }, [canFullscreen]);
 
   React.useEffect(() => {
     const onChange = () => setIsFull(!!(document.fullscreenElement || document.webkitFullscreenElement));
@@ -842,6 +844,7 @@ function Deck() {
       if (tag === "INPUT" || tag === "TEXTAREA" || e.target?.isContentEditable) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === "Escape" && openCell != null) { e.preventDefault(); setOpenCell(null); return; }
+      if (e.key === "Escape" && pseudoFull) { e.preventDefault(); setPseudoFull(false); return; }
       switch (e.key) {
         case "ArrowRight": case "ArrowDown": case "PageDown": case " ":
           e.preventDefault(); setIndex(i => Math.min(total - 1, i + 1)); break;
@@ -849,12 +852,12 @@ function Deck() {
           e.preventDefault(); setIndex(i => Math.max(0, i - 1)); break;
         case "Home": e.preventDefault(); setIndex(0); break;
         case "End":  e.preventDefault(); setIndex(total - 1); break;
-        case "f": case "F": if (canFullscreen) { e.preventDefault(); toggleFullscreen(); } break;
+        case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [total, canFullscreen, toggleFullscreen, openCell]);
+  }, [total, toggleFullscreen, openCell, pseudoFull]);
 
   const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
   const onTouchEnd = (e) => {
@@ -865,7 +868,7 @@ function Deck() {
   };
 
   return (
-    <div ref={rootRef} className={`deck-root${isFull ? " is-fullscreen" : ""}${carStatus === "ready" ? " is-car-ready" : ""}`}>
+    <div ref={rootRef} className={`deck-root${isFull || pseudoFull ? " is-fullscreen" : ""}${pseudoFull ? " is-pseudo-full" : ""}${carStatus === "ready" ? " is-car-ready" : ""}`}>
       <div className="deck-stage-wrap">
         <div className="deck-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
              role="region" aria-roledescription="簡報" aria-label={`第 ${index + 1} 張，共 ${total} 張`}>
@@ -904,11 +907,9 @@ function Deck() {
         <button className="deck-ctrl-btn deck-ctrl-btn--next" onClick={() => go(index + 1)} disabled={index === total - 1} aria-label="下一張">
           <UIIcon kind="chevron-right" size={18} strokeWidth={2}/>
         </button>
-        {canFullscreen && (
-          <button className="deck-ctrl-btn" onClick={toggleFullscreen} aria-label={isFull ? "離開全螢幕" : "全螢幕"} title="全螢幕 (F)">
-            <UIIcon kind="resize" size={16}/>
-          </button>
-        )}
+        <button className="deck-ctrl-btn" onClick={toggleFullscreen} aria-label={isFull || pseudoFull ? "離開全螢幕" : "全螢幕"} title="全螢幕 (F)">
+          <UIIcon kind="resize" size={16}/>
+        </button>
       </div>
     </div>
   );
