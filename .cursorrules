@@ -21,8 +21,8 @@
 - **視圖模組**：
   - `Dashboard.jsx` (工作台)：Bento（`BentoBoard` 8 欄網格）＋ Kanban。卡片用 `.tcard`（large/tile 變體）。
   - `Boards.jsx`：零件 Kanban（`SupplierCard`）＋ 資源庫（`ResourceCard` / `ResourcePreview`）。
-  - `Blueprint.jsx` & `Blueprint3D.js` (車體圖解)：Three.js 3D 畫布＋側邊規格欄。
-  - `Essay.jsx` (技術手冊)：Serif (`var(--font-serif)`) 閱讀排版。
+  - `Academy.jsx` (學院)：分級課程，左側 3D 車（共用 Deck.jsx 的 DeckStageCar）＋右側投影片與測驗。
+  - `PartSpecs.jsx` (工作台「零件規格」分頁)：零件材質、重量、負責人等規格編輯。
   - `Header.jsx`：頂部工具列＋分頁列＋帳號選單。
   - `atoms.jsx`：共用元件（Button / Pill / KPI / Avatar / ProgressBar / SubsystemTag…）。
 

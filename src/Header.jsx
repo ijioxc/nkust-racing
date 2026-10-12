@@ -1,4 +1,4 @@
-// Header.jsx — top-level page nav (Dashboard / Blueprint / Essay) + sub-tabs
+// Header.jsx — top-level page nav (工作台 / 學院 / 簡報) + sub-tabs
 
 // Neutral placeholder avatar for the not-signed-in state
 function GuestAvatar({ size = 28 }) {
@@ -21,8 +21,7 @@ function GuestAvatar({ size = 28 }) {
 function BottomTabBar({ page, onPageChange }) {
   const tabs = [
     { id: "dashboard", label: "工作台",   icon: "target"  },
-    { id: "blueprint", label: "車體圖解", icon: "wrench"  },
-    { id: "essay",     label: "技術手冊", icon: "book"    },
+    { id: "academy",   label: "學院",     icon: "book"    },
     { id: "deck",      label: "簡報",     icon: "layers"  },
   ];
   return (
@@ -113,8 +112,7 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
         <nav className="hdr-page-nav" style={hdrStyles.pageNav}>
           {[
           { id: "dashboard", label: "工作台", en: "Dashboard" },
-          { id: "blueprint", label: "車體圖解", en: "Blueprint" },
-          { id: "essay", label: "技術手冊", en: "First Principles" },
+          { id: "academy", label: "學院", en: "Academy" },
           { id: "deck", label: "簡報", en: "Presentation" }].
           map((p) => {
             const active = page === p.id;
@@ -138,12 +136,11 @@ function Header({ page, onPageChange, subTab, onSubTabChange, dashTabs, appearan
         <div style={hdrStyles.actions}>
 
 
-          {/* 手機：四個頁面各一顆圖示，直接切換（桌面用上方文字導覽） */}
+          {/* 手機：每個頁面各一顆圖示，直接切換（桌面用上方文字導覽） */}
           <nav className="hdr-page-icons" aria-label="頁面">
             {[
               { id: "dashboard", label: "工作台",   icon: "target" },
-              { id: "blueprint", label: "車體圖解", icon: "wrench" },
-              { id: "essay",     label: "技術手冊", icon: "book"   },
+              { id: "academy",   label: "學院",     icon: "book"   },
               { id: "deck",      label: "簡報",     icon: "layers" },
             ].map(p => {
               const active = page === p.id;

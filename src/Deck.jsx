@@ -162,13 +162,23 @@ const DECK_CAR_MODEL = "public/models/chassis_final.glb";
 const DECK_CAR_PARTS = "public/models/chassis_final.parts.json";
 // parts.json 標的是系統（懸吊、煞車…），簡報以組別呈現：系統 → 組
 const DECK_TEAM_OF = { 車體: "車體", 空力: "車體", 懸吊: "底盤", 煞車: "底盤", 引擎: "動力", 電裝: "電力" };
-let deckCarAssets = null;   // Promise<{ THREE, pivot, radius, subsystems }>
+// 零件怎麼分組：(網格名稱, parts.json 的系統) → 組名
+//   team：簡報用，以組別呈現（車體／底盤／動力／電力）
+//   system：學院課程用，分得更細；wheel 網格裡的懸吊件就是輪圈＋輪胎，單獨成「輪胎」
+const DECK_GROUPINGS = {
+  team: (mesh, sys) => DECK_TEAM_OF[sys] || "其他",
+  system: (mesh, sys) => mesh === "wheel" && (sys === "懸吊" || sys === "其他" || !sys) ? "輪胎"
+    : ({ 空力: "空力", 煞車: "煞車", 引擎: "動力", 懸吊: "懸吊", 車體: "車體" }[sys] || "其他"),
+};
+const deckCarAssets = {};   // grouping → Promise<{ THREE, pivot, radius, subsystems, … }>
 
-// 依 chassis_final.parts.json 的「零件→系統」對照表，把模型重組成每個系統一個網格。
+// 依 chassis_final.parts.json 的「零件→系統」對照表，把模型重組成每組一個網格。
 // （GLB 原本的群組左右不對稱、常把同一片板子拆到兩組，所以不直接用。）
-function loadDeckCar() {
-  if (!deckCarAssets) {
-    deckCarAssets = (async () => {
+// 每種分組各自載一份（同一個 pivot 不能同時放在兩個場景）。
+function loadDeckCar(grouping = "team") {
+  const groupOf = DECK_GROUPINGS[grouping];
+  if (!deckCarAssets[grouping]) {
+    deckCarAssets[grouping] = (async () => {
       const THREE = await import("three");
       const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
       const [gltf, table] = await Promise.all([
@@ -208,7 +218,7 @@ function loadDeckCar() {
         const sums = new Float64Array(count * 3), tris = new Int32Array(count);
         for (let t = 0; t < partOfTri.length; t++) {
           const p = partOfTri[t];
-          const sub = DECK_TEAM_OF[assign[mesh.name + ":" + p]] || "其他";
+          const sub = groupOf(mesh.name, assign[mesh.name + ":" + p]);
           let list = bySub.get(sub);
           if (!list) bySub.set(sub, list = []);
           for (let c = 0; c < 3; c++) {
@@ -229,7 +239,7 @@ function loadDeckCar() {
           const c = new THREE.Vector3(sums[p * 3] / n, sums[p * 3 + 1] / n, sums[p * 3 + 2] / n)
             .applyMatrix4(mesh.matrixWorld);
           const raw = assign[mesh.name + ":" + p] || "其他";   // 往上抬的高度依系統分層
-          const sub = DECK_TEAM_OF[raw] || "其他";
+          const sub = groupOf(mesh.name, assign[mesh.name + ":" + p]);
           const off = new THREE.Vector3(c.x * EXPLODE_SPREAD, c.y * EXPLODE_SPREAD * 0.5 + (EXPLODE_LIFT[raw] ?? 0.2), c.z * EXPLODE_SPREAD);
           (labelCands[sub] ||= []).push({ tris: tris[p], base: c, off: off.clone() });
           off.applyMatrix4(inv).sub(origin);
@@ -294,9 +304,9 @@ function loadDeckCar() {
       }
       return { THREE, pivot, radius, subsystems, focusInfo, explode, labelInfo };
     })();
-    deckCarAssets.catch(() => { deckCarAssets = null; });
+    deckCarAssets[grouping].catch(() => { delete deckCarAssets[grouping]; });
   }
-  return deckCarAssets;
+  return deckCarAssets[grouping];
 }
 
 // ── 常駐 3D 車（整份簡報共用一個 renderer）──────────────────
@@ -319,7 +329,8 @@ function deckPortraitPose(pose, layout) {
   return { ...pose, x: 0.5, w: 0.86, y: DECK_PORTRAIT_Y[layout] ?? pose.y, ...pose.portrait };
 }
 
-function DeckStageCar({ pose, onStatus }) {
+// grouping：零件分組方式（見 DECK_GROUPINGS），pose.focus 要用該分組的組名
+function DeckStageCar({ pose, onStatus, grouping = "team" }) {
   const canvasRef = React.useRef(null);
   const poseRef = React.useRef(pose);
   const wakeRef = React.useRef(() => {});
@@ -333,7 +344,7 @@ function DeckStageCar({ pose, onStatus }) {
   React.useEffect(() => {
     let dead = false, raf = 0, renderer, ro, envTex, scene, pivotRef;
     onStatus?.("loading");
-    loadDeckCar().then(({ THREE, pivot, radius, subsystems, focusInfo, explode, labelInfo }) => {
+    loadDeckCar(grouping).then(({ THREE, pivot, radius, subsystems, focusInfo, explode, labelInfo }) => {
       if (dead || !canvasRef.current) return;
       const canvas = canvasRef.current;
       pivotRef = pivot;
@@ -962,4 +973,4 @@ function Deck() {
   );
 }
 
-Object.assign(window, { Deck, DECK_SLIDES });
+Object.assign(window, { Deck, DECK_SLIDES, DeckStageCar });

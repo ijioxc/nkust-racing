@@ -8,9 +8,9 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 function App() {
-  // 網址 hash 決定頁面：#blueprint、#dashboard/plans（工作台子分頁）
-  const PAGES = ["dashboard", "blueprint", "essay", "deck", "twin"];
-  const SUBTABS = ["overview", "worklog", "plans", "parts", "resources", "people"];
+  // 網址 hash 決定頁面：#academy、#dashboard/plans（工作台子分頁）
+  const PAGES = ["dashboard", "academy", "deck", "twin"];
+  const SUBTABS = ["overview", "worklog", "plans", "parts", "specs", "resources", "people"];
   const readHash = () => {
     const [p, sub] = location.hash.replace(/^#\/?/, "").split("/");
     return {
@@ -101,6 +101,7 @@ function App() {
     { id: "worklog",   label: "工作日誌", icon: "calendar", count: tasks.length },
     { id: "plans",     label: "計畫",   icon: "wrench",   count: plans.length },
     { id: "parts",     label: "零件",   icon: "factory",  count: suppliers.length },
+    { id: "specs",     label: "零件規格", icon: "wrench",  count: undefined },
     { id: "resources", label: "資源",   icon: "book",     count: resources.length },
     { id: "people",    label: "人員",   icon: "users",    count: people.length },
   ];
@@ -128,8 +129,7 @@ function App() {
             suppliers={suppliers} setSuppliers={setSuppliers}
             resources={resources} setResources={setResources}/>
         )}
-        {page === "blueprint" && <Blueprint/>}
-        {page === "essay"     && <Essay/>}
+        {page === "academy"   && <Academy/>}
         {page === "deck"      && <Deck/>}
         {page === "twin"      && (
           <div style={{
@@ -171,8 +171,7 @@ function App() {
         <TweakSelect label="Open page" value={page}
           options={[
             { value: "dashboard", label: "工作台" },
-            { value: "blueprint", label: "車體圖解" },
-            { value: "essay",     label: "技術手冊" },
+            { value: "academy",   label: "學院" },
             { value: "deck",      label: "簡報" },
             { value: "twin",      label: "數位雙生" },
           ]}

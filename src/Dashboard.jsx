@@ -78,6 +78,7 @@ function Dashboard({ tab, tasks, setTasks, people, setPeople, plans, setPlans, s
       {tab === "parts" && (
         <PartsView suppliers={suppliers} setSuppliers={setSuppliers}/>
       )}
+      {tab === "specs" && <PartSpecs/>}
       {tab === "resources" && (
         <ResourcesView resources={resources} setResources={setResources}/>
       )}
