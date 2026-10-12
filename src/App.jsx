@@ -8,8 +8,29 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 function App() {
-  const [page, _setPage] = React.useState("dashboard");
-  const [subTab, _setSubTab] = React.useState("overview");
+  // 網址 hash 決定頁面：#blueprint、#dashboard/plans（工作台子分頁）
+  const PAGES = ["dashboard", "blueprint", "essay", "deck", "twin"];
+  const SUBTABS = ["overview", "worklog", "plans", "parts", "resources", "people"];
+  const readHash = () => {
+    const [p, sub] = location.hash.replace(/^#\/?/, "").split("/");
+    return {
+      page: PAGES.includes(p) ? p : "dashboard",
+      subTab: SUBTABS.includes(sub) ? sub : "overview",
+    };
+  };
+  const [page, _setPage] = React.useState(() => readHash().page);
+  const [subTab, _setSubTab] = React.useState(() => readHash().subTab);
+
+  React.useEffect(() => {
+    const h = page === "dashboard" && subTab !== "overview" ? `${page}/${subTab}` : page;
+    if (location.hash !== "#" + h) history.replaceState(null, "", "#" + h);
+  }, [page, subTab]);
+
+  React.useEffect(() => {
+    const onHash = () => { const h = readHash(); _setPage(h.page); _setSubTab(h.subTab); };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   // Wrap state change in a View Transition, swallowing the "aborted" rejection
   // that fires when a new transition starts before the previous one settles
